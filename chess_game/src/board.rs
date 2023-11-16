@@ -4,6 +4,8 @@
 
 const LEFT_FILE_MASK: u64 = 72340172838076673;
 const RIGHT_FILE_MASK: u64 = 9259542123273814144;
+const PAWN_WHITE_FIRST_MOVE_MASK: u64 = 71776119061217280;
+const PAWN_BLACK_FIRST_MOVE_MASK: u64 = 65280;
 
 pub struct Chessboard {
     pub white_pawn: u64, 
@@ -47,30 +49,56 @@ impl Chessboard {
     pub fn get_pawn_attack_mask(&self, pos: u64, is_white: bool) -> u64 {
         // Check if pawn on position
         /*   
-POS 0 ->    R N B K Q B N R
-            P P P P P P P P                 When we >>, we actually move to the "left" on the board because we're moving towards the least significant bit
+POS 0 ->    r n b k q b n r
+            p p p p p p p p                 When we >>, we actually move to the "left" on the board because we're moving towards the least significant bit
             e e e e e e e e 
             e e e e e e e e 
             e e e e e e e e 
             e e e e e e e e 
-            p p p p p p p p 
-            r n b k q b n r  <-  POS 63
+            P P P P P P P P
+            R N B K Q B N R  <-  POS 63
          */
         if is_white {
             if ((self.white_pawn >> pos) & 1u64) == 1 {
-                if in_left_file(pos) {
-                    println!("{}", display_bit_board(1u64 << (pos-7)));
-                } else if in_right_file(pos) {
-                    println!("{}", display_bit_board(1u64 << (pos-9)));
+                if (1u64 << pos | LEFT_FILE_MASK) == LEFT_FILE_MASK {
+                    return 1u64 << (pos-7);
+                } else if (1u64 << pos | RIGHT_FILE_MASK) == RIGHT_FILE_MASK {
+                    return 1u64 << (pos-9);
                 } else {
-                    println!("{}", display_bit_board((1u64 << (pos-9))|((1u64 << (pos-7)))));
+                    return (1u64 << (pos-9))|((1u64 << (pos-7)));
                 }
-                
-                return 1;
             }
         } else {
             if ((self.black_pawn >> pos) & 1u64) == 1 {
-                return 1;
+                if (1u64 << pos | LEFT_FILE_MASK) == LEFT_FILE_MASK  {
+                    return 1u64 << (pos+9);
+                } else if (1u64 << pos | RIGHT_FILE_MASK) == RIGHT_FILE_MASK {
+                    return 1u64 << (pos+7);
+                } else {
+                    return (1u64 << (pos+9))|((1u64 << (pos+7)));
+                }
+            }
+        }
+        
+        return 0;
+    }
+
+    pub fn get_pawn_move_mask(&self, pos: u64, is_white: bool) -> u64 {
+        if is_white {
+            if ((self.white_pawn >> pos) & 1u64) == 1 {
+                if (1u64 << pos | PAWN_WHITE_FIRST_MOVE_MASK) == PAWN_WHITE_FIRST_MOVE_MASK {
+                    return (1u64 << (pos-8))|((1u64 << (pos-16)));
+                } else {
+                    return 1u64 << (pos-8);
+                }
+            }
+        } else {
+            if ((self.black_pawn >> pos) & 1u64) == 1 {
+                if (1u64 << pos | PAWN_BLACK_FIRST_MOVE_MASK) == PAWN_BLACK_FIRST_MOVE_MASK {
+                    return (1u64 << (pos+8))|((1u64 << (pos+16)));
+                } else {
+                    return 1u64 << (pos+8);
+                }            
             }
         }
         
@@ -142,13 +170,6 @@ pub fn display_bit_board(board: u64) -> String {
     board_string
 }
 
-fn in_left_file(pos: u64) -> bool {
-    return (1u64 << pos | LEFT_FILE_MASK) == LEFT_FILE_MASK;
-}
-fn in_right_file(pos: u64) -> bool {
-    return (1u64 << pos | RIGHT_FILE_MASK) == RIGHT_FILE_MASK;
-}
-
 
 // TESTS
 
@@ -158,19 +179,35 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_get_pawn_attack_mask_white() {
+    fn test_get_pawn_attack_mask_white_no_corner() {
         let chessboard = Chessboard::new();
-        let result = chessboard.get_pawn_attack_mask(55, true);
+        let result = chessboard.get_pawn_attack_mask(54, true);
 
-        assert_eq!(result, 1);
+        assert_eq!(result, 175921860444160);
     }
 
     #[test]
-    fn test_get_pawn_attack_mask_black() {
+    fn test_get_pawn_attack_mask_white_corner() {
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_pawn_attack_mask(55, true);
+
+        assert_eq!(result, 70368744177664);
+    }
+
+    #[test]
+    fn test_get_pawn_attack_mask_black_no_corner() {
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_pawn_attack_mask(9, false);
+
+        assert_eq!(result, 327680);
+    }
+
+    #[test]
+    fn test_get_pawn_attack_mask_black_corner() {
         let chessboard = Chessboard::new();
         let result = chessboard.get_pawn_attack_mask(8, false);
 
-        assert_eq!(result, 1);
+        assert_eq!(result, 131072);
     }
 
     #[test]
@@ -180,4 +217,29 @@ mod tests {
 
         assert_eq!(result, 0);
     }
+
+    #[test]
+    fn test_get_pawn_move_mask_white() {
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_pawn_move_mask(55, true);
+
+        assert_eq!(result, 141287244169216);
+    }
+
+    #[test]
+    fn test_get_pawn_move_mask_black() {
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_pawn_move_mask(15, false);
+
+        assert_eq!(result, 2155872256);
+    }
+
+    #[test]
+    fn test_get_pawn_move_mask_no_pawn() {
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_pawn_move_mask(36, true);
+
+        assert_eq!(result, 0);
+    }
+
 }
