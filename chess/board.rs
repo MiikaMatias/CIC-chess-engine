@@ -1,17 +1,19 @@
 pub struct Chessboard {
-    white_pawn: u64, 
-    white_rook: u64, 
-    white_knight: u64, 
-    white_bishop: u64, 
-    white_queen: u64, 
-    white_king: u64, 
+    pub white_pawn: u64, 
+    pub white_rook: u64, 
+    pub white_knight: u64, 
+    pub white_bishop: u64, 
+    pub white_queen: u64, 
+    pub white_king: u64, 
 
-    black_pawn: u64, 
-    black_rook: u64, 
-    black_knight: u64, 
-    black_bishop: u64, 
-    black_queen: u64, 
-    black_king: u64, 
+    pub black_pawn: u64, 
+    pub black_rook: u64, 
+    pub black_knight: u64, 
+    pub black_bishop: u64, 
+    pub black_queen: u64, 
+    pub black_king: u64, 
+
+    pub white_turn: bool
 }
 
 impl Chessboard {
@@ -30,6 +32,8 @@ impl Chessboard {
             black_bishop: 2594073385365405696, 
             black_queen: 1152921504606846976, 
             black_king: 576460752303423488, 
+
+            white_turn: true
         }
     }
 
@@ -50,15 +54,13 @@ impl Chessboard {
         ]
     }
     
-    
     pub fn display_board(&self) -> String {
         let rows = 8;
         let cols = 8;
-
         let mut board_string = String::new();
         for i in 0..rows {
             for j in 0..cols {
-                let mut piece_char = 'e'; // Default empty square
+                let mut piece_char = 'e';
                 for &(piece, piece_type) in self.get_positions().iter() {
                     if (piece & (1u64 << (i * 8 + j))) != 0 {
                         piece_char = piece_type;
@@ -69,7 +71,26 @@ impl Chessboard {
             }
             board_string.push_str("\n");
         }
-    
         return board_string;
     }
+    
+}
+
+pub fn display_bit_board(board: u64) -> String {
+    let rows = 8;
+    let cols = 8;
+    let mut board_string = String::new();
+
+    for i in 0..rows {
+        for j in 0..cols {
+            let bit_position = i * cols + j;
+            let bit_value = (board >> bit_position) & 1u64;
+
+            let piece_char = if bit_value == 1 { '1' } else { '0' };
+            board_string.push(piece_char);
+        }
+        board_string.push_str("\n");
+    }
+
+    board_string
 }
