@@ -99,16 +99,24 @@ impl Chessboard {
         }
 
         if is_white {
-            // Check if pawn can move there
-            if (self.get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
-                self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
-            } else {
-                return false;
+            if (self.white_pawn | (1u64 << from)) == self.white_pawn {
+                if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
+                    // Check if pawn can move there
+                    if (self.get_pawn_attack_mask(from, is_white) >> to) & 1u64 == 1 {
+                        self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
+                        self.black_pawn = self.black_pawn & !(1u64 << to);
+                    } else {
+                        return false;
+                    }
+                } else {
+                    // Check if pawn can move there
+                    if (self.get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                        self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
+                    } else {
+                        return false;
+                    }
+                }
             }
-
-            // check if enemy occupies
-    
-            // modify enemy state
         } else {            
             // Check if pawn can move there
             if (self.get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
@@ -362,8 +370,10 @@ mod tests {
         chessboard.move_piece(11, 27, false);
         chessboard.move_piece(51, 27, true);
         chessboard.move_piece(12, 28, false);
+        // we capture
+        chessboard.move_piece(35, 28, true);
     
         
-        assert_eq!(chessboard.get_pieces(), 18444210833681606655);
+        assert_eq!(chessboard.get_pieces(), 18444210799321868287);
     }
 }

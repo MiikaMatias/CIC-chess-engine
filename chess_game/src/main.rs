@@ -31,5 +31,10 @@ fn main() {
     let passed = cp.move_piece(12, 28, false);
     println!("{} {}", cp.display_board(), passed);
 
-    print!("{}", cp.get_pieces());
+
+    print!("{}", display_bit_board(cp.white_pawn));
+    println!("{}", cp.display_board());
+    let passed = cp.move_piece(35, 28, true);
+    println!("{} {}", cp.display_board(), passed);
+
 }
