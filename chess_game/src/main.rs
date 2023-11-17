@@ -13,13 +13,23 @@ fn main() {
 
     print!("{}", display_bit_board(cp.white_pawn));
     println!("{}", cp.display_board());
-    let passed = cp.move_piece(55, 47, true);
+    let passed = cp.move_piece(51, 35, true);
     println!("{} {}", cp.display_board(), passed);
 
     print!("{}", display_bit_board(cp.black_pawn));
     println!("{}", cp.display_board());
-    let passed = cp.move_piece(9, 25, false);
+    let passed = cp.move_piece(11, 27, false);
     println!("{} {}", cp.display_board(), passed);
 
-    print!("{}", cp.black_pawn);
+    print!("{}", display_bit_board(cp.white_pawn));
+    println!("{}", cp.display_board());
+    let passed = cp.move_piece(51, 27, true);
+    println!("{} {}", cp.display_board(), passed);
+
+    print!("{}", display_bit_board(cp.black_pawn));
+    println!("{}", cp.display_board());
+    let passed = cp.move_piece(12, 28, false);
+    println!("{} {}", cp.display_board(), passed);
+
+    print!("{}", cp.get_pieces());
 }

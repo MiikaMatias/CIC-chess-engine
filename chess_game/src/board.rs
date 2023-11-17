@@ -45,7 +45,10 @@ impl Chessboard {
             white_turn: true
         }
     }
-    
+
+    pub fn get_pieces(&self) -> u64 {
+        self.get_black_pieces()|self.get_white_pieces()
+    }    
     pub fn get_white_pieces(&self) -> u64 {
         self.white_pawn
             | self.white_rook
@@ -64,17 +67,27 @@ impl Chessboard {
             | self.black_king
     }
 
-    pub fn get_all_pieces(&self) -> u64 {
-        self.get_white_pieces() | self.get_black_pieces()
-    }
-
     pub fn self_check_check(&self, from: u64, to: u64, is_white: bool) -> bool {
         return false;
     }
 
     pub fn illegal(&self, from: u64, to: u64, is_white: bool) -> bool {
-        if self.self_check_check(from, to, is_white) {
-            return true;
+        if is_white {
+            if (self.get_white_pieces() | (1u64 << from)) != self.get_white_pieces() { //check if piece exists
+                return true;
+            } else if (self.get_white_pieces() | (1u64 << to)) == self.get_white_pieces(){ //check if occupied by friendly
+                return true;
+            } else if self.self_check_check(from, to, is_white) { // check if suicide
+                return true;
+            }
+        } else {
+            if (self.get_black_pieces() | (1u64 << from)) != self.get_black_pieces() { //check if piece exists
+                return true;
+            } else if (self.get_black_pieces() | (1u64 << to)) == self.get_black_pieces(){ //check if occupied by friendly
+                return true;
+            } else if self.self_check_check(from, to, is_white) { // check if suicide
+                return true;
+            }
         }
         return false;
     }
@@ -86,10 +99,6 @@ impl Chessboard {
         }
 
         if is_white {
-            if ((self.white_pawn >> from) & 1u64) != 1 {
-                return false;
-            }
-            
             // Check if pawn can move there
             if (self.get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
                 self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
@@ -100,11 +109,7 @@ impl Chessboard {
             // check if enemy occupies
     
             // modify enemy state
-        } else {
-            if ((self.black_pawn >> from) & 1u64) != 1 {
-                return false;
-            }
-            
+        } else {            
             // Check if pawn can move there
             if (self.get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
                 self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
@@ -347,5 +352,18 @@ mod tests {
         let passed = chessboard.move_piece(9, 26, false);
 
         assert_eq!(passed, false);
+    }
+
+    #[test]
+    fn test_pawn_capture_collision() {
+        let mut chessboard = Chessboard::new();
+        
+        chessboard.move_piece(51, 35, true);
+        chessboard.move_piece(11, 27, false);
+        chessboard.move_piece(51, 27, true);
+        chessboard.move_piece(12, 28, false);
+    
+        
+        assert_eq!(chessboard.get_pieces(), 18444210833681606655);
     }
 }
