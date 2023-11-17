@@ -4,16 +4,16 @@ use board::Chessboard;
 use board::display_bit_board;
 
 fn main() {
-    let cp = Chessboard::new();
-
-    println!("{}", cp.display_board());
+    let mut cp = Chessboard::new();
 
     // check if pawn exists
-    println!("{}", display_bit_board(71776119061217280));
+    display_bit_board(71776119061217280);
+    cp.get_pawn_move_mask(55, true);
+    cp.get_pawn_move_mask(15, false);
 
-    println!("{}", display_bit_board(cp.get_pawn_attack_mask(9, false)));
-
-
-    println!("{}", cp.get_pawn_move_mask(55, true));
-    println!("{}", cp.get_pawn_move_mask(15, false));
+    print!("{}", display_bit_board(cp.white_pawn));
+    println!("{}", cp.display_board());
+    let passed = cp.move_piece(55, 47, true);
+    println!("{} {}", cp.display_board(), passed);
+    print!("{}", display_bit_board(cp.white_pawn));
 }

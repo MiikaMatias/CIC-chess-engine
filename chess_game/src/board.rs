@@ -46,6 +46,39 @@ impl Chessboard {
         }
     }
 
+    pub fn self_check_check(&self, from: u64, to: u64, is_white: bool) -> bool {
+        return false;
+    }
+
+    pub fn illegal(&self, from: u64, to: u64, is_white: bool) -> bool {
+        if self.self_check_check(from, to, is_white) {
+            return true;
+        }
+        return false;
+    }
+
+    pub fn move_piece(&mut self, from: u64, to: u64, is_white: bool) -> bool {
+        // check who is moving
+        if self.illegal(from, to, is_white) {
+            return false;
+        }
+
+        if is_white {
+            if ((self.white_pawn >> from) & 1u64) != 1 {
+                return false;
+            }
+
+            if (self.get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
+            }
+
+            // check if enemy occupies
+    
+            // modify enemy state    
+        }
+        return true;
+    }
+
     pub fn get_pawn_attack_mask(&self, pos: u64, is_white: bool) -> u64 {
         // Check if pawn on position
         /*   
