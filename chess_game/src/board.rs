@@ -45,6 +45,28 @@ impl Chessboard {
             white_turn: true
         }
     }
+    
+    pub fn get_white_pieces(&self) -> u64 {
+        self.white_pawn
+            | self.white_rook
+            | self.white_knight
+            | self.white_bishop
+            | self.white_queen
+            | self.white_king
+    }
+
+    pub fn get_black_pieces(&self) -> u64 {
+        self.black_pawn
+            | self.black_rook
+            | self.black_knight
+            | self.black_bishop
+            | self.black_queen
+            | self.black_king
+    }
+
+    pub fn get_all_pieces(&self) -> u64 {
+        self.get_white_pieces() | self.get_black_pieces()
+    }
 
     pub fn self_check_check(&self, from: u64, to: u64, is_white: bool) -> bool {
         return false;
