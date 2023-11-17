@@ -67,14 +67,31 @@ impl Chessboard {
             if ((self.white_pawn >> from) & 1u64) != 1 {
                 return false;
             }
-
+            
+            // Check if pawn can move there
             if (self.get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
                 self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
+            } else {
+                return false;
             }
 
             // check if enemy occupies
     
-            // modify enemy state    
+            // modify enemy state
+        } else {
+            if ((self.black_pawn >> from) & 1u64) != 1 {
+                return false;
+            }
+            
+            // Check if pawn can move there
+            if (self.get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
+            } else {
+                return false;
+            }
+
+            // check if enemy occupies
+            // modify enemy state
         }
         return true;
     }
@@ -142,8 +159,11 @@ POS 0 ->    r n b k q b n r
         let rows = 8;
         let cols = 8;
         let mut board_string = String::new();
-        
+        board_string.push_str("    0 1 2 3 4 5 6 7\n");
+        board_string.push_str("    ----------------\n");
+    
         for i in 0..rows {
+            board_string.push_str(&format!("{:2}| ", i*8));
             for j in 0..cols {
                 let mut piece_char = 'e';
     
@@ -177,7 +197,7 @@ POS 0 ->    r n b k q b n r
             }
             board_string.push_str("\n");
         }
-        
+        board_string.push_str("    ----------------\n");
         board_string
     }
     
@@ -275,4 +295,35 @@ mod tests {
         assert_eq!(result, 0);
     }
 
+    #[test]
+    fn test_move_white_pawn_1_return_value() {
+        let mut chessboard = Chessboard::new();
+        let passed = chessboard.move_piece(55, 47, true);
+
+        assert_eq!(passed, true);
+    }
+
+    #[test]
+    fn test_move_white_pawn_1_board_value() {
+        let mut chessboard = Chessboard::new();
+        chessboard.move_piece(55, 47, true);
+
+        assert_eq!(chessboard.white_pawn, 35888059530608640);
+    }
+
+    #[test]
+    fn test_move_black_pawn_2_board_value() {
+        let mut chessboard = Chessboard::new();
+        chessboard.move_piece(9, 25, false);
+
+        assert_eq!(chessboard.black_pawn, 33619200);
+    }
+
+    #[test]
+    fn test_move_black_pawn_2_return_value_fail() {
+        let mut chessboard = Chessboard::new();
+        let passed = chessboard.move_piece(9, 26, false);
+
+        assert_eq!(passed, false);
+    }
 }
