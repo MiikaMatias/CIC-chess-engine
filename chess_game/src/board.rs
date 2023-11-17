@@ -46,9 +46,10 @@ impl Chessboard {
         }
     }
 
-    pub fn get_pieces(&self) -> u64 {
+    pub fn _get_all_piece_mask(&self) -> u64 {
         self.get_black_pieces()|self.get_white_pieces()
-    }    
+    }
+
     pub fn get_white_pieces(&self) -> u64 {
         self.white_pawn
             | self.white_rook
@@ -73,19 +74,11 @@ impl Chessboard {
 
     pub fn illegal(&self, from: u64, to: u64, is_white: bool) -> bool {
         if is_white {
-            if (self.get_white_pieces() | (1u64 << from)) != self.get_white_pieces() { //check if piece exists
-                return true;
-            } else if (self.get_white_pieces() | (1u64 << to)) == self.get_white_pieces(){ //check if occupied by friendly
-                return true;
-            } else if self.self_check_check(from, to, is_white) { // check if suicide
+            if self.self_check_check(from, to, is_white) { // check if suicide
                 return true;
             }
         } else {
-            if (self.get_black_pieces() | (1u64 << from)) != self.get_black_pieces() { //check if piece exists
-                return true;
-            } else if (self.get_black_pieces() | (1u64 << to)) == self.get_black_pieces(){ //check if occupied by friendly
-                return true;
-            } else if self.self_check_check(from, to, is_white) { // check if suicide
+            if self.self_check_check(from, to, is_white) { // check if suicide
                 return true;
             }
         }
@@ -102,7 +95,7 @@ impl Chessboard {
             if (self.white_pawn | (1u64 << from)) == self.white_pawn {
                 if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
                     // Check if pawn can move there
-                    if (self.get_pawn_attack_mask(from, is_white) >> to) & 1u64 == 1 {
+                    if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
                         self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
                         self.black_pawn = self.black_pawn & !(1u64 << to);
                     } else {
@@ -110,7 +103,7 @@ impl Chessboard {
                     }
                 } else {
                     // Check if pawn can move there
-                    if (self.get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                    if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
                         self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
                     } else {
                         return false;
@@ -118,11 +111,22 @@ impl Chessboard {
                 }
             }
         } else {            
-            // Check if pawn can move there
-            if (self.get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
-                self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
-            } else {
-                return false;
+            if (self.black_pawn | (1u64 << from)) == self.black_pawn {
+                if self.get_white_pieces() | (1u64 << to) == self.get_white_pieces() {
+                    // Check if pawn can move there
+                    if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
+                        self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
+                        self.white_pawn = self.white_pawn & !(1u64 << to);
+                    } else {
+                        return false;
+                    }
+                } else {
+                    if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                        self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
+                    } else {
+                        return false;
+                    }
+                }
             }
 
             // check if enemy occupies
@@ -131,7 +135,7 @@ impl Chessboard {
         return true;
     }
 
-    pub fn get_pawn_attack_mask(&self, pos: u64, is_white: bool) -> u64 {
+    pub fn get_attack_mask(&self, pos: u64, is_white: bool) -> u64 {
         // Check if pawn on position
         /*   
 POS 0 ->    r n b k q b n r
@@ -146,21 +150,21 @@ POS 0 ->    r n b k q b n r
         if is_white {
             if ((self.white_pawn >> pos) & 1u64) == 1 {
                 if (1u64 << pos | LEFT_FILE_MASK) == LEFT_FILE_MASK {
-                    return 1u64 << (pos-7);
+                    return (1u64 << (pos-7)) & self.get_black_pieces();
                 } else if (1u64 << pos | RIGHT_FILE_MASK) == RIGHT_FILE_MASK {
-                    return 1u64 << (pos-9);
+                    return (1u64 << (pos-9)) & self.get_black_pieces();
                 } else {
-                    return (1u64 << (pos-9))|((1u64 << (pos-7)));
+                    return ((1u64 << (pos-9))|((1u64 << (pos-7)))) & self.get_black_pieces();
                 }
             }
         } else {
             if ((self.black_pawn >> pos) & 1u64) == 1 {
                 if (1u64 << pos | LEFT_FILE_MASK) == LEFT_FILE_MASK  {
-                    return 1u64 << (pos+9);
+                    return (1u64 << (pos+9)) & self.get_white_pieces();
                 } else if (1u64 << pos | RIGHT_FILE_MASK) == RIGHT_FILE_MASK {
-                    return 1u64 << (pos+7);
+                    return (1u64 << (pos+7)) & self.get_white_pieces();
                 } else {
-                    return (1u64 << (pos+9))|((1u64 << (pos+7)));
+                    return ((1u64 << (pos+9))|((1u64 << (pos+7)))) & self.get_white_pieces();
                 }
             }
         }
@@ -168,21 +172,23 @@ POS 0 ->    r n b k q b n r
         return 0;
     }
 
-    pub fn get_pawn_move_mask(&self, pos: u64, is_white: bool) -> u64 {
+    pub fn get_move_mask(&self, pos: u64, is_white: bool) -> u64 {
         if is_white {
             if ((self.white_pawn >> pos) & 1u64) == 1 {
                 if (1u64 << pos | PAWN_WHITE_FIRST_MOVE_MASK) == PAWN_WHITE_FIRST_MOVE_MASK {
-                    return (1u64 << (pos-8))|((1u64 << (pos-16)));
+                    // pawn block jump
+                    return ((1u64 << (pos-8))|((1u64 << (pos-16)))) & !self._get_all_piece_mask();
                 } else {
-                    return 1u64 << (pos-8);
+                    return (1u64 << (pos-8)) & !self._get_all_piece_mask();
                 }
             }
         } else {
             if ((self.black_pawn >> pos) & 1u64) == 1 {
                 if (1u64 << pos | PAWN_BLACK_FIRST_MOVE_MASK) == PAWN_BLACK_FIRST_MOVE_MASK {
-                    return (1u64 << (pos+8))|((1u64 << (pos+16)));
+                    // pawn block jump
+                    return ((1u64 << (pos+8))|((1u64 << (pos+16)))) & !self._get_all_piece_mask();
                 } else {
-                    return 1u64 << (pos+8);
+                    return (1u64 << (pos+8)) & !self._get_all_piece_mask();
                 }            
             }
         }
@@ -267,41 +273,41 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_get_pawn_attack_mask_white_no_corner() {
+    fn test_get_attack_mask_white_no_corner() {
         let chessboard = Chessboard::new();
-        let result = chessboard.get_pawn_attack_mask(54, true);
+        let result = chessboard.get_attack_mask(54, true);
 
-        assert_eq!(result, 175921860444160);
+        assert_eq!(result, 0);
     }
 
     #[test]
-    fn test_get_pawn_attack_mask_white_corner() {
+    fn test_get_attack_mask_white_corner() {
         let chessboard = Chessboard::new();
-        let result = chessboard.get_pawn_attack_mask(55, true);
+        let result = chessboard.get_attack_mask(55, true);
 
-        assert_eq!(result, 70368744177664);
+        assert_eq!(result, 0);
     }
 
     #[test]
-    fn test_get_pawn_attack_mask_black_no_corner() {
+    fn test_get_attack_mask_black_no_corner() {
         let chessboard = Chessboard::new();
-        let result = chessboard.get_pawn_attack_mask(9, false);
+        let result = chessboard.get_attack_mask(9, false);
 
-        assert_eq!(result, 327680);
+        assert_eq!(result, 0);
     }
 
     #[test]
-    fn test_get_pawn_attack_mask_black_corner() {
+    fn test_get_attack_mask_black_corner() {
         let chessboard = Chessboard::new();
-        let result = chessboard.get_pawn_attack_mask(8, false);
+        let result = chessboard.get_attack_mask(8, false);
 
-        assert_eq!(result, 131072);
+        assert_eq!(result, 0);
     }
 
     #[test]
-    fn test_get_pawn_attack_mask_no_pawn() {
+    fn test_get_attack_mask_no_pawn() {
         let chessboard = Chessboard::new();
-        let result = chessboard.get_pawn_attack_mask(36, true);
+        let result = chessboard.get_attack_mask(36, true);
 
         assert_eq!(result, 0);
     }
@@ -309,7 +315,7 @@ mod tests {
     #[test]
     fn test_get_pawn_move_mask_white() {
         let chessboard = Chessboard::new();
-        let result = chessboard.get_pawn_move_mask(55, true);
+        let result = chessboard.get_move_mask(55, true);
 
         assert_eq!(result, 141287244169216);
     }
@@ -317,7 +323,7 @@ mod tests {
     #[test]
     fn test_get_pawn_move_mask_black() {
         let chessboard = Chessboard::new();
-        let result = chessboard.get_pawn_move_mask(15, false);
+        let result = chessboard.get_move_mask(15, false);
 
         assert_eq!(result, 2155872256);
     }
@@ -325,7 +331,7 @@ mod tests {
     #[test]
     fn test_get_pawn_move_mask_no_pawn() {
         let chessboard = Chessboard::new();
-        let result = chessboard.get_pawn_move_mask(36, true);
+        let result = chessboard.get_move_mask(36, true);
 
         assert_eq!(result, 0);
     }
@@ -368,12 +374,15 @@ mod tests {
         
         chessboard.move_piece(51, 35, true);
         chessboard.move_piece(11, 27, false);
+        // test if can move forwards if occupied
         chessboard.move_piece(51, 27, true);
         chessboard.move_piece(12, 28, false);
-        // we capture
+        // we capture with white
         chessboard.move_piece(35, 28, true);
+        // we capture with black
+        chessboard.move_piece(21, 28, false);
     
         
-        assert_eq!(chessboard.get_pieces(), 18444210799321868287);
+        assert_eq!(chessboard._get_all_piece_mask(), 18444210799321868287);
     }
 }
