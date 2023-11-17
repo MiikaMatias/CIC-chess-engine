@@ -22,6 +22,8 @@ pub struct Chessboard {
     pub black_queen: u64, 
     pub black_king: u64, 
 
+    pub en_passante_square: u64,
+
     pub white_turn: bool
 }
 
@@ -41,6 +43,8 @@ impl Chessboard {
             white_bishop: 2594073385365405696, 
             white_queen: 1152921504606846976, 
             white_king: 576460752303423488, 
+
+            en_passante_square: 0,
 
             white_turn: true
         }
@@ -72,6 +76,19 @@ impl Chessboard {
         return false;
     }
 
+    pub fn check_en_passante(&self, pos: u64, return_mask: u64, is_white: bool) -> u64 {
+        if is_white {
+            if self.en_passante_square == pos - 7 || self.en_passante_square == pos - 9 {
+                return return_mask | self.en_passante_square;
+            }
+        } else {
+            if self.en_passante_square == pos + 7 || self.en_passante_square == pos + 9 {
+                return return_mask | self.en_passante_square;
+            }
+        }
+        return_mask
+    }
+
     pub fn illegal(&self, from: u64, to: u64, is_white: bool) -> bool {
         if is_white {
             if self.self_check_check(from, to, is_white) { // check if suicide
@@ -100,14 +117,27 @@ impl Chessboard {
                         self.black_pawn = self.black_pawn & !(1u64 << to);
                         return true;
                     } 
+                } else if (1u64 << to) == self.en_passante_square {
+                    self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
+                    self.black_pawn = self.black_pawn & !(1u64 << (to+8));
+                    return true;
                 } else {
                     // Check if pawn can move there
                     if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
                         self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
+                        if from - to == 16 {
+                            // Set en_passante_square for the next move
+                            self.en_passante_square = 1u64 << (to + 8);
+                        } else {
+                            // uncheck en passant if next move is pawn
+                            self.en_passante_square = 0;
+                        }
                         return true;
                     } 
                 }
             }
+            // after we have finished with considering the next pawn move, we uncheck en_passante
+            self.en_passante_square = 0;
         } else {            
             if (self.black_pawn | (1u64 << from)) == self.black_pawn {
                 if self.get_white_pieces() | (1u64 << to) == self.get_white_pieces() {
@@ -117,14 +147,26 @@ impl Chessboard {
                         self.white_pawn = self.white_pawn & !(1u64 << to);
                         return true;
                     }
+                } else if (1u64 << to) == self.en_passante_square {
+                    self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
+                    self.white_pawn = self.white_pawn & !(1u64 << (to-8));
+                    return true;
                 } else {
                     if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
                         self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
+                        if to - from == 16 {
+                            // Set en_passante_square for the next move
+                            self.en_passante_square = 1u64 << (to - 8);
+                        } else {
+                            // uncheck en passant if next move is pawn
+                            self.en_passante_square = 0;
+                        }
                         return true;
                     } 
                 }
             }
-
+            // after we have finished with considering the next pawn move, we uncheck en_passante
+            self.en_passante_square = 0;
             // check if enemy occupies
             // modify enemy state
         }
@@ -146,21 +188,21 @@ POS 0 ->    r n b k q b n r
         if is_white {
             if ((self.white_pawn >> pos) & 1u64) == 1 {
                 if (1u64 << pos | LEFT_FILE_MASK) == LEFT_FILE_MASK {
-                    return (1u64 << (pos-7)) & self.get_black_pieces();
+                    return self.check_en_passante(pos, (1u64 << (pos-7)) & self.get_black_pieces(), is_white);
                 } else if (1u64 << pos | RIGHT_FILE_MASK) == RIGHT_FILE_MASK {
-                    return (1u64 << (pos-9)) & self.get_black_pieces();
+                    return  self.check_en_passante(pos, (1u64 << (pos-9)) & self.get_black_pieces(), is_white);
                 } else {
-                    return ((1u64 << (pos-9))|((1u64 << (pos-7)))) & self.get_black_pieces();
+                    return  self.check_en_passante(pos, ((1u64 << (pos-9))|((1u64 << (pos-7)))) & self.get_black_pieces(), is_white);
                 }
             }
         } else {
             if ((self.black_pawn >> pos) & 1u64) == 1 {
                 if (1u64 << pos | LEFT_FILE_MASK) == LEFT_FILE_MASK  {
-                    return (1u64 << (pos+9)) & self.get_white_pieces();
+                    return  self.check_en_passante(pos, (1u64 << (pos+9)) & self.get_white_pieces(), is_white);
                 } else if (1u64 << pos | RIGHT_FILE_MASK) == RIGHT_FILE_MASK {
-                    return (1u64 << (pos+7)) & self.get_white_pieces();
+                    return  self.check_en_passante(pos, (1u64 << (pos+7)) & self.get_white_pieces(), is_white);
                 } else {
-                    return ((1u64 << (pos+9))|((1u64 << (pos+7)))) & self.get_white_pieces();
+                    return  self.check_en_passante(pos, ((1u64 << (pos+9))|((1u64 << (pos+7)))) & self.get_white_pieces(), is_white);
                 }
             }
         }
@@ -405,6 +447,41 @@ mod tests {
         chessboard.move_piece(11, 27, false);
 
         assert_eq!(chessboard._get_all_piece_mask(), 18444211898431373055);
+    }
+
+    #[test]
+    fn test_en_passantee_square() {
+        let mut chessboard = Chessboard::new();
+        // create square
+        chessboard.move_piece(48, 32, true);
+        assert_eq!(chessboard.en_passante_square, (1u64 << 40));
+        // make sure it's gone
+        chessboard.move_piece(32, 24, true);
+        assert_eq!(chessboard.en_passante_square, 0);
+    }
+
+    #[test]
+    fn test_en_passantee_allowed() {
+        let mut chessboard = Chessboard::new();
+         // bring white pawn to front of black pieces
+         chessboard.move_piece(51, 35, true);
+         chessboard.move_piece(35, 27, true);
+         
+         // bring black pawn to front of white pieces
+         chessboard.move_piece(8, 24, false);
+         chessboard.move_piece(24, 32, false);
+
+        //JUMP!
+        chessboard.move_piece(49, 33, true);
+        // eat
+        let epb: bool =chessboard.move_piece(32, 41, false);
+        //JUMP!
+        chessboard.move_piece(12, 28, false);
+        //eat
+        let epw =chessboard.move_piece(27, 20, true);
+        assert_eq!(chessboard._get_all_piece_mask(), 18443650047990099711);
+        assert_eq!(epb, true);
+        assert_eq!(epw, true);
     }
 
 }
