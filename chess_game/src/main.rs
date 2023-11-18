@@ -20,7 +20,7 @@ fn main() {
     chessboard.move_piece(24, 32, false);
 
     chessboard.move_piece(49, 33, true);
-    print!("{}", display_bit_board(chessboard.en_passante_square));
+    print!("{}", display_bit_board(chessboard.en_passant_square));
     let epb: bool =chessboard.move_piece(32, 41, false);
     chessboard.move_piece(12, 28, false);
     let epw =chessboard.move_piece(27, 20, true);
