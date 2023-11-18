@@ -22,7 +22,7 @@ pub struct Chessboard {
     pub black_queen: u64, 
     pub black_king: u64, 
 
-    pub en_passante_square: u64,
+    pub en_passant_square: u64,
 
     pub white_turn: bool
 }
@@ -44,7 +44,7 @@ impl Chessboard {
             white_queen: 1152921504606846976, 
             white_king: 576460752303423488, 
 
-            en_passante_square: 0,
+            en_passant_square: 0,
 
             white_turn: true
         }
@@ -78,12 +78,12 @@ impl Chessboard {
 
     pub fn check_en_passante(&self, pos: u64, return_mask: u64, is_white: bool) -> u64 {
         if is_white {
-            if self.en_passante_square == pos - 7 || self.en_passante_square == pos - 9 {
-                return return_mask | self.en_passante_square;
+            if self.en_passant_square == pos - 7 || self.en_passant_square == pos - 9 {
+                return return_mask | self.en_passant_square;
             }
         } else {
-            if self.en_passante_square == pos + 7 || self.en_passante_square == pos + 9 {
-                return return_mask | self.en_passante_square;
+            if self.en_passant_square == pos + 7 || self.en_passant_square == pos + 9 {
+                return return_mask | self.en_passant_square;
             }
         }
         return_mask
@@ -117,7 +117,7 @@ impl Chessboard {
                         self.black_pawn = self.black_pawn & !(1u64 << to);
                         return true;
                     } 
-                } else if (1u64 << to) == self.en_passante_square {
+                } else if (1u64 << to) == self.en_passant_square {
                     self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
                     self.black_pawn = self.black_pawn & !(1u64 << (to+8));
                     return true;
@@ -126,18 +126,18 @@ impl Chessboard {
                     if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
                         self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
                         if from - to == 16 {
-                            // Set en_passante_square for the next move
-                            self.en_passante_square = 1u64 << (to + 8);
+                            // Set en_passant_square for the next move
+                            self.en_passant_square = 1u64 << (to + 8);
                         } else {
                             // uncheck en passant if next move is pawn
-                            self.en_passante_square = 0;
+                            self.en_passant_square = 0;
                         }
                         return true;
                     } 
                 }
             }
             // after we have finished with considering the next pawn move, we uncheck en_passante
-            self.en_passante_square = 0;
+            self.en_passant_square = 0;
         } else {            
             if (self.black_pawn | (1u64 << from)) == self.black_pawn {
                 if self.get_white_pieces() | (1u64 << to) == self.get_white_pieces() {
@@ -147,7 +147,7 @@ impl Chessboard {
                         self.white_pawn = self.white_pawn & !(1u64 << to);
                         return true;
                     }
-                } else if (1u64 << to) == self.en_passante_square {
+                } else if (1u64 << to) == self.en_passant_square {
                     self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
                     self.white_pawn = self.white_pawn & !(1u64 << (to-8));
                     return true;
@@ -155,18 +155,18 @@ impl Chessboard {
                     if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
                         self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
                         if to - from == 16 {
-                            // Set en_passante_square for the next move
-                            self.en_passante_square = 1u64 << (to - 8);
+                            // Set en_passant_square for the next move
+                            self.en_passant_square = 1u64 << (to - 8);
                         } else {
                             // uncheck en passant if next move is pawn
-                            self.en_passante_square = 0;
+                            self.en_passant_square = 0;
                         }
                         return true;
                     } 
                 }
             }
             // after we have finished with considering the next pawn move, we uncheck en_passante
-            self.en_passante_square = 0;
+            self.en_passant_square = 0;
             // check if enemy occupies
             // modify enemy state
         }
@@ -454,10 +454,10 @@ mod tests {
         let mut chessboard = Chessboard::new();
         // create square
         chessboard.move_piece(48, 32, true);
-        assert_eq!(chessboard.en_passante_square, (1u64 << 40));
+        assert_eq!(chessboard.en_passant_square, (1u64 << 40));
         // make sure it's gone
         chessboard.move_piece(32, 24, true);
-        assert_eq!(chessboard.en_passante_square, 0);
+        assert_eq!(chessboard.en_passant_square, 0);
     }
 
     #[test]
