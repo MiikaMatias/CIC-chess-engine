@@ -6,6 +6,11 @@ use board::display_bit_board;
 fn main() {
     let mut chessboard = Chessboard::new();
 
+
+    println!("{}", display_bit_board(chessboard.get_move_mask(57, true)));
+    println!("{}", chessboard.display_board());
+
+    /*
     // check if pawn exists
     display_bit_board(71776119061217280);
     chessboard.get_move_mask(55, true);
@@ -28,5 +33,5 @@ fn main() {
     println!("{} {} {}", chessboard.display_board(), epw, epb);
 
     print!("{}", chessboard._get_all_piece_mask());
-
+    */
 }

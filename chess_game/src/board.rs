@@ -4,8 +4,15 @@
 
 const LEFT_FILE_MASK: u64 = 72340172838076673;
 const RIGHT_FILE_MASK: u64 = 9259542123273814144;
-const PAWN_WHITE_FIRST_MOVE_MASK: u64 = 71776119061217280;
-const PAWN_BLACK_FIRST_MOVE_MASK: u64 = 65280;
+const RANK_1_MASK: u64 = 18374686479671623680;
+const RANK_2_MASK: u64 = 71776119061217280;
+const RANK_7_MASK: u64 = 65280;
+const RANK_8_MASK: u64 = 255;
+const FILE_A_MASK: u64 = 9259542123273814144;
+const FILE_B_MASK: u64 = 4629771061636907072;
+const FILE_G_MASK: u64 = 144680345676153346;
+const FILE_H_MASK: u64 = 72340172838076673;
+
 
 pub struct Chessboard {
     pub white_pawn: u64, 
@@ -213,8 +220,8 @@ POS 0 ->    r n b k q b n r
     pub fn get_move_mask(&self, pos: u64, is_white: bool) -> u64 {
         if is_white {
             if ((self.white_pawn >> pos) & 1u64) == 1 {
-                if (1u64 << pos | PAWN_WHITE_FIRST_MOVE_MASK) == PAWN_WHITE_FIRST_MOVE_MASK {
-                    // check for pawn in the way
+                if (1u64 << pos | RANK_2_MASK) == RANK_2_MASK {
+                    // check for piece in the way
                     if 1u64 << (pos-8) | self._get_all_piece_mask() == self._get_all_piece_mask(){
                         return 0;
                     }
@@ -222,10 +229,24 @@ POS 0 ->    r n b k q b n r
                 } else {
                     return (1u64 << (pos-8)) & !self._get_all_piece_mask();
                 }
+            } else if ((self.white_knight >> pos) & 1u64) == 1 {
+                let in_a_file = ((1u64 << pos | FILE_A_MASK) == FILE_A_MASK);
+                let in_b_file = ((1u64 << pos | FILE_B_MASK) == FILE_B_MASK);
+                let in_g_file = ((1u64 << pos | FILE_G_MASK) == FILE_G_MASK);
+                let in_h_file = ((1u64 << pos | FILE_H_MASK) == FILE_H_MASK);
+                let in_1_rank = ((1u64 << pos | RANK_1_MASK) == RANK_1_MASK);
+                let in_2_rank = ((1u64 << pos | RANK_2_MASK) == RANK_2_MASK);
+                let in_3_rank = ((1u64 << pos | RANK_3_MASK) == RANK_3_MASK);
+                let in_4_rank = ((1u64 << pos | RANK_4_MASK) == RANK_4_MASK);
+
+                return (
+                    ((1u64 << (pos-10)) & !((in_a_file | in_b_file) & (in_1_rank | in_2_rank)))  |
+                    ((1u64 << (pos-17)) & !((in_a_file | in_b_file) & (in_1_rank | in_2_rank)))  |
+            );
             }
         } else {
             if ((self.black_pawn >> pos) & 1u64) == 1 {
-                if (1u64 << pos | PAWN_BLACK_FIRST_MOVE_MASK) == PAWN_BLACK_FIRST_MOVE_MASK {
+                if (1u64 << pos | RANK_7_MASK) == RANK_7_MASK {
                     if 1u64 << (pos+8) | self._get_all_piece_mask() == self._get_all_piece_mask(){
                         return 0;
                     }                 
