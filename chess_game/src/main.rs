@@ -7,7 +7,8 @@ fn main() {
     let mut chessboard = Chessboard::new();
 
 
-    println!("{}", display_bit_board(chessboard.get_move_mask(57, true)));
+    let loc = 1;
+    println!("{} {}", display_bit_board(chessboard.get_knight_move_mask(loc)), chessboard.get_knight_move_mask(loc));
     println!("{}", chessboard.display_board());
 
     /*
