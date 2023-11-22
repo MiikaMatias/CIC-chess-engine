@@ -225,59 +225,72 @@ POS 0 ->    r n b k q b n r
         let in_7_rank = ((1u64 << pos) | RANK_7_MASK) == RANK_7_MASK;
         let in_8_rank = ((1u64 << pos) | RANK_8_MASK) == RANK_8_MASK;
 
-        println!("a: {} 1: {}", in_b_file, in_8_rank);
-        println!("{}", display_bit_board(FILE_B_MASK));
+        println!("a: {} 1: {}", in_a_file, in_8_rank);
+        println!("{}", display_bit_board(RANK_8_MASK));
 
         if in_a_file {
-            if in_1_rank {
-                return (1u64 << (pos-15)) | (1u64 << (pos-6))
-            } else if in_2_rank {
-                return (1u64 << (pos+17)) | (1u64 << (pos+10)) | (1u64 << (pos-6))
+            //done
+            if in_8_rank {
+                return (1u64 << (pos+10)) | (1u64 << (pos+17))
             } else if in_7_rank {
+                return (1u64 << (pos+17)) | (1u64 << (pos+10)) | (1u64 << (pos-6))
+            } else if in_2_rank {
                 return (1u64 << (pos-15)) | (1u64 << (pos+10)) | (1u64 << (pos-6))
-            } else if in_8_rank {
-                return (1u64 << (pos+17)) | (1u64 << (pos+15)) | (1u64 << (pos+10))
+            } else if in_1_rank {
+                return (1u64 << (pos-15)) | (1u64 << (pos-6))
             } else {
                 return (1u64 << (pos+17)) | (1u64 << (pos+10)) | (1u64 << (pos-6)) | (1u64 << (pos-15))
             }
         } else if in_b_file {
-            if in_1_rank {
-                return (1u64 << (pos+15))  | (1u64 << (pos+15)) |  (1u64 << (pos+6))
-            } else if in_2_rank {
-                return (1u64 << (pos+17)) | (1u64 << (pos+10)) | (1u64 << (pos-6)) | (1u64 << (pos-6)) | (1u64 << (pos+15))
+            if in_8_rank {
+                return (1u64 << (pos+15)) |  (1u64 << (pos+10)) |  (1u64 << (pos+17))
             } else if in_7_rank {
+                return (1u64 << (pos+17)) | (1u64 << (pos+10)) | (1u64 << (pos-6)) | (1u64 << (pos-6))
+            } else if in_2_rank {
                 return (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-6)) | (1u64 << (pos+10))
-            } else if in_8_rank {
-                return (1u64 << (pos+17)) | (1u64 << (pos+15)) | (1u64 << (pos+10))
+            } else if in_1_rank {
+                return (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-6))
             } else {
                 return (1u64 << (pos))
             }
         } else if in_g_file {
-            if in_1_rank {
+            if in_8_rank {
                 return (1u64 << (pos+17)) | (1u64 << (pos+15)) | (1u64 << (pos+6))
-            } else if in_2_rank {
-                return (1u64 << (pos+17)) | (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos-10)) 
             } else if in_7_rank {
+                return (1u64 << (pos+17)) | (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos-10)) 
+            } else if in_2_rank {
                 return (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos+6)) | (1u64 << (pos-10))
-            } else if in_8_rank {
-                return (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-6))
+            } else if in_1_rank {
+                return (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-10))
             } else {
                 return (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos-10)) | (1u64 << (pos-17))
             }
         } else if in_h_file {
-            if in_1_rank {
+            if in_8_rank {
                 return (1u64 << (pos+15)) | (1u64 << (pos+6))
-            } else if in_2_rank {
-                return (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos-10))
             } else if in_7_rank {
+                return (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos-10)) 
+            } else if in_2_rank {
                 return (1u64 << (pos-17)) | (1u64 << (pos+6)) | (1u64 << (pos-10))
-            } else if in_8_rank {
+            } else if in_1_rank {
                 return (1u64 << (pos-10)) | (1u64 << (pos-17))
             } else {
                 return (1u64 << (pos+6)) | (1u64 << (pos+15)) | (1u64 << (pos-10)) | (1u64 << (pos-17))
             }
+        } else {
+            //done
+            if in_8_rank {
+                return (1u64 << (pos+10)) | (1u64 << (pos+17)) | (1u64 << (pos+6)) | (1u64 << (pos+15))
+            } else if in_7_rank {
+                return (1u64 << (pos+10)) | (1u64 << (pos+17)) | (1u64 << (pos+6)) | (1u64 << (pos+15)) | (1u64 << (pos-6))  | (1u64 << (pos-10))
+            } else if in_2_rank {
+                return (1u64 << (pos-10)) | (1u64 << (pos-17)) | (1u64 << (pos-6)) | (1u64 << (pos-15))  | (1u64 << (pos+6))  | (1u64 << (pos+10))
+            } else if in_1_rank {
+                return (1u64 << (pos-10)) | (1u64 << (pos-17)) | (1u64 << (pos-6)) | (1u64 << (pos-15))
+            } else {
+                return (1u64 << (pos+17)) | (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos+10)) | (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-6)) | (1u64 << (pos-10)) 
+            }
         }
-    return (1u64 << (pos+17)) | (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos+10)) | (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-6)) | (1u64 << (pos-10)) 
     }
 
     pub fn get_move_mask(&self, pos: u64, is_white: bool) -> u64 {
@@ -561,7 +574,19 @@ mod tests {
         let chessboard = Chessboard::new();
         let result = chessboard.get_knight_move_mask(0);
         assert_eq!(result, 132096);
-    
+
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(1);
+        assert_eq!(result, 329728);
+        
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(2);
+        assert_eq!(result, 659712);
+
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(31);
+        assert_eq!(result, 70506185244672);
+
         let chessboard = Chessboard::new();
         let result = chessboard.get_knight_move_mask(32);
         assert_eq!(result, 567348067172352);
@@ -572,19 +597,33 @@ mod tests {
 
         let chessboard = Chessboard::new();
         let result = chessboard.get_knight_move_mask(48);
-        assert_eq!(result, 1128098930098176);
+        assert_eq!(result, 288234782788157440);
 
         let chessboard = Chessboard::new();
         let result = chessboard.get_knight_move_mask(49);
-        assert_eq!(result, 1128098930098176);
+        assert_eq!(result, 576469569871282176);
 
         let chessboard = Chessboard::new();
-        let result = chessboard.get_knight_move_mask(56);
-        assert_eq!(result, 1128098930098176);
+        let result = chessboard.get_knight_move_mask(54);
+        assert_eq!(result, 1152939783987658752);
 
         let chessboard = Chessboard::new();
-        let result = chessboard.get_knight_move_mask(57);
-        assert_eq!(result, 1128098930098176);
+        let result = chessboard.get_knight_move_mask(55);
+        assert_eq!(result, 2305878468463689728);
+
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(58);
+        assert_eq!(result, 4796069720358912);
+
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(62);
+        assert_eq!(result, 4679521487814656);
+
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(63);
+        assert_eq!(result, 9077567998918656);
+ 
+
     }
 
 }
