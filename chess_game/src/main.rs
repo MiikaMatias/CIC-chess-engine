@@ -6,8 +6,7 @@ use board::display_bit_board;
 fn main() {
     let mut chessboard = Chessboard::new();
 
-    let loc = 58;
-    println!("{} {}", display_bit_board(chessboard.get_knight_move_mask(loc)), chessboard.get_knight_move_mask(loc));
+    println!("{} {}", display_bit_board(chessboard.get_knight_move_mask(24)), chessboard.get_knight_move_mask(24));
 
 
     println!("{}", chessboard.display_board());

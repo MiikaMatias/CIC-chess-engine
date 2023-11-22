@@ -251,7 +251,7 @@ POS 0 ->    r n b k q b n r
             } else if in_1_rank {
                 return (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-6))
             } else {
-                return (1u64 << (pos))
+                return (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos-10)) | (1u64 << (pos-17))
             }
         } else if in_g_file {
             if in_8_rank {
@@ -582,6 +582,26 @@ mod tests {
         let chessboard = Chessboard::new();
         let result = chessboard.get_knight_move_mask(2);
         assert_eq!(result, 659712);
+    
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(6);
+        assert_eq!(result, 10489856);
+
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(7);
+        assert_eq!(result, 4202496);
+
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(14);
+        assert_eq!(result, 2685403152);
+
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(15);
+        assert_eq!(result, 1075839008);
+
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(24);
+        assert_eq!(result, 2216203387392);
 
         let chessboard = Chessboard::new();
         let result = chessboard.get_knight_move_mask(31);
@@ -610,6 +630,14 @@ mod tests {
         let chessboard = Chessboard::new();
         let result = chessboard.get_knight_move_mask(55);
         assert_eq!(result, 2305878468463689728);
+
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(56);
+        assert_eq!(result, 1128098930098176);
+
+        let chessboard = Chessboard::new();
+        let result = chessboard.get_knight_move_mask(57);
+        assert_eq!(result, 2257297371824128);
 
         let chessboard = Chessboard::new();
         let result = chessboard.get_knight_move_mask(58);
