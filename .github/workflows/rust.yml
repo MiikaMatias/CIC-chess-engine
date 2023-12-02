@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Locate Dir
+      run: cd src/
     - name: Build
       run: cargo build --verbose
     - name: Lint
