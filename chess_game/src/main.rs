@@ -1,16 +1,20 @@
 mod board;
 
 use board::Chessboard; 
+#[allow(unused_imports)]
 use board::display_bit_board;
 
 fn main() {
     let mut chessboard = Chessboard::new();
 
-    println!("{} {}", display_bit_board(chessboard.get_knight_move_mask(24)), chessboard.get_knight_move_mask(24));
-
 
     println!("{}", chessboard.display_board());
+    chessboard.move_piece(57, 40, true);
+    chessboard.move_piece(40, 25, true);
+    chessboard.move_piece(25, 8, true);
+    println!("{}", chessboard.display_board());
     /*
+
     // check if pawn exists
     display_bit_board(71776119061217280);
     chessboard.get_move_mask(55, true);
