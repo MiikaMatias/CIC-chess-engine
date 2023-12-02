@@ -4,6 +4,7 @@
 cargo clippy
 if %errorlevel% neq 0 (
     echo Clippy failed. Exiting...
+    cargo clippy --fix --allow-dirty
     exit /b %errorlevel%
 )
 

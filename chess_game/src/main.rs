@@ -9,9 +9,12 @@ fn main() {
 
 
     println!("{}", chessboard.display_board());
-    chessboard.move_piece(57, 40, true);
-    chessboard.move_piece(40, 25, true);
-    chessboard.move_piece(25, 8, true);
+    chessboard.move_piece(9,25, false);
+    chessboard.move_piece(25, 33, false);
+    println!("{}", chessboard.display_board());
+    chessboard.move_piece(33, 41, false);
+    chessboard.move_piece(41, 48, false);
+    println!("{}", chessboard._get_all_piece_mask());
     println!("{}", chessboard.display_board());
     /*
 
