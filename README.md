@@ -2,7 +2,7 @@
 
 
 # magochess
-Chess engine to beat my friend with. The idea is to use a bitboard representation to speed up calculation times. Some sort of heuristic-based Alpha-beta thingy will be implemented.
+Chess engine to beat my friend with. The idea is to use a rudimentary bitboard representation to speed up calculation times. Some sort of heuristic-based Alpha-beta thingy will be implemented.
 
 # How to run
-Run chessboard via 'rustc main.rs; ./main'
+Run chessboard via 'rustc main.rs; ./main' or just run the bat script in ´chess_game/src´
