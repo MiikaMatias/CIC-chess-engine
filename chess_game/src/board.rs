@@ -4,26 +4,10 @@
 
 const RANK_1_MASK: u64 = 18374686479671623680;
 const RANK_2_MASK: u64 = 71776119061217280;
-#[allow(dead_code)]
-const FILE_3_MASK: u64 = 280375465082880;
-#[allow(dead_code)]
-const FILE_4_MASK: u64 = 1095216660480;
-#[allow(dead_code)]
-const FILE_5_MASK: u64 = 4278190080;
-#[allow(dead_code)]
-const FILE_6_MASK: u64 = 4278190080;
 const RANK_7_MASK: u64 = 65280;
 const RANK_8_MASK: u64 = 255;
 const FILE_H_MASK: u64 = 9259542123273814144;
 const FILE_G_MASK: u64 = 4629771061636907072;
-#[allow(dead_code)]
-const FILE_F_MASK: u64 = 2314885530818453536;
-#[allow(dead_code)]
-const FILE_E_MASK: u64 = 1157442765409226768;
-#[allow(dead_code)]
-const FILE_D_MASK: u64 = 578721382704613384;
-#[allow(dead_code)]
-const FILE_C_MASK: u64 = 289360691352306692;
 const FILE_B_MASK: u64 = 144680345676153346;
 const FILE_A_MASK: u64 = 72340172838076673;
 
@@ -205,7 +189,19 @@ impl Chessboard {
                             self.white_rook = (self.white_rook & !(1u64 << from)) | (1u64 << to);
                             return true;
                        } 
-                    }
+                    } else if (self.white_bishop | (1u64 << from)) == self.white_bishop {
+                        if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
+                            println!("found");
+                            if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
+                                self.white_bishop = (self.white_bishop & !(1u64 << from)) | (1u64 << to);
+                                self.take_piece_at_spot(to, is_white);
+                                return true;
+                            }  
+                        } else if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                            self.white_bishop = (self.white_bishop & !(1u64 << from)) | (1u64 << to);
+                            return true;
+                           } 
+                        }
         } else if (self.black_pawn | (1u64 << from)) == self.black_pawn {
             if self.get_white_pieces() | (1u64 << to) == self.get_white_pieces() {
                 // Check if pawn can move there
@@ -228,7 +224,7 @@ impl Chessboard {
                     self.en_passant_square = 0;
                 }
                 return true;
-            }
+            } 
         self.en_passant_square = 0;
         } else if (self.black_knight | (1u64 << from)) == self.black_knight {
             if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
@@ -251,8 +247,19 @@ impl Chessboard {
                 } else if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
                 self.black_rook = (self.black_rook & !(1u64 << from)) | (1u64 << to);
                 return true;
-           }  
-        }
+                }
+            } else if (self.black_bishop | (1u64 << from)) == self.black_bishop {
+                if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
+                    if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
+                        self.black_bishop = (self.black_bishop & !(1u64 << from)) | (1u64 << to);
+                        self.take_piece_at_spot(to, is_white);
+                        return true;
+                    }  
+                } else if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                    self.black_bishop = (self.black_bishop & !(1u64 << from)) | (1u64 << to);
+                    return true;
+                }
+            }
         false
     }
         
@@ -281,6 +288,8 @@ POS 0 ->    r n b k q b n r
                 return self.get_knight_move_mask(pos) & self.get_black_pieces()
             } else if ((self.white_rook >> pos) & 1u64) == 1 {   
                 return self.get_rook_move_mask(pos, is_white) & self.get_black_pieces()
+            } else if ((self.white_bishop >> pos) & 1u64) == 1 {   
+                return self.get_bishop_move_mask(pos, is_white) & self.get_black_pieces()
             }
         } else if ((self.black_pawn >> pos) & 1u64) == 1 {
             if (1u64 << pos | FILE_H_MASK) == FILE_H_MASK  {
@@ -294,6 +303,8 @@ POS 0 ->    r n b k q b n r
                 return self.get_knight_move_mask(pos) & self.get_white_pieces()
             } else if ((self.black_rook >> pos) & 1u64) == 1 {   
                 return self.get_rook_move_mask(pos, is_white) & self.get_white_pieces()
+            } else if ((self.black_bishop >> pos) & 1u64) == 1 {   
+                return self.get_bishop_move_mask(pos, is_white) & self.get_white_pieces()
             }
         
         0
@@ -471,9 +482,145 @@ POS 0 ->    r n b k q b n r
         }    
         
     }
-        
     
+    pub fn get_bishop_move_mask(&self, pos: u64, is_white: bool) -> u64 {
+        let mut board: u64 = 0;
     
+        if is_white {
+            // Generate moves to the top-left
+            for i in 1..8 {
+                let file = (pos % 8) as i64 - i;
+                let rank = (pos / 8) as i64 - i;
+                if file < 0 || rank < 0 {
+                    break;
+                }
+                let square = (rank * 8 + file) as u64;
+                if (self._get_all_piece_mask() & (1 << square)) == 0 {
+                    board |= 1 << square;
+                } else {
+                    board |= 1 << square;
+                    break;
+                }
+            }
+    
+            // Generate moves to the top-right
+            for i in 1..8 {
+                let file = (pos % 8) as i64 + i;
+                let rank = (pos / 8) as i64 - i;
+                if file >= 8 || rank < 0 {
+                    break;
+                }
+                let square = (rank * 8 + file) as u64;
+                if (self._get_all_piece_mask() & (1 << square)) == 0 {
+                    board |= 1 << square;
+                } else {
+                    board |= 1 << square;
+                    break;
+                }
+            }
+    
+            // Generate moves to the bottom-left
+            for i in 1..8 {
+                let file = (pos % 8) as i64 - i;
+                let rank = (pos / 8) as i64 + i;
+                if file < 0 || rank >= 8 {
+                    break;
+                }
+                let square = (rank * 8 + file) as u64;
+                if (self._get_all_piece_mask() & (1 << square)) == 0 {
+                    board |= 1 << square;
+                } else {
+                    board |= 1 << square;
+                    break;
+                }
+            }
+    
+            // Generate moves to the bottom-right
+            for i in 1..8 {
+                let file = (pos % 8) as i64 + i;
+                let rank = (pos / 8) as i64 + i;
+                if file >= 8 || rank >= 8 {
+                    break;
+                }
+                let square = (rank * 8 + file) as u64;
+                if (self._get_all_piece_mask() & (1 << square)) == 0 {
+                    board |= 1 << square;
+                } else {
+                    board |= 1 << square;
+                    break;
+                }
+            }
+    
+            board & !self.get_white_pieces()
+        } else {
+            // Generate moves to the top-left
+            for i in 1..8 {
+                let file = (pos % 8) as i64 - i;
+                let rank = (pos / 8) as i64 - i;
+                if file < 0 || rank < 0 {
+                    break;
+                }
+                let square = (rank * 8 + file) as u64;
+                if (self._get_all_piece_mask() & (1 << square)) == 0 {
+                    board |= 1 << square;
+                } else {
+                    board |= 1 << square;
+                    break;
+                }
+            }
+    
+            // Generate moves to the top-right
+            for i in 1..8 {
+                let file = (pos % 8) as i64 + i;
+                let rank = (pos / 8) as i64 - i;
+                if file >= 8 || rank < 0 {
+                    break;
+                }
+                let square = (rank * 8 + file) as u64;
+                if (self._get_all_piece_mask() & (1 << square)) == 0 {
+                    board |= 1 << square;
+                } else {
+                    board |= 1 << square;
+                    break;
+                }
+            }
+    
+            // Generate moves to the bottom-left
+            for i in 1..8 {
+                let file = (pos % 8) as i64 - i;
+                let rank = (pos / 8) as i64 + i;
+                if file < 0 || rank >= 8 {
+                    break;
+                }
+                let square = (rank * 8 + file) as u64;
+                if (self._get_all_piece_mask() & (1 << square)) == 0 {
+                    board |= 1 << square;
+                } else {
+                    board |= 1 << square;
+                    break;
+                }
+            }
+    
+            // Generate moves to the bottom-right
+            for i in 1..8 {
+                let file = (pos % 8) as i64 + i;
+                let rank = (pos / 8) as i64 + i;
+                if file >= 8 || rank >= 8 {
+                    break;
+                }
+                let square = (rank * 8 + file) as u64;
+                if (self._get_all_piece_mask() & (1 << square)) == 0 {
+                    board |= 1 << square;
+                } else {
+                    board |= 1 << square;
+                    break;
+                }
+            }
+    
+            board & !self.get_black_pieces()
+        }
+    }    
+
     pub fn get_move_mask(&self, pos: u64, is_white: bool) -> u64 {
         if is_white {
             if ((self.white_pawn >> pos) & 1u64) == 1 {
@@ -490,6 +637,8 @@ POS 0 ->    r n b k q b n r
                 return self.get_knight_move_mask(pos)
             } else if ((self.white_rook >> pos) & 1u64) == 1 {
                 return self.get_rook_move_mask(pos, is_white)
+            } else if ((self.white_bishop >> pos) & 1u64) == 1 {
+                return self.get_bishop_move_mask(pos, is_white)
             }
         } else if ((self.black_pawn >> pos) & 1u64) == 1 {
             if (1u64 << pos | RANK_7_MASK) == RANK_7_MASK {
@@ -504,7 +653,9 @@ POS 0 ->    r n b k q b n r
             return self.get_knight_move_mask(pos);
         } else if ((self.black_rook >> pos) & 1u64) == 1 {
                 return self.get_rook_move_mask(pos, is_white)
-            }       
+        } else if ((self.black_bishop >> pos) & 1u64) == 1 {
+            return self.get_bishop_move_mask(pos, is_white)
+        }          
         0
     }
 
@@ -921,5 +1072,25 @@ mod tests {
     
         assert_eq!(chessboard._get_all_piece_mask(), 18446462598749683454);
     }
+
+    #[test]
+    fn test_white_bishop_capture() {
+        let mut chessboard = Chessboard::new();
+        chessboard.move_piece(49, 41, true);
+        chessboard.move_piece(58, 40, true);
+        chessboard.move_piece(40, 12, true);
+        assert_eq!(chessboard._get_all_piece_mask(), 18157671471651028991);
+    }
+
+    #[test]
+    fn test_black_bishop_capture() {
+        let mut chessboard = Chessboard::new();
+        chessboard.move_piece(49, 41, true);
+        chessboard.move_piece(58, 40, true);
+        chessboard.move_piece(40, 12, true);
+        chessboard.move_piece(5, 12, false);
+        assert_eq!(chessboard._get_all_piece_mask(), 18157671471651028959);
+    }
+
 
 }
