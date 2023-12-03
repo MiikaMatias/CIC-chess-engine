@@ -422,7 +422,7 @@ POS 0 ->    r n b k q b n r
                 }
             }
 
-            return board & !self.get_white_pieces()
+            board & !self.get_white_pieces()
         } else {
             // Generate horizontal moves to the left
             for i in (0..(pos % 8)).rev() {
@@ -467,7 +467,7 @@ POS 0 ->    r n b k q b n r
                     break;
                 }
             }
-            return board & !self.get_black_pieces()
+            board & !self.get_black_pieces()
         }    
         
     }
