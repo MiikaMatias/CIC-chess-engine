@@ -6,8 +6,6 @@ use board::display_bit_board;
 
 fn main() {
     let mut chessboard = Chessboard::new();
-
-
     println!("{}", display_bit_board(1157442765409226768));
     // Sample Chess Game
 
@@ -101,31 +99,10 @@ fn main() {
     chessboard._move_piece(11, 4, false);
     chessboard._move_piece(43, 35, true);
      */
-   
-    chessboard._move_piece(12, 28, false, false);
-    chessboard._move_piece(13, 29, false, false);
-    chessboard._move_piece(14, 30, false, false);
-    chessboard._move_piece(15, 31, false, false);
-    chessboard._move_piece(1, 18, false, false);
-    chessboard._move_piece(0, 16, false, false);
-    chessboard._move_piece(2, 17, false, false);
-    chessboard._move_piece(3, 19, false, false);
-    chessboard._move_piece(5, 33, false, false);
-
-    chessboard._move_piece(52, 36, true, false);
-    chessboard._move_piece(53, 37, true, false);
-    chessboard._move_piece(54, 38, true, false);
-    chessboard._move_piece(55, 39, true, false);
-    chessboard._move_piece(61, 44, true, false);
-    chessboard._move_piece(63, 46, true, false);
-    chessboard._move_piece(62, 45, true, false);
-    chessboard._move_piece(60, 47, true, false);
-    chessboard._move_piece(51, 35, true, false);
-    chessboard._move_piece(45, 28, true, false);
-    chessboard._move_piece(39, 30, true, false);
-
-    println!("{} {}", chessboard.display_board(),(chessboard._get_all_piece_mask()));
-
-    println!("{:?}", (chessboard._get_threat_masks(true)));
-    println!("{:?}", (chessboard._get_threat_masks(false)));
+    chessboard._move_piece(51, 35, true, true);   // White moves
+    chessboard._move_piece(12, 28, false, true);    // Black moves
+    chessboard._move_piece(4,20, false, true);    // Black moves
+    chessboard._move_piece(20, 19, false, true);    // Black moves
+    let truval = chessboard._move_piece(35, 28, true, true); // White moves
+    println!("{} {} {}", chessboard.display_board(),(chessboard._get_all_piece_mask()), truval);
 }
