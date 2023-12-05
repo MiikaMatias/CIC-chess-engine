@@ -154,7 +154,7 @@ impl Chessboard {
                     return true;
                 } else {
                     // Check if pawn can move there
-                    if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                    if (self.get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
                         self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
                         if from - to == 16 {
                             // Set en_passant_square for the next move
@@ -174,34 +174,44 @@ impl Chessboard {
                         self.take_piece_at_spot(to, is_white);
                         return true;
                     }  
-                } else if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                } else if (self.get_knight_move_mask(from) >> to) & 1u64 == 1 {
                         self.white_knight = (self.white_knight & !(1u64 << from)) | (1u64 << to);
                         return true;
                    } 
-                } else if (self.white_rook | (1u64 << from)) == self.white_rook {
-                    if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
-                        if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
-                            self.white_rook = (self.white_rook & !(1u64 << from)) | (1u64 << to);
-                            self.take_piece_at_spot(to, is_white);
-                            return true;
-                        }  
-                    } else if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
-                            self.white_rook = (self.white_rook & !(1u64 << from)) | (1u64 << to);
-                            return true;
-                       } 
-                    } else if (self.white_bishop | (1u64 << from)) == self.white_bishop {
-                        if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
-                            println!("found");
-                            if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
-                                self.white_bishop = (self.white_bishop & !(1u64 << from)) | (1u64 << to);
-                                self.take_piece_at_spot(to, is_white);
-                                return true;
-                            }  
-                        } else if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
-                            self.white_bishop = (self.white_bishop & !(1u64 << from)) | (1u64 << to);
-                            return true;
-                           } 
-                        }
+            } else if (self.white_rook | (1u64 << from)) == self.white_rook {
+                if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
+                    if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
+                        self.white_rook = (self.white_rook & !(1u64 << from)) | (1u64 << to);
+                        self.take_piece_at_spot(to, is_white);
+                        return true;
+                    }  
+                } else if (self.get_rook_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                        self.white_rook = (self.white_rook & !(1u64 << from)) | (1u64 << to);
+                        return true;
+                    } 
+            } else if (self.white_bishop | (1u64 << from)) == self.white_bishop {
+                if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
+                    if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
+                        self.white_bishop = (self.white_bishop & !(1u64 << from)) | (1u64 << to);
+                        self.take_piece_at_spot(to, is_white);
+                        return true;
+                    }  
+                } else if (self.get_bishop_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                    self.white_bishop = (self.white_bishop & !(1u64 << from)) | (1u64 << to);
+                    return true;
+                    } 
+            } else if (self.white_queen | (1u64 << from)) == self.white_queen {
+                if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
+                    if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
+                        self.white_queen = (self.white_queen & !(1u64 << from)) | (1u64 << to);
+                        self.take_piece_at_spot(to, is_white);
+                        return true;
+                    }  
+                } else if (self.get_queen_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                    self.white_queen = (self.white_queen & !(1u64 << from)) | (1u64 << to);
+                    return true;
+                }
+            }
         } else if (self.black_pawn | (1u64 << from)) == self.black_pawn {
             if self.get_white_pieces() | (1u64 << to) == self.get_white_pieces() {
                 // Check if pawn can move there
@@ -214,7 +224,7 @@ impl Chessboard {
                 self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
                 self.white_pawn &= !(1u64 << (to-8));
                 return true;
-            } else if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
+            } else if (self.get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
                 self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
                 if to - from == 16 {
                     // Set en_passant_square for the next move
@@ -227,36 +237,47 @@ impl Chessboard {
             } 
         self.en_passant_square = 0;
         } else if (self.black_knight | (1u64 << from)) == self.black_knight {
-            if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
+            if self.get_white_pieces() | (1u64 << to) == self.get_white_pieces() {
                 if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
                     self.black_knight = (self.black_knight & !(1u64 << from)) | (1u64 << to);
                     self.take_piece_at_spot(to, is_white);
                     return true;
                 }  
-            } else if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
+            } else if (self.get_knight_move_mask(from) >> to) & 1u64 == 1 {
                     self.black_knight = (self.black_knight & !(1u64 << from)) | (1u64 << to);
                     return true;
                } 
             } else if (self.black_rook | (1u64 << from)) == self.black_rook {
-                if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
+                if self.get_white_pieces() | (1u64 << to) == self.get_white_pieces() {
                     if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
                         self.black_rook = (self.black_rook & !(1u64 << from)) | (1u64 << to);
                         self.take_piece_at_spot(to, is_white);
                         return true;
                     }  
-                } else if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
-                self.black_rook = (self.black_rook & !(1u64 << from)) | (1u64 << to);
-                return true;
+                } else if (self.get_rook_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                    self.black_rook = (self.black_rook & !(1u64 << from)) | (1u64 << to);
+                    return true;
                 }
             } else if (self.black_bishop | (1u64 << from)) == self.black_bishop {
-                if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
+                if self.get_white_pieces() | (1u64 << to) == self.get_white_pieces() {
                     if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
                         self.black_bishop = (self.black_bishop & !(1u64 << from)) | (1u64 << to);
                         self.take_piece_at_spot(to, is_white);
                         return true;
                     }  
-                } else if (self.get_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                } else if (self.get_bishop_move_mask(from, is_white) >> to) & 1u64 == 1 {
                     self.black_bishop = (self.black_bishop & !(1u64 << from)) | (1u64 << to);
+                    return true;
+                }
+            } else if (self.black_queen | (1u64 << from)) == self.black_queen {
+                if self.get_white_pieces() | (1u64 << to) == self.get_white_pieces() {
+                    if (self.get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
+                        self.black_queen = (self.black_queen & !(1u64 << from)) | (1u64 << to);
+                        self.take_piece_at_spot(to, is_white);
+                        return true;
+                    }  
+                } else if (self.get_queen_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                    self.black_queen = (self.black_queen & !(1u64 << from)) | (1u64 << to);
                     return true;
                 }
             }
@@ -290,6 +311,8 @@ POS 0 ->    r n b k q b n r
                 return self.get_rook_move_mask(pos, is_white) & self.get_black_pieces()
             } else if ((self.white_bishop >> pos) & 1u64) == 1 {   
                 return self.get_bishop_move_mask(pos, is_white) & self.get_black_pieces()
+            } else if ((self.white_queen >> pos) & 1u64) == 1 {   
+                return self.get_queen_move_mask(pos, is_white) & self.get_black_pieces()
             }
         } else if ((self.black_pawn >> pos) & 1u64) == 1 {
             if (1u64 << pos | FILE_H_MASK) == FILE_H_MASK  {
@@ -305,6 +328,8 @@ POS 0 ->    r n b k q b n r
                 return self.get_rook_move_mask(pos, is_white) & self.get_white_pieces()
             } else if ((self.black_bishop >> pos) & 1u64) == 1 {   
                 return self.get_bishop_move_mask(pos, is_white) & self.get_white_pieces()
+            } else if ((self.black_queen >> pos) & 1u64) == 1 {   
+                return self.get_queen_move_mask(pos, is_white) & self.get_white_pieces()
             }
         
         0
@@ -621,7 +646,11 @@ POS 0 ->    r n b k q b n r
         }
     }    
 
-    pub fn get_move_mask(&self, pos: u64, is_white: bool) -> u64 {
+    pub fn get_queen_move_mask(&self, pos: u64, is_white: bool) -> u64 {
+        self.get_rook_move_mask(pos, is_white) | self.get_bishop_move_mask(pos, is_white)
+    }
+
+    pub fn get_pawn_move_mask(&self, pos: u64, is_white: bool) -> u64 {
         if is_white {
             if ((self.white_pawn >> pos) & 1u64) == 1 {
                 if (1u64 << pos | RANK_2_MASK) == RANK_2_MASK {
@@ -633,12 +662,6 @@ POS 0 ->    r n b k q b n r
                 } else {
                     return (1u64 << (pos-8)) & !self._get_all_piece_mask();
                 }
-            } else if ((self.white_knight >> pos) & 1u64) == 1 {
-                return self.get_knight_move_mask(pos)
-            } else if ((self.white_rook >> pos) & 1u64) == 1 {
-                return self.get_rook_move_mask(pos, is_white)
-            } else if ((self.white_bishop >> pos) & 1u64) == 1 {
-                return self.get_bishop_move_mask(pos, is_white)
             }
         } else if ((self.black_pawn >> pos) & 1u64) == 1 {
             if (1u64 << pos | RANK_7_MASK) == RANK_7_MASK {
@@ -649,13 +672,7 @@ POS 0 ->    r n b k q b n r
             } else {
                 return (1u64 << (pos+8)) & !self._get_all_piece_mask();
             }     
-        } else if ((self.black_knight >> pos) & 1u64) == 1 {
-            return self.get_knight_move_mask(pos);
-        } else if ((self.black_rook >> pos) & 1u64) == 1 {
-                return self.get_rook_move_mask(pos, is_white)
-        } else if ((self.black_bishop >> pos) & 1u64) == 1 {
-            return self.get_bishop_move_mask(pos, is_white)
-        }          
+        }      
         0
     }
 
@@ -778,7 +795,7 @@ mod tests {
     #[test]
     fn test_get_pawn_move_mask_white() {
         let chessboard = Chessboard::new();
-        let result = chessboard.get_move_mask(55, true);
+        let result = chessboard.get_pawn_move_mask(55, true);
 
         assert_eq!(result, 141287244169216);
     }
@@ -786,7 +803,7 @@ mod tests {
     #[test]
     fn test_get_pawn_move_mask_black() {
         let chessboard = Chessboard::new();
-        let result = chessboard.get_move_mask(15, false);
+        let result = chessboard.get_pawn_move_mask(15, false);
 
         assert_eq!(result, 2155872256);
     }
@@ -794,7 +811,7 @@ mod tests {
     #[test]
     fn test_get_pawn_move_mask_no_pawn() {
         let chessboard = Chessboard::new();
-        let result = chessboard.get_move_mask(36, true);
+        let result = chessboard.get_pawn_move_mask(36, true);
 
         assert_eq!(result, 0);
     }
@@ -1028,8 +1045,8 @@ mod tests {
     #[test]
     fn test_rook_move_mask() {
         let mut chessboard = Chessboard::new();
-        chessboard.get_move_mask(55, true);
-        chessboard.get_move_mask(15, false);
+        chessboard.get_pawn_move_mask(55, true);
+        chessboard.get_pawn_move_mask(15, false);
         chessboard.move_piece(51, 35, true);
         chessboard.move_piece(35, 27, true);
         chessboard.move_piece(8, 24, false);
@@ -1090,6 +1107,19 @@ mod tests {
         chessboard.move_piece(40, 12, true);
         chessboard.move_piece(5, 12, false);
         assert_eq!(chessboard._get_all_piece_mask(), 18157671471651028959);
+    }
+
+    #[test]
+    fn test_queen_movement_capture() {
+        let mut chessboard = Chessboard::new();
+        chessboard.move_piece(51, 35, true);
+        chessboard.move_piece(60, 24, true);
+        chessboard.move_piece(24, 10, true);
+        chessboard.move_piece(10, 1, true);
+        chessboard.move_piece(1, 2, true);
+        chessboard.move_piece(2, 3, true);
+        chessboard.move_piece(4, 3, false);
+        assert_eq!(chessboard._get_all_piece_mask(), 17291289328672111593)
     }
 
 
