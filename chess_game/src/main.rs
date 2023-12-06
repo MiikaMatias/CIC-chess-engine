@@ -4,9 +4,11 @@ use board::Chessboard;
 #[allow(unused_imports)]
 use board::display_bit_board;
 
+
 fn main() {
     let mut chessboard = Chessboard::new();
-    println!("{}", display_bit_board(1157442765409226768));
+    let possible_moves = chessboard._get_all_possible_moves(true);
+    chessboard._move_piece(1, 2, true, true);
     // Sample Chess Game
 
     /*
@@ -99,15 +101,7 @@ fn main() {
     chessboard._move_piece(11, 4, false);
     chessboard._move_piece(43, 35, true);
      */
-    chessboard._move_piece(51, 35, true, true);   // White moves
-    chessboard._move_piece(59, 51, true, true);   // White moves
-    chessboard._move_piece(51, 43, true, true);   // White moves
-    chessboard._move_piece(43, 34, true, true);   // White moves
-    chessboard._move_piece(34, 27, true, true);   // White moves
-    let truval = chessboard._move_piece(27, 19, true, true);   // White moves
-    chessboard._move_piece(6, 21, false, true);   // Black checks
-    chessboard._move_piece(48, 40, true, true);   // White attempts to move pawns but can't
 
-    println!("{} {}", chessboard.display_board(),(chessboard._get_all_piece_mask()));
-    print!("{}", truval)
+    println!("{}", chessboard._display_board());
+    println!("{}", possible_moves.len());
 }

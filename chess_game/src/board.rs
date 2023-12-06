@@ -72,6 +72,62 @@ impl Chessboard {
         }
     }
 
+    pub fn _get_all_moves_at_position(&self, pos: u64, is_white: bool) -> Vec<u64> {
+        if is_white {
+            if (self.white_pawn & (1u64 << pos)) == (1u64 << pos) {
+                find_set_bits_positions(self._get_pawn_move_mask(pos, is_white)& !self.get_white_pieces())
+            } else if (self.white_rook & (1u64 << pos)) == (1u64 << pos) {
+                return find_set_bits_positions(self._get_rook_move_mask(pos, is_white)& !self.get_white_pieces());
+            } else if (self.white_bishop & (1u64 << pos)) == (1u64 << pos) {
+                return find_set_bits_positions(self._get_bishop_move_mask(pos, is_white)& !self.get_white_pieces());
+            } else if (self.white_king & (1u64 << pos)) == (1u64 << pos) {
+                return find_set_bits_positions(self._get_king_move_mask(pos)& !self.get_white_pieces());
+            } else if (self.white_knight & (1u64 << pos)) == (1u64 << pos) {
+                return find_set_bits_positions(self._get_knight_move_mask(pos)& !self.get_white_pieces());
+            } else {
+                return find_set_bits_positions(self._get_queen_move_mask(pos, is_white)& !self.get_white_pieces());
+            }
+        } else if (self.black_pawn & (1u64 << pos)) == (1u64 << pos) {
+            find_set_bits_positions(self._get_pawn_move_mask(pos, is_white)& !self.get_black_pieces())
+        } else if (self.black_rook & (1u64 << pos)) == (1u64 << pos) {
+            return find_set_bits_positions(self._get_rook_move_mask(pos, is_white)& !self.get_black_pieces());
+        } else if (self.black_bishop & (1u64 << pos)) == (1u64 << pos) {
+            return find_set_bits_positions(self._get_bishop_move_mask(pos, is_white)& !self.get_black_pieces());
+        } else if (self.black_king & (1u64 << pos)) == (1u64 << pos) {
+            return find_set_bits_positions(self._get_king_move_mask(pos)& !self.get_black_pieces());
+        } else if (self.black_knight & (1u64 << pos)) == (1u64 << pos) {
+            return find_set_bits_positions(self._get_knight_move_mask(pos)& !self.get_black_pieces());
+        } else{
+            return find_set_bits_positions(self._get_queen_move_mask(pos, is_white)& !self.get_black_pieces());
+        }
+    }
+
+    pub fn _get_all_possible_moves(&self, is_white: bool) -> Vec<Chessboard> {
+        // this will very likely get rough with memory; consider having an array of values instead
+
+        let mut board_array: Vec<Chessboard> = Vec::new();
+        let _i = 0;
+
+        if is_white {
+            let pieces = [self.white_pawn, self.white_bishop, self.white_king, self.white_queen, self.white_rook, self.white_knight];
+
+            for piece in pieces {
+                let positions_of_pieces = find_set_bits_positions(piece);
+                for position in positions_of_pieces {
+                    let moves_of_position = self._get_all_moves_at_position(position, is_white);
+                    for move_target in moves_of_position {
+                        let mut new_chessboard = *self;
+                        new_chessboard._move_piece(position, move_target, is_white, true);
+                        board_array.push(new_chessboard);
+                    }
+                }
+            }
+
+        }
+
+        board_array
+    }
+
     pub fn _get_all_piece_mask(&self) -> u64 {
         self.get_black_pieces()|self.get_white_pieces()
     }
@@ -228,7 +284,12 @@ impl Chessboard {
             if (self.white_pawn | (1u64 << from)) == self.white_pawn {
                 if self.get_black_pieces() | (1u64 << to) == self.get_black_pieces() {
                     if (self._get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
-                        self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
+                        if ((1u64 << to) | RANK_8_MASK) == RANK_8_MASK {
+                            self.white_queen |= 1u64 << to;
+                            self.white_pawn &= !(1u64 << from);
+                        } else {
+                            self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
+                        }
                         self._take_piece_at_spot(to, is_white);
                         return true;
                     } 
@@ -238,7 +299,12 @@ impl Chessboard {
                     return true;
                 }
                 if (self._get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
-                    self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
+                    if ((1u64 << to) | RANK_8_MASK) == RANK_8_MASK {
+                        self.white_queen |= 1u64 << to;
+                        self.white_pawn &= !(1u64 << from);
+                    } else {
+                        self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
+                    }
                     if from - to == 16 {
                         // Set en_passant_square for the next move
                         self.en_passant_square = 1u64 << (to + 8);
@@ -304,7 +370,7 @@ impl Chessboard {
                 self.white_king = old_king;
                 
                 if self.get_white_pieces() | (1u64 << to) == self.get_white_pieces() {
-                    if  ((self._get_attack_mask(from, is_white) >> to)) & 1u64 == 1 {
+                    if  (self._get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
                         self.white_king = (self.white_king & !(1u64 << from)) | (1u64 << to);
                         self._take_piece_at_spot(to, is_white);
                         return true;
@@ -316,7 +382,13 @@ impl Chessboard {
             }
         } else if (self.black_pawn | (1u64 << from)) == self.black_pawn {
             if self.get_white_pieces() | (1u64 << to) == self.get_white_pieces() {
-                // Check if pawn can move there
+                if ((1u64 << to) | RANK_1_MASK) == RANK_1_MASK {
+                    self.black_queen |= 1u64 << to;
+                    self.black_pawn &= !(1u64 << from);
+                } else {
+                    self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
+                }
+
                 if (self._get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
                     self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
                     self.white_pawn &= !(1u64 << to);
@@ -327,7 +399,13 @@ impl Chessboard {
                 self.white_pawn &= !(1u64 << (to-8));
                 return true;
             } else if (self._get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
-                self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
+                if ((1u64 << to) | RANK_1_MASK) == RANK_1_MASK {
+                    self.black_queen |= 1u64 << to;
+                    self.black_pawn &= !(1u64 << from);
+                } else {
+                    self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
+                }
+
                 if to - from == 16 {
                     // Set en_passant_square for the next move
                     self.en_passant_square = 1u64 << (to - 8);
@@ -393,7 +471,7 @@ impl Chessboard {
                 self.black_king = old_king;
                 
                 if self.get_white_pieces() | (1u64 << to) == self.get_white_pieces() {
-                    if  ((self._get_attack_mask(from, is_white) >> to)) & 1u64 == 1 {
+                    if  (self._get_attack_mask(from, is_white) >> to) & 1u64 == 1 {
                         self.black_king = (self.black_king & !(1u64 << from)) | (1u64 << to);
                         self._take_piece_at_spot(to, is_white);
                         return true;
@@ -845,7 +923,7 @@ POS 0 ->    r n b k q b n r
 
     }    
 
-    pub fn display_board(&self) -> String {
+    pub fn _display_board(&self) -> String {
         let rows = 8;
         let cols = 8;
         let mut board_string = String::new();
@@ -913,6 +991,23 @@ pub fn display_bit_board(board: u64) -> String {
 
     board_string
 }
+
+#[allow(dead_code)]
+pub fn find_set_bits_positions(mut num: u64) -> Vec<u64> {
+    let mut positions = Vec::new();
+    let mut bit_position = 1u64;
+
+    while num != 0 {
+        if num & 1 == 1 {
+            positions.push(bit_position-1);
+        }
+        num >>= 1;
+        bit_position += 1;
+    }
+
+    positions
+}
+
 
 
 // TESTS
@@ -1328,7 +1423,7 @@ mod tests {
         chessboard._move_piece(44, 43, true, true);
         let truval = chessboard._move_piece(27, 36, false, true);    
 
-        assert_eq!(truval, false);
+        assert!(!truval);
     }
 
     #[test]
@@ -1339,10 +1434,10 @@ mod tests {
         chessboard._move_piece(4,20, false, true);    // Black moves
         chessboard._move_piece(20, 19, false, true);    // Black moves
         let truval = chessboard._move_piece(35, 28, true, true); // White moves
-        assert_eq!(truval, false);
+        assert!(!truval);
         chessboard._move_piece(19, 35, false, true);    // Black moves
         let truval = chessboard._move_piece(60, 51, true, true); // White saves with queen    
-        assert_eq!(truval, true);
+        assert!(truval);
     }
 
     #[test]
@@ -1354,10 +1449,10 @@ mod tests {
         chessboard._move_piece(43, 34, true, true);   // White moves
         chessboard._move_piece(34, 27, true, true);   // White moves
         let truval = chessboard._move_piece(27, 19, true, true);   // White moves
-        assert_eq!(truval, false);
+        assert!(!truval);
         chessboard._move_piece(6, 21, false, true);   // Black checks
         let truval = chessboard._move_piece(48, 40, true, true);   // White attempts to move pawns but can't
-        assert_eq!(truval, false);
+        assert!(!truval);
     }
 
     #[test]
@@ -1369,11 +1464,31 @@ mod tests {
         chessboard._move_piece(19, 26, false, true);   // Black moves
         chessboard._move_piece(26, 34, false, true);   // Black moves
         let truval = chessboard._move_piece(34, 42, false, true);   // Black moves
-        assert_eq!(truval, false);
+        assert!(!truval);
         chessboard._move_piece(49, 41, true, true);   // White checks
         let truval = chessboard._move_piece(8, 16, false, true);   // Black attempts to move pawns but can't
-        assert_eq!(truval, false);
+        assert!(!truval);
     }
+
+    #[test]
+    fn test_pawn_promote_always_to_queen() {
+        let mut chessboard: Chessboard = Chessboard::new();
+        chessboard._move_piece(51, 35, true, true);   // White moves
+        chessboard._move_piece(35, 27, true, true);   // White moves
+        chessboard._move_piece(27, 19, true, true);   // White moves
+        chessboard._move_piece(19, 10, true, true);   // White moves
+        chessboard._move_piece(10, 1, true, true);   // White moves
+        assert_eq!(chessboard._get_all_piece_mask(), 18444210798919220223);
+
+        let mut chessboard: Chessboard = Chessboard::new();
+        chessboard._move_piece(12, 28, false, true);   // Black moves
+        chessboard._move_piece(28, 36, false, true);   // Black moves
+        chessboard._move_piece(36, 44, false, true);   // Black moves
+        chessboard._move_piece(44, 51, false, true);   // Black moves
+        chessboard._move_piece(51, 58, false, true);   // Black moves
+        assert_eq!(chessboard._get_all_piece_mask(), 18446462598732902399);
+    }
+
 
 
 }
