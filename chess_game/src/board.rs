@@ -108,21 +108,24 @@ impl Chessboard {
         let mut board_array: Vec<Chessboard> = Vec::new();
         let _i = 0;
 
-        if is_white {
-            let pieces = [self.white_pawn, self.white_bishop, self.white_king, self.white_queen, self.white_rook, self.white_knight];
+        let pieces = if is_white {
+            [self.white_pawn, self.white_bishop, self.white_king, self.white_queen, self.white_rook, self.white_knight]
+        } else {
+            [self.black_pawn, self.black_bishop, self.black_king, self.black_queen, self.black_rook, self.black_knight]
+        };
 
-            for piece in pieces {
-                let positions_of_pieces = find_set_bits_positions(piece);
-                for position in positions_of_pieces {
-                    let moves_of_position = self._get_all_moves_at_position(position, is_white);
-                    for move_target in moves_of_position {
-                        let mut new_chessboard = *self;
-                        new_chessboard._move_piece(position, move_target, is_white, true);
+        for piece in pieces {
+            let positions_of_pieces = find_set_bits_positions(piece);
+            for position in positions_of_pieces {
+                let moves_of_position = self._get_all_moves_at_position(position, is_white);
+                for move_target in moves_of_position {
+                    let mut new_chessboard = *self;
+                    let is_legal = new_chessboard._move_piece(position, move_target, is_white, true);
+                    if is_legal {
                         board_array.push(new_chessboard);
                     }
                 }
             }
-
         }
 
         board_array
@@ -1487,6 +1490,13 @@ mod tests {
         chessboard._move_piece(44, 51, false, true);   // Black moves
         chessboard._move_piece(51, 58, false, true);   // Black moves
         assert_eq!(chessboard._get_all_piece_mask(), 18446462598732902399);
+    }
+
+    #[test]
+    fn test_get_board_states_initial_state() {
+        let chessboard = Chessboard::new();
+        assert_eq!(20, chessboard._get_all_possible_moves(true).len());
+        assert_eq!(20, chessboard._get_all_possible_moves(false).len());
     }
 
 
