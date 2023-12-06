@@ -100,9 +100,14 @@ fn main() {
     chessboard._move_piece(43, 35, true);
      */
     chessboard._move_piece(51, 35, true, true);   // White moves
-    chessboard._move_piece(12, 28, false, true);    // Black moves
-    chessboard._move_piece(4,20, false, true);    // Black moves
-    chessboard._move_piece(20, 19, false, true);    // Black moves
-    let truval = chessboard._move_piece(35, 28, true, true); // White moves
-    println!("{} {} {}", chessboard.display_board(),(chessboard._get_all_piece_mask()), truval);
+    chessboard._move_piece(59, 51, true, true);   // White moves
+    chessboard._move_piece(51, 43, true, true);   // White moves
+    chessboard._move_piece(43, 34, true, true);   // White moves
+    chessboard._move_piece(34, 27, true, true);   // White moves
+    let truval = chessboard._move_piece(27, 19, true, true);   // White moves
+    chessboard._move_piece(6, 21, false, true);   // Black checks
+    chessboard._move_piece(48, 40, true, true);   // White attempts to move pawns but can't
+
+    println!("{} {}", chessboard.display_board(),(chessboard._get_all_piece_mask()));
+    print!("{}", truval)
 }
