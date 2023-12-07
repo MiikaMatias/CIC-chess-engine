@@ -16,11 +16,10 @@ if %errorlevel% neq 0 (
 )
 
 :: Build the main.rs
-rustc main.rs
+cargo build
 if %errorlevel% neq 0 (
     echo Build failed. Exiting...
     exit /b %errorlevel%
 )
+cargo run
 
-:: Run the compiled executable
-.\main.exe
