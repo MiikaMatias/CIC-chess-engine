@@ -1,5 +1,5 @@
 [package]
-name = "chess_game"
+name = "CIC-bitboard"
 version = "0.1.0"
 edition = "2021"
 description = "simple bitboard implementation"
