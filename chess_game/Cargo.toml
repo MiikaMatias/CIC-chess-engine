@@ -5,3 +5,7 @@ edition = "2021"
 
 [dependencies]
 tracing-core = "0.1.32"
+
+[lib]
+name = "chess_game"
+crate-type = ["lib"]

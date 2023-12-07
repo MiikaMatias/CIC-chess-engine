@@ -42,6 +42,9 @@ pub struct Chessboard {
     pub white_castle_allowed_right: bool,
     pub black_castle_allowed_left: bool,
     pub black_castle_allowed_right: bool,
+
+    pub white_won: bool,
+    pub black_won: bool,
 }
 
 impl Chessboard {
@@ -51,15 +54,15 @@ impl Chessboard {
             black_rook: 129, 
             black_knight: 66, 
             black_bishop: 36, 
-            black_queen: 16, 
-            black_king: 8, 
+            black_queen: 8, 
+            black_king: 16, 
                                             // wwwww .... bbbbbb
             white_pawn: 71776119061217280, // White pawns have a larger number; "bottom"
             white_rook: 9295429630892703744, 
             white_knight: 4755801206503243776, 
             white_bishop: 2594073385365405696, 
-            white_queen: 1152921504606846976, 
-            white_king: 576460752303423488, 
+            white_queen: 576460752303423488,
+            white_king: 1152921504606846976, 
 
             en_passant_square: 0,
 
@@ -68,7 +71,10 @@ impl Chessboard {
             white_castle_allowed_left: true,
             white_castle_allowed_right: true,
             black_castle_allowed_left: true,
-            black_castle_allowed_right: true
+            black_castle_allowed_right: true,
+
+            white_won: false,
+            black_won: false,
         }
     }
 
@@ -121,7 +127,7 @@ impl Chessboard {
                 for move_target in moves_of_position {
                     let mut new_chessboard = *self;
                     let is_legal = new_chessboard._move_piece(position, move_target, is_white, true);
-                    if is_legal {
+                    if is_legal & !is_check(new_chessboard, is_white) {
                         board_array.push(new_chessboard);
                     }
                 }
@@ -225,17 +231,7 @@ impl Chessboard {
         let mut next_state = *self;
         next_state._move_piece(from, to, is_white, false);
 
-        let opponent_threatens: u64 = next_state._get_threat_masks(!is_white).iter().cloned().fold(0, |acc, x| acc | x);
-
-        if opponent_threatens == 0 {
-            return false;
-        }
-
-        if is_white {
-            (self.white_king & opponent_threatens) == self.white_king
-        } else {
-            (self.black_king & opponent_threatens) == self.black_king
-        }
+        is_check(next_state, is_white)
     }
 
     pub fn _check_en_passant(&self, pos: u64, return_mask: u64, is_white: bool) -> u64 {
@@ -1011,6 +1007,22 @@ pub fn find_set_bits_positions(mut num: u64) -> Vec<u64> {
     positions
 }
 
+#[allow(dead_code)]
+pub fn is_check(state: Chessboard, is_white: bool) -> bool {
+    let opponent_threatens: u64 = state._get_threat_masks(!is_white).iter().cloned().fold(0, |acc, x| acc | x);
+
+    if opponent_threatens == 0 {
+        return false;
+    }
+
+    if is_white {
+        (state.white_king & opponent_threatens) == state.white_king
+    } else {
+        (state.black_king & opponent_threatens) == state.black_king
+    }
+}
+
+
 
 
 // TESTS
@@ -1378,13 +1390,12 @@ mod tests {
     fn test_queen_movement_capture() {
         let mut chessboard = Chessboard::new();
         chessboard._move_piece(51, 35, true, false);
-        chessboard._move_piece(60, 24, true, false);
-        chessboard._move_piece(24, 10, true, false);
-        chessboard._move_piece(10, 1, true, false);
-        chessboard._move_piece(1, 2, true, false);
-        chessboard._move_piece(2, 11, true, false);
-        chessboard._move_piece(4, 11, false, false);
-        assert_eq!(chessboard._get_all_piece_mask(), 17291289328672111593)
+        chessboard._move_piece(59, 43, true, false);
+        chessboard._move_piece(43, 16, true, false);
+        chessboard._move_piece(16, 9, true, false);
+        chessboard._move_piece(9, 2, true, false);
+        chessboard._move_piece(3, 2, false, false);
+        assert_eq!(chessboard._get_all_piece_mask(), 17867750080975535607)
     }
 
     #[test]
@@ -1412,15 +1423,14 @@ mod tests {
         chessboard._move_piece(45, 28, true, false);
         chessboard._move_piece(39, 30, true, false);
     
-        assert_eq!(format!("{:?}", chessboard._get_threat_masks(false)),"[343597383680, 1152921504606846976, 34628173824, 0, 268435456, 0]");
-        assert_eq!(format!("{:?}", chessboard._get_threat_masks(true)),"[2684354560, 0, 264192, 2147483648, 8589934592, 0]");
+        assert_eq!(format!("{:?}", chessboard._get_threat_masks(false)),"[343597383680, 1152921504606846976, 34628173824, 0, 1073741824, 0]");
+        assert_eq!(format!("{:?}", chessboard._get_threat_masks(true)),"[2684354560, 0, 264192, 2147483648, 0, 0]");
     }
 
     #[test]
     fn test_discovered_check_black() {
         let mut chessboard: Chessboard = Chessboard::new();
         chessboard._move_piece(11, 27, false, true);
-        println!("lol");
         chessboard._move_piece(52, 36, true, true);
         chessboard._move_piece(60, 44, true, true);
         chessboard._move_piece(44, 43, true, true);
@@ -1432,28 +1442,26 @@ mod tests {
     #[test]
     fn test_check_and_discovered_check_white() {
         let mut chessboard: Chessboard = Chessboard::new();
-        chessboard._move_piece(51, 35, true, true);   // White moves
-        chessboard._move_piece(12, 28, false, true);    // Black moves
-        chessboard._move_piece(4,20, false, true);    // Black moves
-        chessboard._move_piece(20, 19, false, true);    // Black moves
-        let truval = chessboard._move_piece(35, 28, true, true); // White moves
+        chessboard._move_piece(52, 36, true, true);   // White moves
+        chessboard._move_piece(11, 27, false, true);    // Black moves
+        chessboard._move_piece(3,19, false, true);    // Black moves
+        chessboard._move_piece(19, 20, false, true);    // Black moves
+        let truval = chessboard._move_piece(36, 27, true, true); // White moves
         assert!(!truval);
-        chessboard._move_piece(19, 35, false, true);    // Black moves
-        let truval = chessboard._move_piece(60, 51, true, true); // White saves with queen    
-        assert!(truval);
     }
 
     #[test]
     fn test_white_king_movement_check() {
         let mut chessboard: Chessboard = Chessboard::new();
-        chessboard._move_piece(51, 35, true, true);   // White moves
-        chessboard._move_piece(59, 51, true, true);   // White moves
-        chessboard._move_piece(51, 43, true, true);   // White moves
-        chessboard._move_piece(43, 34, true, true);   // White moves
-        chessboard._move_piece(34, 27, true, true);   // White moves
-        let truval = chessboard._move_piece(27, 19, true, true);   // White moves
+        chessboard._move_piece(52, 36, true, true);   // White moves
+        chessboard._move_piece(60, 52, true, true);   // White moves
+        chessboard._move_piece(52, 44, true, true);   // White moves
+        chessboard._move_piece(44, 35, true, true);   // White moves
+        chessboard._move_piece(35, 28, true, true);   // White moves
+        let truval = chessboard._move_piece(28, 20, true, true);   // White moves
         assert!(!truval);
-        chessboard._move_piece(6, 21, false, true);   // Black checks
+        chessboard._move_piece(11, 19, false, true);   // Black checks
+        println!("{}", chessboard._display_board());
         let truval = chessboard._move_piece(48, 40, true, true);   // White attempts to move pawns but can't
         assert!(!truval);
     }
@@ -1461,13 +1469,13 @@ mod tests {
     #[test]
     fn test_black_king_movement_check() {
         let mut chessboard: Chessboard = Chessboard::new();
-        chessboard._move_piece(11, 27, false, true);   // Black moves
-        chessboard._move_piece(3, 11, false, true);   // Black moves
-        chessboard._move_piece(11, 19, false, true);   // Black moves
-        chessboard._move_piece(19, 26, false, true);   // Black moves
-        chessboard._move_piece(26, 34, false, true);   // Black moves
-        let truval = chessboard._move_piece(34, 42, false, true);   // Black moves
-        assert!(!truval);
+        chessboard._move_piece(12, 28, false, true);   // Black moves
+        chessboard._move_piece(4, 12, false, true);   // Black moves
+        chessboard._move_piece(12, 20, false, true);   // Black moves
+        chessboard._move_piece(20, 27, false, true);   // Black moves
+        chessboard._move_piece(27, 35, false, true);   // Black moves
+        let truval = chessboard._move_piece(62, 45, true, true);   // Black moves
+        assert!(truval);
         chessboard._move_piece(49, 41, true, true);   // White checks
         let truval = chessboard._move_piece(8, 16, false, true);   // Black attempts to move pawns but can't
         assert!(!truval);
@@ -1494,9 +1502,30 @@ mod tests {
 
     #[test]
     fn test_get_board_states_initial_state() {
-        let chessboard = Chessboard::new();
+        let chessboard: Chessboard = Chessboard::new();
         assert_eq!(20, chessboard._get_all_possible_moves(true).len());
         assert_eq!(20, chessboard._get_all_possible_moves(false).len());
+    }
+
+    #[test]
+    fn check_checkmate_checker() {
+        let chessboard: Chessboard = Chessboard::new();
+        assert_eq!(20, chessboard._get_all_possible_moves(true).len());
+        assert_eq!(20, chessboard._get_all_possible_moves(false).len());
+    }
+
+    #[test]
+    fn run_scholars_mate() {
+        let mut chessboard = Chessboard::new();
+        chessboard._move_piece(52, 36, true, true);
+        chessboard._move_piece(12, 28, false, true);
+        chessboard._move_piece(59, 31, true, true);
+        chessboard._move_piece(8, 16, false, true);
+        chessboard._move_piece(61, 34, true, true);
+        chessboard._move_piece(16, 24, false, true);
+        chessboard._move_piece(31, 13, true, true);
+        
+        assert_eq!(0, chessboard._get_all_possible_moves(false).len());
     }
 
 
