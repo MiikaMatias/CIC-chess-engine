@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::board::Chessboard;
 
 
-pub fn uci_loop(mut board: Chessboard) {
+pub fn _uci_loop(mut board: Chessboard) {
     let stdin = io::stdin();
     let mut lines = stdin.lock().lines().map(|l| l.unwrap());
     println!("{}", board._display_board());
@@ -62,7 +62,7 @@ pub fn uci_loop(mut board: Chessboard) {
             }
             "quit" => {
                 // Quit the UCI loop
-                break;
+                break;  
             }
             _ => {
                 println!("Unknown command");
