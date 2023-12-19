@@ -17,8 +17,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build
-      run: cd chess_game/src; cargo build --verbose
+      run: cargo build --verbose
     - name: Lint
-      run: cd chess_game/src; cargo clippy
+      run: cargo clippy
     - name: Run tests
-      run: cd chess_game/src; cargo test --verbose
+      run: cargo test --verbose
