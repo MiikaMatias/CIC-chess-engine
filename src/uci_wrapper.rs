@@ -3,14 +3,17 @@ use std::collections::HashMap;
 use crate::board::Chessboard;
 
 
-pub fn _uci_loop(mut board: Chessboard) {
+pub fn uci_loop(mut board: Chessboard) {
     let stdin = io::stdin();
     let mut lines = stdin.lock().lines().map(|l| l.unwrap());
-    println!("{}", board._display_board());
+    println!("{}", board._display_board()); // Assuming `_display_board` is a method to display the board
+
     // Send UCI identification information
     println!("id name Magachess");
     println!("id author Kontrakti");
     println!("uciok");
+
+    let mut is_white_turn = true;
 
     loop {
         let input = lines.next().unwrap();
@@ -27,22 +30,17 @@ pub fn _uci_loop(mut board: Chessboard) {
                 println!("readyok");
             }
             "ucinewgame" => {
-                let input = lines.next().unwrap();
-                let input_split: Vec<&str> = input.split_whitespace().collect();
-                let mut is_white_turn = true;
-
-                println!("Input len: {}", input_split.len());
-
-                if input_split[0] == "stop" {
-                    break;
-                }
-                if input_split[0] == "position" && input_split[1] == "startpos" && input_split[2] == "moves" {
+                // Clear the board and prepare for a new game
+                is_white_turn = true;
+            }
+            "position" => {
+                if input_split[1] == "startpos" && input_split[2] == "moves" {
                     for movestr in input_split.iter().skip(3) {
-                        let move_to_play = translate_move(&movestr);
+                        let move_to_play = translate_move(movestr);
 
                         let piece_moved = board._move_piece(move_to_play[0], move_to_play[1], is_white_turn, true);
                         if !piece_moved {
-                            println!("The move {} -> {} was not succesful", move_to_play[0], move_to_play[1]);
+                            println!("The move {} -> {} was not successful", move_to_play[0], move_to_play[1]);
                             continue;
                         } else {
                             println!("moved from {} to {}", move_to_play[0], move_to_play[1]);
@@ -52,17 +50,14 @@ pub fn _uci_loop(mut board: Chessboard) {
                     }
                 }
             }
-            "position" => {
-                // Parse the position command and update the board
-            }
             "go" => {
                 // Parse the go command and start searching for the best move
                 // Send best move and additional information when ready
-                println!("bestmove MoveFrom e2 MoveTo e4");
+                println!("bestmove e2e4"); // Replace with the actual best move
             }
             "quit" => {
                 // Quit the UCI loop
-                break;  
+                break;
             }
             _ => {
                 println!("Unknown command");
@@ -70,6 +65,8 @@ pub fn _uci_loop(mut board: Chessboard) {
         }
     }
 }
+
+
 
 fn translate_move(uci: &str) -> [u64; 2] {
     if uci.len() != 4 {
@@ -89,7 +86,7 @@ fn translate_move(uci: &str) -> [u64; 2] {
     .into_iter()
     .collect();
 
-    let file_from = *nummap.get(&uci.chars().nth(0).unwrap()).unwrap_or(&10000);
+    let file_from = *nummap.get(&uci.chars().next().unwrap()).unwrap_or(&10000);
     let rank_from = uci.chars().nth(1).unwrap().to_digit(10).unwrap() as u64;
     let file_to = *nummap.get(&uci.chars().nth(2).unwrap()).unwrap_or(&10000);
     let rank_to = uci.chars().nth(3).unwrap().to_digit(10).unwrap() as u64;

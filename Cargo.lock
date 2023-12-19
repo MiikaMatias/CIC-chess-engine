@@ -3,7 +3,7 @@
 version = 3
 
 [[package]]
-name = "chess_game"
+name = "cic_bitboard"
 version = "0.1.0"
 dependencies = [
  "tracing-core",

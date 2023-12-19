@@ -1,5 +1,5 @@
 [package]
-name = "CIC-bitboard"
+name = "cic_bitboard"
 version = "0.1.0"
 edition = "2021"
 description = "simple bitboard implementation"
@@ -7,7 +7,3 @@ license = "MIT"
 
 [dependencies]
 tracing-core = "0.1.32"
-
-[lib]
-name = "chess_game"
-crate-type = ["lib"]
