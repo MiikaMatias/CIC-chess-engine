@@ -1,5 +1,6 @@
 mod board;
 mod uci_wrapper;
+mod cic;
 
 use board::Chessboard; 
 #[allow(unused_imports)]

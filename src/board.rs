@@ -137,6 +137,11 @@ impl Chessboard {
         board_array
     }
 
+    pub fn check_win(&self, is_white: bool) -> bool {
+        return (self._get_all_possible_moves(!is_white).len() == 0) &&
+                (self._get_all_possible_moves(is_white).len() != 0)
+    }
+
     pub fn _get_all_piece_mask(&self) -> u64 {
         self.get_black_pieces()|self.get_white_pieces()
     }

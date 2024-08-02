@@ -1,14 +1,12 @@
 use std::io::{self, BufRead};
 use std::collections::HashMap;
 use crate::board::Chessboard;
-
+use crate::cic::search_best_move;
 
 pub fn uci_loop(mut board: Chessboard) {
     let stdin = io::stdin();
     let mut lines = stdin.lock().lines().map(|l| l.unwrap());
-    println!("{}", board._display_board()); // Assuming `_display_board` is a method to display the board
 
-    // Send UCI identification information
     println!("id name Magachess");
     println!("id author Kontrakti");
     println!("uciok");
@@ -18,7 +16,7 @@ pub fn uci_loop(mut board: Chessboard) {
     loop {
         let input = lines.next().unwrap();
         let input_split: Vec<&str> = input.split_whitespace().collect();
-
+    
         match input_split[0] {
             "uci" => {
                 // Send UCI options, if any
@@ -51,12 +49,10 @@ pub fn uci_loop(mut board: Chessboard) {
                 }
             }
             "go" => {
-                // Parse the go command and start searching for the best move
-                // Send best move and additional information when ready
-                println!("bestmove e2e4"); // Replace with the actual best move
+                board = search_best_move(board, is_white_turn);
+                println!("{}", board._display_board());
             }
             "quit" => {
-                // Quit the UCI loop
                 break;
             }
             _ => {
