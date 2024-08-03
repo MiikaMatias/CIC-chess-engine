@@ -49,6 +49,18 @@ pub fn uci_loop(mut board: Chessboard) {
                 }
             }
             "go" => {
+                board._move_piece(51, 35, true, false);
+                board._move_piece(35, 27, true, false);
+                board._move_piece(8, 24, false, false);
+                board._move_piece(24, 32, false, false);
+                board._move_piece(49, 33, true, false);
+                board._move_piece(32, 41, false, false);
+                board._move_piece(12, 28, false, false);
+                board._move_piece(27, 20, true, false);
+                board._move_piece(55, 39, true, false);
+                board._move_piece(63, 47, true, false);
+                board._move_piece(47, 41, true, false);
+                println!("{}", board._display_board());
                 board = search_best_move(board, is_white_turn);
                 println!("{}", board._display_board());
             }

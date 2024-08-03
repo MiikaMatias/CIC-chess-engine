@@ -47,7 +47,9 @@ pub struct Chessboard {
     pub black_won: bool,
 
     pub last_captured:u8,
-    pub last_capturee:u8
+    pub last_capturee:u8,
+
+    pub score:u8
 }
 
 impl Chessboard {
@@ -80,41 +82,37 @@ impl Chessboard {
             black_won: false,
 
             last_captured: 0,
-            last_capturee: 0
+            last_capturee: 0,
+
+            score: 0
         }
     }
 
     pub fn _get_all_moves_at_position(&self, pos: u64, is_white: bool) -> Vec<u64> {
-        if is_white {
-            if (self.white_pawn & (1u64 << pos)) == (1u64 << pos) {
-                return find_set_bits_positions(self._get_pawn_move_mask(pos, is_white)& !self.get_white_pieces())
-            } else if (self.white_rook & (1u64 << pos)) == (1u64 << pos) {
-                return find_set_bits_positions(self._get_rook_move_mask(pos, is_white)& !self.get_white_pieces());
-            } else if (self.white_bishop & (1u64 << pos)) == (1u64 << pos) {
-                return find_set_bits_positions(self._get_bishop_move_mask(pos, is_white)& !self.get_white_pieces());
-            } else if (self.white_king & (1u64 << pos)) == (1u64 << pos) {
-                return find_set_bits_positions(self._get_king_move_mask(pos)& !self.get_white_pieces());
-            } else if (self.white_knight & (1u64 << pos)) == (1u64 << pos) {
-                return find_set_bits_positions(self._get_knight_move_mask(pos)& !self.get_white_pieces());
-            } else {
-                return find_set_bits_positions(self._get_queen_move_mask(pos, is_white)& !self.get_white_pieces());
-            }
+        let (pawn, rook, bishop, king, knight, queen, pieces) = if is_white {
+            (self.white_pawn, self.white_rook, self.white_bishop, self.white_king, self.white_knight, self.white_queen, self.get_white_pieces())
         } else {
-            if (self.black_pawn & (1u64 << pos)) == (1u64 << pos) {
-                find_set_bits_positions(self._get_pawn_move_mask(pos, is_white)& !self.get_black_pieces())
-            } else if (self.black_rook & (1u64 << pos)) == (1u64 << pos) {
-                return find_set_bits_positions(self._get_rook_move_mask(pos, is_white)& !self.get_black_pieces());
-            } else if (self.black_bishop & (1u64 << pos)) == (1u64 << pos) {
-                return find_set_bits_positions(self._get_bishop_move_mask(pos, is_white)& !self.get_black_pieces());
-            } else if (self.black_king & (1u64 << pos)) == (1u64 << pos) {
-                return find_set_bits_positions(self._get_king_move_mask(pos)& !self.get_black_pieces());
-            } else if (self.black_knight & (1u64 << pos)) == (1u64 << pos) {
-                return find_set_bits_positions(self._get_knight_move_mask(pos)& !self.get_black_pieces());
-            } else{
-                return find_set_bits_positions(self._get_queen_move_mask(pos, is_white)& !self.get_black_pieces());
-            }
-        } 
+            (self.black_pawn, self.black_rook, self.black_bishop, self.black_king, self.black_knight, self.black_queen, self.get_black_pieces())
+        };
+    
+        let pos_mask = 1u64 << pos;
+        let empty_squares = !pieces;
+    
+        if (pawn & pos_mask) == pos_mask {
+            find_set_bits_positions(self._get_pawn_move_mask(pos, is_white) & empty_squares)
+        } else if (rook & pos_mask) == pos_mask {
+            find_set_bits_positions(self._get_rook_move_mask(pos, is_white) & empty_squares)
+        } else if (bishop & pos_mask) == pos_mask {
+            find_set_bits_positions(self._get_bishop_move_mask(pos, is_white) & empty_squares)
+        } else if (king & pos_mask) == pos_mask {
+            find_set_bits_positions(self._get_king_move_mask(pos) & empty_squares)
+        } else if (knight & pos_mask) == pos_mask {
+            find_set_bits_positions(self._get_knight_move_mask(pos) & empty_squares)
+        } else {
+            find_set_bits_positions(self._get_queen_move_mask(pos, is_white) & empty_squares)
+        }
     }
+    
 
     pub fn _get_all_possible_moves(&self, is_white: bool) -> Vec<Chessboard> {
         // this will very likely get rough with memory; consider having an array of values instead
@@ -323,6 +321,8 @@ impl Chessboard {
                 } else if (1u64 << to) == self.en_passant_square {
                     self.white_pawn = (self.white_pawn & !(1u64 << from)) | (1u64 << to);
                     self.black_pawn &= !(1u64 << (to+8));
+                    self.last_captured = 0;
+                    self.last_capturee = 0;
                     return true;
                 }
                 if (self._get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
@@ -339,6 +339,8 @@ impl Chessboard {
                         // uncheck en passant if next move is pawn
                         self.en_passant_square = 0;
                     }
+                    self.last_captured = 0;
+                    self.last_capturee = 0;
                     return true;
                 } 
                 self.en_passant_square = 0;
@@ -352,6 +354,8 @@ impl Chessboard {
                     }  
                 } else if (self._get_knight_move_mask(from) >> to) & 1u64 == 1 {
                         self.white_knight = (self.white_knight & !(1u64 << from)) | (1u64 << to);
+                        self.last_captured = 0;
+                        self.last_capturee = 0;    
                         return true;
                    } 
             } else if (self.white_rook | (1u64 << from)) == self.white_rook {
@@ -364,6 +368,8 @@ impl Chessboard {
                     }  
                 } else if (self._get_rook_move_mask(from, is_white) >> to) & 1u64 == 1 {
                         self.white_rook = (self.white_rook & !(1u64 << from)) | (1u64 << to);
+                        self.last_captured = 0;
+                        self.last_capturee = 0;    
                         return true;
                     } 
             } else if (self.white_bishop | (1u64 << from)) == self.white_bishop {
@@ -376,6 +382,8 @@ impl Chessboard {
                     }  
                 } else if (self._get_bishop_move_mask(from, is_white) >> to) & 1u64 == 1 {
                     self.white_bishop = (self.white_bishop & !(1u64 << from)) | (1u64 << to);
+                    self.last_captured = 0;
+                    self.last_capturee = 0;
                     return true;
                     } 
             } else if (self.white_queen | (1u64 << from)) == self.white_queen {
@@ -388,6 +396,8 @@ impl Chessboard {
                     }  
                 } else if (self._get_queen_move_mask(from, is_white) >> to) & 1u64 == 1 {
                     self.white_queen = (self.white_queen & !(1u64 << from)) | (1u64 << to);
+                    self.last_captured = 0;
+                    self.last_capturee = 0;
                     return true;
                 }
             } else if (self.white_king | (1u64 << from)) == self.white_king {
@@ -409,6 +419,8 @@ impl Chessboard {
                     }  
                 } else if ((self._get_king_move_mask(from)) >> to) & 1u64 == 1 {
                     self.white_king = (self.white_king & !(1u64 << from)) | (1u64 << to) ;
+                    self.last_captured = 0;
+                    self.last_capturee = 0;
                     return true;
                 }
             }
@@ -429,6 +441,8 @@ impl Chessboard {
             } else if (1u64 << to) == self.en_passant_square {
                 self.black_pawn = (self.black_pawn & !(1u64 << from)) | (1u64 << to);
                 self.white_pawn &= !(1u64 << (to-8));
+                self.last_captured = 0;
+                self.last_capturee = 0;
                 return true;
             } else if (self._get_pawn_move_mask(from, is_white) >> to) & 1u64 == 1 {
                 if ((1u64 << to) | RANK_1_MASK) == RANK_1_MASK {
@@ -458,6 +472,8 @@ impl Chessboard {
                 }  
             } else if (self._get_knight_move_mask(from) >> to) & 1u64 == 1 {
                     self.black_knight = (self.black_knight & !(1u64 << from)) | (1u64 << to);
+                    self.last_captured = 0;
+                    self.last_capturee = 0;
                     return true;
                } 
             } else if (self.black_rook | (1u64 << from)) == self.black_rook {
@@ -470,6 +486,8 @@ impl Chessboard {
                     }  
                 } else if (self._get_rook_move_mask(from, is_white) >> to) & 1u64 == 1 {
                     self.black_rook = (self.black_rook & !(1u64 << from)) | (1u64 << to);
+                    self.last_captured = 0;
+                    self.last_capturee = 0;
                     return true;
                 }
             } else if (self.black_bishop | (1u64 << from)) == self.black_bishop {
@@ -482,6 +500,8 @@ impl Chessboard {
                     }  
                 } else if (self._get_bishop_move_mask(from, is_white) >> to) & 1u64 == 1 {
                     self.black_bishop = (self.black_bishop & !(1u64 << from)) | (1u64 << to);
+                    self.last_captured = 0;
+                    self.last_capturee = 0;
                     return true;
                 }
             } else if (self.black_queen | (1u64 << from)) == self.black_queen {
@@ -494,6 +514,8 @@ impl Chessboard {
                     }  
                 } else if (self._get_queen_move_mask(from, is_white) >> to) & 1u64 == 1 {
                     self.black_queen = (self.black_queen & !(1u64 << from)) | (1u64 << to);
+                    self.last_captured = 0;
+                    self.last_capturee = 0;
                     return true;
                 }
             } else if (self.black_king | (1u64 << from)) == self.black_king {
@@ -515,6 +537,8 @@ impl Chessboard {
                     }  
                 } else if ((self._get_king_move_mask(from)) >> to) & 1u64 == 1 {
                     self.black_king = (self.black_king & !(1u64 << from)) | (1u64 << to) ;
+                    self.last_captured = 0;
+                    self.last_capturee = 0;
                     return true;
                 }
             }
@@ -1562,6 +1586,18 @@ mod tests {
         assert_eq!(0, chessboard._get_all_possible_moves(false).len());
     }
 
+    #[test]
+    fn test_captures() {
+        let mut chessboard: Chessboard = Chessboard::new();
 
+        chessboard._move_piece(48, 32, true, true); 
+        chessboard._move_piece(1, 18, false, true); 
+        chessboard._move_piece(18, 35, false, true); 
+        chessboard._move_piece(35, 25,  false, true); 
+
+        assert!(chessboard._move_piece(32, 25, true, true)); 
+        assert_eq!(chessboard.last_capturee, 1);
+        assert_eq!(chessboard.last_captured, 2);
+    }
 
 }

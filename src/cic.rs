@@ -1,7 +1,8 @@
 // the implementation of the ai
 
 // improvement ideas
-// - sorting
+// - magic bitboards
+// - sorting MVV-LVA
 // - dynamic programming
 // - nuanced heuristics (killer?)
 // - parallel processing or whatever
@@ -9,23 +10,32 @@
 // - add opening book 
 // - test some obvious evals
 // - add counting so that each move computes material in board.rs
-// - magic bitboards
-// - MVV-LVA
 
 use crate::board::Chessboard;
 use crate::board::display_bit_board;
 
 
-
 const EXTENDED_CENTER:u64 = 66229406269440;
 const PIECE_COUNT_EC: u64 = 16;
-const DEPTH: u16 = 3; 
+const DEPTH: u16 = 4; 
 
 const PAWN_VAL:u32 = 100;
 const KNIGHT_VAL:u32 = 300;
 const BISHOP_VAL:u32 = 300;
 const ROOK_VAL:u32 = 500;
 const QUEEN_VAL:u32 = 900;
+
+// shamelessly stolen from: https://rustic-chess.org/search/ordering/mvv_lva.html
+const MVV_LVA_TABLE : [[f64; 8]; 8] = [
+    [0.0,0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],       // None, victim None, attacker K, Q, R, B, N, P, None
+    [0.0,0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],       // None, victim K, attacker K, Q, R, B, N, P, None
+    [0.0,50.0, 51.0, 52.0, 53.0, 54.0, 55.0, 0.0], // None, victim Q, attacker K, Q, R, B, N, P, None
+    [0.0,40.0, 41.0, 42.0, 43.0, 44.0, 45.0, 0.0], // None, victim R, attacker K, Q, R, B, N, P, None
+    [0.0,30.0, 31.0, 32.0, 33.0, 34.0, 35.0, 0.0], // None, victim B, attacker K, Q, R, B, N, P, None
+    [0.0,20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 0.0], // None, victim N, attacker K, Q, R, B, N, P, None
+    [0.0,10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 0.0], // None, victim P, attacker K, Q, R, B, N, P, None
+    [0.0,0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],       // None, victim None, attacker K, Q, R, B, N, P, None
+];
 
 fn eval_extended_center(state: Chessboard, is_white_turn: bool) -> f64 {
     if is_white_turn {
@@ -45,6 +55,10 @@ fn eval_win_threat(state: Chessboard, is_white_turn: bool) -> f64 {
         return f64::NEG_INFINITY;
     }
     return 0.0;
+}
+
+fn eval_mvv_lva(state: Chessboard) -> f64 {
+    return MVV_LVA_TABLE[state.last_captured as usize][state.last_capturee as usize];
 }
 
 fn eval_material(state: Chessboard, is_white_turn: bool) -> f64 {
@@ -76,19 +90,13 @@ fn primitive_heuristic_eval(state: Chessboard, is_white_turn: bool) -> f64 {
     return (score_ext_center + score_win_threat + score_material)/3.0;
 }
 
-fn order_by_heuristic(states: Vec<Chessboard>, is_white_turn: bool) -> Vec<Chessboard> {
-    let mut evaluated_states = Vec::<(Chessboard, f64)>::new();
-    for state in states {
-        let eval = primitive_heuristic_eval(state, is_white_turn);
-        evaluated_states.push((state, eval));
-    }
-    evaluated_states.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+fn order_by_mvv_lva(states: Vec<Chessboard>) -> Vec<Chessboard> {
+    let mut evaluated_states = states.iter().map(|s| (s, eval_mvv_lva(*s))).collect::<Vec<_>>();
 
-    let mut ret_states = Vec::<Chessboard>::new();
-    for state in evaluated_states {
-        ret_states.push(state.0);
-    }
-    return ret_states;
+    evaluated_states.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+
+    let result: Vec<_> = evaluated_states.into_iter().map(|(first, _)| *first).collect();
+    return result;
 }
 
 
@@ -111,7 +119,7 @@ fn minimax(board: Chessboard, mut a: f64, mut b : f64, depth: u16, is_white_turn
         return (board, primitive_heuristic_eval(board, is_white_turn));
     }
 
-    let legal_moves = board._get_all_possible_moves(is_white_turn);
+    let legal_moves = (board._get_all_possible_moves(is_white_turn));
     let mut best_move: Chessboard = Chessboard::new();
     if is_white_turn {
         let mut current_eval = f64::NEG_INFINITY;
@@ -148,8 +156,7 @@ fn init_minimax(board: Chessboard, is_white_turn: bool, depth: u16) -> (Chessboa
     let mut best_move = Chessboard::new();
     if is_white_turn {
         let mut eval = f64::NEG_INFINITY;
-        let moves = order_by_heuristic(board._get_all_possible_moves(is_white_turn), 
-        !is_white_turn);
+        let moves = order_by_mvv_lva(board._get_all_possible_moves(is_white_turn));
 
         for m in moves {
             let (_, new_eval) = minimax(m, f64::NEG_INFINITY, f64::INFINITY, depth, !is_white_turn);
@@ -162,8 +169,7 @@ fn init_minimax(board: Chessboard, is_white_turn: bool, depth: u16) -> (Chessboa
 
     } else {
         let mut eval = f64::INFINITY;
-        let moves = order_by_heuristic(board._get_all_possible_moves(is_white_turn), 
-        !is_white_turn);
+        let moves = order_by_mvv_lva(board._get_all_possible_moves(is_white_turn));
 
         for m in moves {
             let (_, new_eval) = minimax(m, f64::NEG_INFINITY, f64::INFINITY, depth, !is_white_turn);
