@@ -2,11 +2,15 @@
 
 // improvement ideas
 // - sorting
+// - dynamic programming
 // - nuanced heuristics (killer?)
 // - parallel processing or whatever
 // - handle ties
 // - add opening book 
 // - test some obvious evals
+// - add counting so that each move computes material in board.rs
+// - magic bitboards
+// - MVV-LVA
 
 use crate::board::Chessboard;
 use crate::board::display_bit_board;
@@ -15,7 +19,7 @@ use crate::board::display_bit_board;
 
 const EXTENDED_CENTER:u64 = 66229406269440;
 const PIECE_COUNT_EC: u64 = 16;
-const DEPTH: u16 = 5; 
+const DEPTH: u16 = 3; 
 
 const PAWN_VAL:u32 = 100;
 const KNIGHT_VAL:u32 = 300;
@@ -44,19 +48,17 @@ fn eval_win_threat(state: Chessboard, is_white_turn: bool) -> f64 {
 }
 
 fn eval_material(state: Chessboard, is_white_turn: bool) -> f64 {
-    let white_knight_val = state.white_knight.count_ones() * KNIGHT_VAL;
-    let white_bishop_val = state.white_bishop.count_ones() * BISHOP_VAL;
-    let white_rook_val = state.white_rook.count_ones() * ROOK_VAL;
-    let white_queen_val = state.white_queen.count_ones() * QUEEN_VAL;
-    let white_pawn_val = state.white_pawn.count_ones() * PAWN_VAL; 
-    let white_val = white_pawn_val + white_knight_val + white_bishop_val + white_rook_val + white_queen_val;
+    let white_val = state.white_knight.count_ones() * KNIGHT_VAL 
+    + state.white_bishop.count_ones() * BISHOP_VAL 
+    + state.white_rook.count_ones() * ROOK_VAL 
+    + state.white_queen.count_ones() * QUEEN_VAL 
+    + state.white_pawn.count_ones() * PAWN_VAL; 
 
-    let black_knight_val = state.black_knight.count_ones() * KNIGHT_VAL;
-    let black_bishop_val = state.black_bishop.count_ones() * BISHOP_VAL;
-    let black_rook_val = state.black_rook.count_ones() * ROOK_VAL;
-    let black_queen_val = state.black_queen.count_ones() * QUEEN_VAL;
-    let black_pawn_val = state.black_pawn.count_ones() * PAWN_VAL;
-    let black_val = black_pawn_val + black_knight_val + black_bishop_val + black_rook_val + black_queen_val;
+    let black_val = state.black_knight.count_ones() * KNIGHT_VAL
+    + state.black_bishop.count_ones() * BISHOP_VAL
+    + state.black_rook.count_ones() * ROOK_VAL
+    + state.black_queen.count_ones() * QUEEN_VAL
+    + state.black_pawn.count_ones() * PAWN_VAL;
 
     if is_white_turn {
         return f64::from(white_val / black_val);
@@ -70,7 +72,6 @@ fn primitive_heuristic_eval(state: Chessboard, is_white_turn: bool) -> f64 {
     let score_ext_center = eval_extended_center(state, is_white_turn); 
     let score_win_threat = eval_win_threat(state, is_white_turn);
     let score_material = eval_material(state, is_white_turn);
-
 
     return (score_ext_center + score_win_threat + score_material)/3.0;
 }
@@ -89,6 +90,7 @@ fn order_by_heuristic(states: Vec<Chessboard>, is_white_turn: bool) -> Vec<Chess
     }
     return ret_states;
 }
+
 
 fn max(a: f64, b : f64) -> f64 {
     if a > b {
@@ -256,17 +258,17 @@ mod tests {
         chessboard._move_piece(11, 18, false, true); 
         chessboard._move_piece(18, 17, false, true); 
         chessboard._move_piece(12, 20, false, true);
-        chessboard._move_piece(19, 27, false, true);  
+        chessboard._move_piece(19, 27, false, true); 
+        chessboard._move_piece(8, 24, false, true);  
         chessboard._move_piece(49, 33, true, true); 
-
-        println!("{}", chessboard._display_board());
     
         let (board_1, _) = init_minimax(chessboard, false, 1);
-    
-        chessboard._move_piece(17, 33, false, true); 
+        let (board_2, _) = init_minimax(chessboard, false, 2);
+        let (board_3, _) = init_minimax(chessboard, false, 3);
 
-        println!("{}\n{}", board_1._display_board(), chessboard._display_board());
-    
+        chessboard._move_piece(17, 33, false, true); 
         assert_eq!(board_1._display_board(), chessboard._display_board());
+        assert_eq!(board_2._display_board(), chessboard._display_board());
+        assert_eq!(board_3._display_board(), chessboard._display_board());
     }
 }
