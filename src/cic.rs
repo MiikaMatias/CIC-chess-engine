@@ -1,6 +1,10 @@
 // the implementation of the ai
 
 // improvement ideas
+
+// first optimise search
+// then finish board
+
 // - magic bitboards
 // - sorting MVV-LVA
 // - dynamic programming
@@ -13,11 +17,12 @@
 
 use crate::board::Chessboard;
 use crate::board::display_bit_board;
+use std::sync::LazyLock;
 
 
 const EXTENDED_CENTER:u64 = 66229406269440;
 const PIECE_COUNT_EC: u64 = 16;
-const DEPTH: u16 = 4; 
+const DEPTH: u16 = 3;
 
 const PAWN_VAL:u32 = 100;
 const KNIGHT_VAL:u32 = 300;
@@ -28,12 +33,12 @@ const QUEEN_VAL:u32 = 900;
 // shamelessly stolen from: https://rustic-chess.org/search/ordering/mvv_lva.html
 const MVV_LVA_TABLE : [[f64; 8]; 8] = [
     [0.0,0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],       // None, victim None, attacker K, Q, R, B, N, P, None
-    [0.0,0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],       // None, victim K, attacker K, Q, R, B, N, P, None
-    [0.0,50.0, 51.0, 52.0, 53.0, 54.0, 55.0, 0.0], // None, victim Q, attacker K, Q, R, B, N, P, None
-    [0.0,40.0, 41.0, 42.0, 43.0, 44.0, 45.0, 0.0], // None, victim R, attacker K, Q, R, B, N, P, None
-    [0.0,30.0, 31.0, 32.0, 33.0, 34.0, 35.0, 0.0], // None, victim B, attacker K, Q, R, B, N, P, None
-    [0.0,20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 0.0], // None, victim N, attacker K, Q, R, B, N, P, None
     [0.0,10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 0.0], // None, victim P, attacker K, Q, R, B, N, P, None
+    [0.0,20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 0.0], // None, victim N, attacker K, Q, R, B, N, P, None
+    [0.0,30.0, 31.0, 32.0, 33.0, 34.0, 35.0, 0.0], // None, victim B, attacker K, Q, R, B, N, P, None
+    [0.0,40.0, 41.0, 42.0, 43.0, 44.0, 45.0, 0.0], // None, victim R, attacker K, Q, R, B, N, P, None
+    [0.0,50.0, 51.0, 52.0, 53.0, 54.0, 55.0, 0.0], // None, victim Q, attacker K, Q, R, B, N, P, None
+    [0.0,0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],       // None, victim K, attacker K, Q, R, B, N, P, None
     [0.0,0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],       // None, victim None, attacker K, Q, R, B, N, P, None
 ];
 
@@ -81,13 +86,12 @@ fn eval_material(state: Chessboard, is_white_turn: bool) -> f64 {
     }
 }
 
-// return board state evaluation as float between 0 and 1
+// return board state evaluation
 fn primitive_heuristic_eval(state: Chessboard, is_white_turn: bool) -> f64 {
-    let score_ext_center = eval_extended_center(state, is_white_turn); 
-    let score_win_threat = eval_win_threat(state, is_white_turn);
-    let score_material = eval_material(state, is_white_turn);
-
-    return (score_ext_center + score_win_threat + score_material)/3.0;
+    return  (eval_extended_center(state, is_white_turn)
+    + eval_win_threat(state, is_white_turn)
+    + eval_material(state, is_white_turn)
+    + eval_mvv_lva(state)) / 4.0;
 }
 
 fn order_by_mvv_lva(states: Vec<Chessboard>) -> Vec<Chessboard> {
@@ -114,71 +118,68 @@ fn mini(a: f64, b : f64) -> f64 {
     return b;
 }
 
-fn minimax(board: Chessboard, mut a: f64, mut b : f64, depth: u16, is_white_turn: bool) -> (Chessboard, f64) {
+fn minimax(board: Chessboard, mut a: f64, mut b : f64, depth: u16, is_white_turn: bool) -> f64 {
     if depth == 0 {
-        return (board, primitive_heuristic_eval(board, is_white_turn));
+        return primitive_heuristic_eval(board, is_white_turn);
     }
-
     let legal_moves = (board._get_all_possible_moves(is_white_turn));
-    let mut best_move: Chessboard = Chessboard::new();
+
     if is_white_turn {
         let mut current_eval = f64::NEG_INFINITY;
         for m in legal_moves {
-            let (_, eval) = minimax(m, a, b,depth - 1, !is_white_turn);
+            let eval = minimax(m, a, b,depth - 1, !is_white_turn);
             a = max(a, eval);
             if eval > current_eval {
                 current_eval = eval;
-                best_move = m;
             }
             if eval >= b {
                 break;
             }
         }
-        return (best_move, current_eval);
+        return current_eval;
     } else {
         let mut current_eval = f64::INFINITY;
         for m in legal_moves {
-            let (_, eval) = minimax(m, a, b, depth - 1, !is_white_turn);
+            let eval = minimax(m, a, b, depth - 1, !is_white_turn);
             b = mini(b, eval);
             if eval < current_eval {
                 current_eval = eval;
-                best_move = m;
             }
             if eval <= a {
                 break;
             }
         }
-        return (best_move, current_eval);
+        return current_eval;
     }
 }
 
 fn init_minimax(board: Chessboard, is_white_turn: bool, depth: u16) -> (Chessboard, f64) {
-    let mut best_move = Chessboard::new();
+    let mut best_move: Option<Chessboard> = None;
     if is_white_turn {
         let mut eval = f64::NEG_INFINITY;
         let moves = order_by_mvv_lva(board._get_all_possible_moves(is_white_turn));
 
         for m in moves {
-            let (_, new_eval) = minimax(m, f64::NEG_INFINITY, f64::INFINITY, depth, !is_white_turn);
+            let new_eval = minimax(m, f64::NEG_INFINITY, f64::INFINITY, depth, !is_white_turn);
             if new_eval > eval {
-                best_move = m;
+                best_move = Some(m);
                 eval = new_eval;
             }
         }
-        return (best_move, eval);
+        return (best_move.unwrap(), eval);
 
     } else {
         let mut eval = f64::INFINITY;
         let moves = order_by_mvv_lva(board._get_all_possible_moves(is_white_turn));
 
         for m in moves {
-            let (_, new_eval) = minimax(m, f64::NEG_INFINITY, f64::INFINITY, depth, !is_white_turn);
+            let new_eval = minimax(m, f64::NEG_INFINITY, f64::INFINITY, depth, !is_white_turn);
             if new_eval < eval {
-                best_move = m;
+                best_move = Some(m);
                 eval = new_eval;
             }
         }
-        return (best_move, eval);
+        return (best_move.unwrap(), eval);
     }
     
 }
@@ -198,7 +199,7 @@ pub fn search_best_move(board: Chessboard, is_white_turn: bool) -> Chessboard {
         .write(true)
         .append(true)
         .create(true)
-        .open("timetable.txt")
+        .open("reports/timetable.txt")
         .expect("Unable to open file");
 
     if let Err(e) = writeln!(
@@ -215,11 +216,16 @@ pub fn search_best_move(board: Chessboard, is_white_turn: bool) -> Chessboard {
 }
 
 mod tests {
+    use crate::precomps;
+
     use super::*;
+
+    static PRECOMPS: LazyLock<precomps::Precomps> = LazyLock::new(|| precomps::Precomps::new());
 
     #[test]
     fn test_heuristic_eval_win() {
-        let mut chessboard = Chessboard::new();
+        let precomps: &precomps::Precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(52, 36, true, true);
         chessboard._move_piece(12, 28, false, true);
         chessboard._move_piece(59, 31, true, true);
@@ -232,7 +238,8 @@ mod tests {
     }
     #[test]
     fn test_minimax_pick_checkmate_white() {
-        let mut chessboard = Chessboard::new();
+        let precomps: &precomps::Precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(52, 36, true, true);
         chessboard._move_piece(12, 28, false, true);
         chessboard._move_piece(59, 31, true, true);
@@ -251,7 +258,8 @@ mod tests {
 
     #[test]
     fn test_minimax_pick_checkmate_black() {
-        let mut chessboard = Chessboard::new();
+        let precomps: &precomps::Precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
 
         chessboard._move_piece(52, 36, true, true); 
         chessboard._move_piece(60, 52, true, true); 

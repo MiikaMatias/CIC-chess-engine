@@ -58,8 +58,11 @@ pub fn uci_loop(mut board: Chessboard) {
                 board._move_piece(12, 28, false, false);
                 board._move_piece(27, 20, true, false);
                 board._move_piece(55, 39, true, false);
-                board._move_piece(63, 47, true, false);
-                board._move_piece(47, 41, true, false);
+                board._move_piece(59, 43, true, false);
+                board._move_piece(43, 16, true, false);
+                board._move_piece(16, 9, true, false);
+                board._move_piece(9, 2, true, false);
+                board._move_piece(3, 2, false, false);
                 println!("{}", board._display_board());
                 board = search_best_move(board, is_white_turn);
                 println!("{}", board._display_board());

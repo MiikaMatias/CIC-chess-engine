@@ -1,22 +1,14 @@
 
 // Leftmost file mask: 72340172838076673
 // Rightmost file mask: 9259542123273814144
-#[allow(dead_code)]
-const RANK_1_MASK: u64 = 18374686479671623680;
-#[allow(dead_code)]
-const RANK_2_MASK: u64 = 71776119061217280;
-#[allow(dead_code)]
-const RANK_7_MASK: u64 = 65280;
-#[allow(dead_code)]
-const RANK_8_MASK: u64 = 255;
-#[allow(dead_code)]
-const FILE_H_MASK: u64 = 9259542123273814144;
-#[allow(dead_code)]
-const FILE_G_MASK: u64 = 4629771061636907072;
-#[allow(dead_code)]
-const FILE_B_MASK: u64 = 144680345676153346;
-#[allow(dead_code)]
-const FILE_A_MASK: u64 = 72340172838076673;
+
+use crate::precomps;
+use crate::precomps::RANK_1_MASK;
+use crate::precomps::RANK_2_MASK;
+use crate::precomps::RANK_7_MASK;
+use crate::precomps::RANK_8_MASK;
+use crate::precomps::FILE_A_MASK;
+use crate::precomps::FILE_H_MASK;
 
 #[derive(Copy, Clone)]
 pub struct Chessboard {
@@ -49,11 +41,11 @@ pub struct Chessboard {
     pub last_captured:u8,
     pub last_capturee:u8,
 
-    pub score:u8
+    pub precomps: &'static precomps::Precomps,
 }
 
 impl Chessboard {
-    pub fn new() -> Chessboard {
+    pub fn new(precomps: &'static precomps::Precomps) -> Chessboard {
         Chessboard {
             black_pawn: 65280,   // Black pawns have a smaller number; they're at the "top"
             black_rook: 129, 
@@ -84,7 +76,7 @@ impl Chessboard {
             last_captured: 0,
             last_capturee: 0,
 
-            score: 0
+            precomps: precomps
         }
     }
 
@@ -107,7 +99,7 @@ impl Chessboard {
         } else if (king & pos_mask) == pos_mask {
             find_set_bits_positions(self._get_king_move_mask(pos) & empty_squares)
         } else if (knight & pos_mask) == pos_mask {
-            find_set_bits_positions(self._get_knight_move_mask(pos) & empty_squares)
+            find_set_bits_positions(self.precomps.get_knight_move_mask(pos) & empty_squares)
         } else {
             find_set_bits_positions(self._get_queen_move_mask(pos, is_white) & empty_squares)
         }
@@ -162,27 +154,21 @@ impl Chessboard {
                     let check_square = (j*8) + i - 1;
                     if (self.white_pawn | (1u64 << check_square))  == self.white_pawn {
                         threat_mask[0] |= self._get_attack_mask(check_square, is_white);
-                        continue;
                     } 
-                    if (self.white_bishop | (1u64 << check_square))  == self.white_bishop {
+                    else if (self.white_bishop | (1u64 << check_square))  == self.white_bishop {
                         threat_mask[1] |= self._get_attack_mask(check_square, is_white);
-                        continue;
                     }
-                    if (self.white_knight | (1u64 << check_square))  == self.white_knight {
+                    else if (self.white_knight | (1u64 << check_square))  == self.white_knight {
                         threat_mask[2] |= self._get_attack_mask(check_square, is_white);
-                        continue;
                     }
-                    if (self.white_rook | (1u64 << check_square))  == self.white_rook {
+                    else if (self.white_rook | (1u64 << check_square))  == self.white_rook {
                         threat_mask[3] |= self._get_attack_mask(check_square, is_white);
-                        continue;
                     }
-                    if (self.white_queen | (1u64 << check_square))  == self.white_queen {
+                    else if (self.white_queen | (1u64 << check_square))  == self.white_queen {
                         threat_mask[4] |= self._get_attack_mask(check_square, is_white);
-                        continue;
                     }
-                    if (self.white_king | (1u64 << check_square))  == self.white_king {
+                    else if (self.white_king | (1u64 << check_square))  == self.white_king {
                         threat_mask[5] |= self._get_attack_mask(check_square, is_white);
-                        continue;
                     } 
                 }
             }
@@ -192,27 +178,21 @@ impl Chessboard {
                     let check_square = (j*8) + i - 1;
                     if (self.black_pawn | (1u64 << check_square))  == self.black_pawn {
                         threat_mask[0] |= self._get_attack_mask(check_square, is_white);
-                        continue;
                     } 
-                    if (self.black_bishop | (1u64 << check_square))  == self.black_bishop {
+                    else if (self.black_bishop | (1u64 << check_square))  == self.black_bishop {
                         threat_mask[1] |= self._get_attack_mask(check_square, is_white);
-                        continue;
                     }
-                    if (self.black_knight | (1u64 << check_square))  == self.black_knight {
+                    else if (self.black_knight | (1u64 << check_square))  == self.black_knight {
                         threat_mask[2] |= self._get_attack_mask(check_square, is_white);
-                        continue;
                     }
-                    if (self.black_rook | (1u64 << check_square))  == self.black_rook {
+                    else if (self.black_rook | (1u64 << check_square))  == self.black_rook {
                         threat_mask[3] |= self._get_attack_mask(check_square, is_white);
-                        continue;
                     }
-                    if (self.black_queen | (1u64 << check_square))  == self.black_queen {
+                    else if (self.black_queen | (1u64 << check_square))  == self.black_queen {
                         threat_mask[4] |= self._get_attack_mask(check_square, is_white);
-                        continue;
                     }
-                    if (self.black_king | (1u64 << check_square))  == self.black_king {
+                    else if (self.black_king | (1u64 << check_square))  == self.black_king {
                         threat_mask[5] |= self._get_attack_mask(check_square, is_white);
-                        continue;
                     } 
                 }
             }
@@ -352,7 +332,7 @@ impl Chessboard {
                         self._take_piece_at_spot(to, is_white);
                         return true;
                     }  
-                } else if (self._get_knight_move_mask(from) >> to) & 1u64 == 1 {
+                } else if (self.precomps.get_knight_move_mask(from) >> to) & 1u64 == 1 {
                         self.white_knight = (self.white_knight & !(1u64 << from)) | (1u64 << to);
                         self.last_captured = 0;
                         self.last_capturee = 0;    
@@ -470,7 +450,7 @@ impl Chessboard {
                     self._take_piece_at_spot(to, is_white);
                     return true;
                 }  
-            } else if (self._get_knight_move_mask(from) >> to) & 1u64 == 1 {
+            } else if (self.precomps.get_knight_move_mask(from) >> to) & 1u64 == 1 {
                     self.black_knight = (self.black_knight & !(1u64 << from)) | (1u64 << to);
                     self.last_captured = 0;
                     self.last_capturee = 0;
@@ -567,7 +547,7 @@ POS 0 ->    r n b k q b n r
                     return  self._check_en_passant(pos, ((1u64 << (pos-9))|(1u64 << (pos-7))) & self.get_black_pieces(), is_white);
                 }
             } else if ((self.white_knight >> pos) & 1u64) == 1 {   
-                return self._get_knight_move_mask(pos) & self.get_black_pieces()
+                return self.precomps.get_knight_move_mask(pos) & self.get_black_pieces()
             } else if ((self.white_rook >> pos) & 1u64) == 1 {   
                 return self._get_rook_move_mask(pos, is_white) & self.get_black_pieces()
             } else if ((self.white_bishop >> pos) & 1u64) == 1 {   
@@ -588,7 +568,7 @@ POS 0 ->    r n b k q b n r
                 return  self._check_en_passant(pos, ((1u64 << (pos+9))|(1u64 << (pos+7))) & self.get_white_pieces(), is_white);
             }
         } else if ((self.black_knight >> pos) & 1u64) == 1 {   
-            return self._get_knight_move_mask(pos) & self.get_white_pieces()
+            return self.precomps.get_knight_move_mask(pos) & self.get_white_pieces()
         } else if ((self.black_rook >> pos) & 1u64) == 1 {   
             return self._get_rook_move_mask(pos, is_white) & self.get_white_pieces()
         } else if ((self.black_bishop >> pos) & 1u64) == 1 {   
@@ -599,81 +579,6 @@ POS 0 ->    r n b k q b n r
             return self._get_king_move_mask(pos) & self.get_white_pieces()
         }
         0
-    }
-
-    pub fn _get_knight_move_mask(&self, pos: u64) -> u64 {
-        let in_a_file = ((1u64 << pos) | FILE_A_MASK) == FILE_A_MASK;
-        let in_b_file = ((1u64 << pos) | FILE_B_MASK) == FILE_B_MASK;
-        let in_g_file = ((1u64 << pos) | FILE_G_MASK) == FILE_G_MASK;
-        let in_h_file = ((1u64 << pos) | FILE_H_MASK) == FILE_H_MASK;
-        let in_1_rank = ((1u64 << pos) | RANK_1_MASK) == RANK_1_MASK;
-        let in_2_rank = ((1u64 << pos) | RANK_2_MASK) == RANK_2_MASK;
-        let in_7_rank = ((1u64 << pos) | RANK_7_MASK) == RANK_7_MASK;
-        let in_8_rank = ((1u64 << pos) | RANK_8_MASK) == RANK_8_MASK;
-
-        if in_a_file {
-            //done
-            if in_8_rank {
-                (1u64 << (pos+10)) | (1u64 << (pos+17))
-            } else if in_7_rank {
-                (1u64 << (pos+17)) | (1u64 << (pos+10)) | (1u64 << (pos-6))
-            } else if in_2_rank {
-                (1u64 << (pos-15)) | (1u64 << (pos+10)) | (1u64 << (pos-6))
-            } else if in_1_rank {
-                (1u64 << (pos-15)) | (1u64 << (pos-6))
-            } else {
-                (1u64 << (pos+17)) | (1u64 << (pos+10)) | (1u64 << (pos-6)) | (1u64 << (pos-15))
-            }
-        } else if in_b_file {
-            if in_8_rank {
-                (1u64 << (pos+15)) |  (1u64 << (pos+10)) |  (1u64 << (pos+17))
-            } else if in_7_rank {
-                (1u64 << (pos+17)) | (1u64 << (pos+10)) | (1u64 << (pos-6)) | (1u64 << (pos-6))
-            } else if in_2_rank {
-                (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-6)) | (1u64 << (pos+10))
-            } else if in_1_rank {
-                (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-6))
-            } else {
-                (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos-10)) | (1u64 << (pos-17))
-            }
-        } else if in_g_file {
-            if in_8_rank {
-                (1u64 << (pos+17)) | (1u64 << (pos+15)) | (1u64 << (pos+6))
-            } else if in_7_rank {
-                (1u64 << (pos+17)) | (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos-10)) 
-            } else if in_2_rank {
-                (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos+6)) | (1u64 << (pos-10))
-            } else if in_1_rank {
-                (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-10))
-            } else {
-                (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos-10)) | (1u64 << (pos-17))
-            }
-        } else if in_h_file {
-            if in_8_rank {
-                (1u64 << (pos+15)) | (1u64 << (pos+6))
-            } else if in_7_rank {
-                (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos-10)) 
-            } else if in_2_rank {
-                (1u64 << (pos-17)) | (1u64 << (pos+6)) | (1u64 << (pos-10))
-            } else if in_1_rank {
-                (1u64 << (pos-10)) | (1u64 << (pos-17))
-            } else {
-                (1u64 << (pos+6)) | (1u64 << (pos+15)) | (1u64 << (pos-10)) | (1u64 << (pos-17))
-            }
-        } else {
-            //done
-            if in_8_rank {
-                (1u64 << (pos+10)) | (1u64 << (pos+17)) | (1u64 << (pos+6)) | (1u64 << (pos+15))
-            } else if in_7_rank {
-                (1u64 << (pos+10)) | (1u64 << (pos+17)) | (1u64 << (pos+6)) | (1u64 << (pos+15)) | (1u64 << (pos-6))  | (1u64 << (pos-10))
-            } else if in_2_rank {
-                (1u64 << (pos-10)) | (1u64 << (pos-17)) | (1u64 << (pos-6)) | (1u64 << (pos-15))  | (1u64 << (pos+6))  | (1u64 << (pos+10))
-            } else if in_1_rank {
-                (1u64 << (pos-10)) | (1u64 << (pos-17)) | (1u64 << (pos-6)) | (1u64 << (pos-15))
-            } else {
-                (1u64 << (pos+17)) | (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos+10)) | (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-6)) | (1u64 << (pos-10)) 
-            }
-        }
     }
 
     pub fn _get_rook_move_mask(&self, pos: u64, is_white: bool) -> u64 {
@@ -1088,10 +993,15 @@ pub fn is_check(state: Chessboard, is_white: bool) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::LazyLock;
+
+    static PRECOMPS: LazyLock<precomps::Precomps> = LazyLock::new(|| precomps::Precomps::new());
+
 
     #[test]
     fn test_get_attack_mask_white_no_corner() {
-        let chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let chessboard = Chessboard::new(&precomps);
         let result = chessboard._get_attack_mask(54, false);
 
         assert_eq!(result, 0);
@@ -1099,7 +1009,8 @@ mod tests {
 
     #[test]
     fn test_get_attack_mask_white_corner() {
-        let chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let chessboard = Chessboard::new(&precomps);
         let result = chessboard._get_attack_mask(55, false);
 
         assert_eq!(result, 0);
@@ -1107,7 +1018,8 @@ mod tests {
 
     #[test]
     fn test_get_attack_mask_black_no_corner() {
-        let chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let chessboard = Chessboard::new(&precomps);
         let result = chessboard._get_attack_mask(9, false);
 
         assert_eq!(result, 0);
@@ -1115,7 +1027,8 @@ mod tests {
 
     #[test]
     fn test_get_attack_mask_black_corner() {
-        let chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let chessboard = Chessboard::new(&precomps);
         let result = chessboard._get_attack_mask(8, false);
 
         assert_eq!(result, 0);
@@ -1123,7 +1036,8 @@ mod tests {
 
     #[test]
     fn test_get_attack_mask_no_pawn() {
-        let chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let chessboard = Chessboard::new(&precomps);
         let result = chessboard._get_attack_mask(36, false);
 
         assert_eq!(result, 0);
@@ -1131,7 +1045,8 @@ mod tests {
 
     #[test]
     fn test_get_pawn_move_mask_white() {
-        let chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let chessboard = Chessboard::new(&precomps);
         let result = chessboard._get_pawn_move_mask(55, true);
 
         assert_eq!(result, 141287244169216);
@@ -1139,7 +1054,8 @@ mod tests {
 
     #[test]
     fn test_get_pawn_move_mask_black() {
-        let chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let chessboard = Chessboard::new(&precomps);
         let result = chessboard._get_pawn_move_mask(15, false);
 
         assert_eq!(result, 2155872256);
@@ -1147,7 +1063,8 @@ mod tests {
 
     #[test]
     fn test_get_pawn_move_mask_no_pawn() {
-        let chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let chessboard = Chessboard::new(&precomps);
         let result = chessboard._get_pawn_move_mask(36, false);
 
         assert_eq!(result, 0);
@@ -1155,7 +1072,8 @@ mod tests {
 
     #[test]
     fn test_move_white_pawn_1_return_value() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         let passed = chessboard._move_piece(55, 47, true, false);
 
         assert!(passed);
@@ -1163,7 +1081,8 @@ mod tests {
 
     #[test]
     fn test_move_white_pawn_1_board_value() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(55, 47, true, false);
 
         assert_eq!(chessboard.white_pawn, 35888059530608640);
@@ -1171,7 +1090,8 @@ mod tests {
 
     #[test]
     fn test_move_black_pawn_2_board_value() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(9, 25, false, false);
 
         assert_eq!(chessboard.black_pawn, 33619200);
@@ -1179,7 +1099,8 @@ mod tests {
 
     #[test]
     fn test_move_black_pawn_2_return_value_fail() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         let passed = chessboard._move_piece(9, 26, false, false);
 
         assert!(!passed);
@@ -1187,7 +1108,8 @@ mod tests {
 
     #[test]
     fn test_white_pawn_capture() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(48, 32, true, false);
         chessboard._move_piece(32, 24, true, false);
         chessboard._move_piece(24, 16, true, false);
@@ -1197,7 +1119,8 @@ mod tests {
 
     #[test]
     fn test_black_pawn_capture() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(9,25, false, false);
         chessboard._move_piece(25, 33, false, false);
         chessboard._move_piece(33, 41, false, false);
@@ -1207,7 +1130,8 @@ mod tests {
 
     #[test]
     fn test_pawn_capture_collision() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         
         chessboard._move_piece(51, 35, true, false);
         chessboard._move_piece(11, 27, false, false);
@@ -1225,7 +1149,8 @@ mod tests {
 
     #[test]
     fn test_pawn_jump_not_allowed() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         
         // bring white pawn to front of black pieces
         chessboard._move_piece(51, 35, true, false);
@@ -1245,7 +1170,8 @@ mod tests {
 
     #[test]
     fn test_en_passant_square() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         // create square
         chessboard._move_piece(48, 32, true, false);
         assert_eq!(chessboard.en_passant_square, (1u64 << 40));
@@ -1256,7 +1182,8 @@ mod tests {
 
     #[test]
     fn test_en_passant_allowed() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         // bring white pawn to front of black pieces
         chessboard._move_piece(51, 35, true, false);
         chessboard._move_piece(35, 27, true, false);
@@ -1280,7 +1207,8 @@ mod tests {
 
     #[test]
     fn test_white_knight_capture() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(57, 40, true, false);
         chessboard._move_piece(40, 25, true, false);
         chessboard._move_piece(25, 8, true, false);
@@ -1289,7 +1217,8 @@ mod tests {
 
     #[test]
     fn test_black_knight_capture() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(1,18, false, false);
         chessboard._move_piece(18, 35, false, false);
         chessboard._move_piece(35, 52, false, false);
@@ -1297,91 +1226,72 @@ mod tests {
     }
 
     #[test]
-    fn test_get_knight_move_masks() {
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(0);
+    fn get_knight_move_masks() {
+        let result = PRECOMPS.get_knight_move_mask(0);
         assert_eq!(result, 132096);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(1);
+        let result = PRECOMPS.get_knight_move_mask(1);
         assert_eq!(result, 329728);
         
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(2);
+        let result = PRECOMPS.get_knight_move_mask(2);
         assert_eq!(result, 659712);
     
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(6);
+        let result = PRECOMPS.get_knight_move_mask(6);
         assert_eq!(result, 10489856);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(7);
+        let result = PRECOMPS.get_knight_move_mask(7);
         assert_eq!(result, 4202496);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(14);
+        let result = PRECOMPS.get_knight_move_mask(14);
         assert_eq!(result, 2685403152);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(15);
+        let result = PRECOMPS.get_knight_move_mask(15);
         assert_eq!(result, 1075839008);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(24);
+        let result = PRECOMPS.get_knight_move_mask(24);
         assert_eq!(result, 2216203387392);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(31);
+        let result = PRECOMPS.get_knight_move_mask(31);
         assert_eq!(result, 70506185244672);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(32);
+        let result = PRECOMPS.get_knight_move_mask(32);
         assert_eq!(result, 567348067172352);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(39);
+        let result = PRECOMPS.get_knight_move_mask(39);
         assert_eq!(result, 18049583422636032);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(48);
+        let result = PRECOMPS.get_knight_move_mask(48);
         assert_eq!(result, 288234782788157440);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(49);
+        let result = PRECOMPS.get_knight_move_mask(49);
         assert_eq!(result, 576469569871282176);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(54);
+        let result = PRECOMPS.get_knight_move_mask(54);
         assert_eq!(result, 1152939783987658752);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(55);
+        let result = PRECOMPS.get_knight_move_mask(55);
         assert_eq!(result, 2305878468463689728);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(56);
+        let result = PRECOMPS.get_knight_move_mask(56);
         assert_eq!(result, 1128098930098176);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(57);
+        let result = PRECOMPS.get_knight_move_mask(57);
         assert_eq!(result, 2257297371824128);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(58);
+        let result = PRECOMPS.get_knight_move_mask(58);
         assert_eq!(result, 4796069720358912);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(62);
+        let result = PRECOMPS.get_knight_move_mask(62);
         assert_eq!(result, 4679521487814656);
 
-        let chessboard = Chessboard::new();
-        let result = chessboard._get_knight_move_mask(63);
+        let result = PRECOMPS.get_knight_move_mask(63);
         assert_eq!(result, 9077567998918656);
     }
 
     #[test]
     fn test_rook_move_mask() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._get_pawn_move_mask(55, true);
         chessboard._get_pawn_move_mask(15, false);
         chessboard._move_piece(51, 35, true, false);
@@ -1398,7 +1308,8 @@ mod tests {
 
     #[test]
     fn test_white_rook_capture() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(51, 35, true, false);
         chessboard._move_piece(35, 27, true, false);
         chessboard._move_piece(8, 24, false, false);
@@ -1416,7 +1327,8 @@ mod tests {
 
     #[test]
     fn test_black_rook_capture() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(8, 24, false, false);
         chessboard._move_piece(0, 16, false, false);
         chessboard._move_piece(16, 23, false, false);
@@ -1427,7 +1339,8 @@ mod tests {
 
     #[test]
     fn test_white_bishop_capture() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(49, 41, true, false);
         chessboard._move_piece(58, 40, true, false);
         chessboard._move_piece(40, 12, true, false);
@@ -1436,7 +1349,8 @@ mod tests {
 
     #[test]
     fn test_black_bishop_capture() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(49, 41, true, false);
         chessboard._move_piece(58, 40, true, false);
         chessboard._move_piece(40, 12, true, false);
@@ -1446,7 +1360,8 @@ mod tests {
 
     #[test]
     fn test_queen_movement_capture() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(51, 35, true, false);
         chessboard._move_piece(59, 43, true, false);
         chessboard._move_piece(43, 16, true, false);
@@ -1458,7 +1373,8 @@ mod tests {
 
     #[test]
     fn test_threat_mask() {
-        let mut chessboard: Chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard: Chessboard = Chessboard::new(precomps);
         chessboard._move_piece(12, 28, false, false);
         chessboard._move_piece(13, 29, false, false);
         chessboard._move_piece(14, 30, false, false);
@@ -1487,7 +1403,8 @@ mod tests {
 
     #[test]
     fn test_discovered_check_black() {
-        let mut chessboard: Chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard: Chessboard = Chessboard::new(precomps);
         chessboard._move_piece(11, 27, false, true);
         chessboard._move_piece(52, 36, true, true);
         chessboard._move_piece(60, 44, true, true);
@@ -1499,7 +1416,8 @@ mod tests {
 
     #[test]
     fn test_check_and_discovered_check_white() {
-        let mut chessboard: Chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard: Chessboard = Chessboard::new(precomps);
         chessboard._move_piece(52, 36, true, true);   // White moves
         chessboard._move_piece(11, 27, false, true);    // Black moves
         chessboard._move_piece(3,19, false, true);    // Black moves
@@ -1510,7 +1428,8 @@ mod tests {
 
     #[test]
     fn test_white_king_movement_check() {
-        let mut chessboard: Chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard: Chessboard = Chessboard::new(precomps);
         chessboard._move_piece(52, 36, true, true);   // White moves
         chessboard._move_piece(60, 52, true, true);   // White moves
         chessboard._move_piece(52, 44, true, true);   // White moves
@@ -1526,7 +1445,8 @@ mod tests {
 
     #[test]
     fn test_black_king_movement_check() {
-        let mut chessboard: Chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard: Chessboard = Chessboard::new(precomps);
         chessboard._move_piece(12, 28, false, true);   // Black moves
         chessboard._move_piece(4, 12, false, true);   // Black moves
         chessboard._move_piece(12, 20, false, true);   // Black moves
@@ -1541,7 +1461,8 @@ mod tests {
 
     #[test]
     fn test_pawn_promote_always_to_queen() {
-        let mut chessboard: Chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard: Chessboard = Chessboard::new(precomps);
         chessboard._move_piece(51, 35, true, true);   // White moves
         chessboard._move_piece(35, 27, true, true);   // White moves
         chessboard._move_piece(27, 19, true, true);   // White moves
@@ -1549,7 +1470,8 @@ mod tests {
         chessboard._move_piece(10, 1, true, true);   // White moves
         assert_eq!(chessboard._get_all_piece_mask(), 18444210798919220223);
 
-        let mut chessboard: Chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard: Chessboard = Chessboard::new(precomps);
         chessboard._move_piece(12, 28, false, true);   // Black moves
         chessboard._move_piece(28, 36, false, true);   // Black moves
         chessboard._move_piece(36, 44, false, true);   // Black moves
@@ -1560,21 +1482,24 @@ mod tests {
 
     #[test]
     fn test_get_board_states_initial_state() {
-        let chessboard: Chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let chessboard: Chessboard = Chessboard::new(precomps);
         assert_eq!(20, chessboard._get_all_possible_moves(true).len());
         assert_eq!(20, chessboard._get_all_possible_moves(false).len());
     }
 
     #[test]
     fn check_checkmate_checker() {
-        let chessboard: Chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let chessboard: Chessboard = Chessboard::new(precomps);
         assert_eq!(20, chessboard._get_all_possible_moves(true).len());
         assert_eq!(20, chessboard._get_all_possible_moves(false).len());
     }
 
     #[test]
     fn run_scholars_mate() {
-        let mut chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard = Chessboard::new(&precomps);
         chessboard._move_piece(52, 36, true, true);
         chessboard._move_piece(12, 28, false, true);
         chessboard._move_piece(59, 31, true, true);
@@ -1588,7 +1513,8 @@ mod tests {
 
     #[test]
     fn test_captures() {
-        let mut chessboard: Chessboard = Chessboard::new();
+        let precomps = &PRECOMPS;
+        let mut chessboard: Chessboard = Chessboard::new(precomps);
 
         chessboard._move_piece(48, 32, true, true); 
         chessboard._move_piece(1, 18, false, true); 
