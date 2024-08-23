@@ -3,7 +3,12 @@ use rayon::{result, vec};
 use crate::masks::*;
 use std::collections::HashMap;
 
-pub const ROOK_MOVE_TABLE_SIZE: usize = 102400;
+struct RookMagic {
+    magic: u64,
+    mask: u64,
+    shift: u8,
+    offset: u32,
+}
 
 pub fn init_rook_magics() -> Vec<u64>{
     vec![0;64]
@@ -152,9 +157,9 @@ pub fn init_rook_and_attack_map() -> HashMap<u64, Vec<u64>> {
 }
 
 
-
 #[cfg(test)]
 mod tests {
+    pub const ROOK_MOVE_TABLE_SIZE: usize = 102400;
     use crate::board::display_bit_board;
     use crate::precomps_rook_logic::*;
 
@@ -167,11 +172,7 @@ mod tests {
     }
 
     #[test]
-    fn test_rook_init() {
-        let rook_moves = init_rook_and_masks();
-    
-        for r in rook_moves {
-        }
+    fn test_rook_init() {    
         let rook_moves = init_rook_and_masks();
 
         assert_eq!(rook_moves.len(), 64);

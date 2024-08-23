@@ -1,9 +1,7 @@
 use std::collections::HashMap;
-use crate::precomps_bishop_logic::init_bishop_magics;
-use crate::precomps_bishop_logic::init_bishop_and_masks;
-use crate::precomps_knight_logic::init_knight_and_masks;
-use crate::precomps_rook_logic::init_rook_magics;
-use crate::precomps_rook_logic::init_rook_and_masks;
+use crate::precomps_bishop_logic::*;
+use crate::precomps_knight_logic::*;
+use crate::precomps_rook_logic::*;
 
 pub const BISHOP_MOVE_TABLE_SIZE: usize = 5248;
 
@@ -13,12 +11,9 @@ pub struct Precomps {
     knight_table: HashMap<u64, u64>,
 
     rook_magics: Vec<u64>,
-    rook_and_masks: Vec<u64>,
-    rook_and_results: Vec<u64>,
+    rook_moves: HashMap<u64, Vec<u64>>,
 
     bishop_magics: Vec<u64>,
-    bishop_and_masks: Vec<u64>,
-    bishop_and_results: Vec<u64>,
 }
 
 impl Precomps {
@@ -26,13 +21,10 @@ impl Precomps {
         Precomps {
             knight_table: init_knight_and_masks(),
             
+            rook_moves: init_rook_and_attack_map(),
             rook_magics: init_rook_magics(),
-            rook_and_masks: init_rook_and_masks(),
-            rook_and_results: init_rook_and_masks(),
 
             bishop_magics: init_bishop_magics(),
-            bishop_and_masks: init_bishop_and_masks(),
-            bishop_and_results: init_rook_and_masks(),
         }
     }
 
@@ -41,14 +33,10 @@ impl Precomps {
     }
 
     pub fn get_rook_move_mask(&self, square: u64, blockers: u64) -> u64 {
-        let and_result = blockers & self.rook_and_masks[square as usize];
-
         return 0; // moves needs to be pre-generated
     }
 
     pub fn get_bishop_move_mask(&self, square: u64, blockers: u64) -> u64 {
-        let and_result = blockers & self.bishop_and_masks[square as usize];
-
         return 0 // moves needs to be pre-generated
     }
 }
