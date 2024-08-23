@@ -3,12 +3,7 @@
 // Rightmost file mask: 9259542123273814144
 
 use crate::precomps;
-use crate::precomps::RANK_1_MASK;
-use crate::precomps::RANK_2_MASK;
-use crate::precomps::RANK_7_MASK;
-use crate::precomps::RANK_8_MASK;
-use crate::precomps::FILE_A_MASK;
-use crate::precomps::FILE_H_MASK;
+use crate::masks::*;
 
 #[derive(Copy, Clone)]
 pub struct Chessboard {
@@ -582,10 +577,7 @@ POS 0 ->    r n b k q b n r
     }
 
     pub fn _get_rook_move_mask(&self, pos: u64, is_white: bool) -> u64 {
-        let mut board: u64 = 0;
-
-        // Replace with precomputed values to improve performance
-    
+        let mut board: u64 = 0;    
         if is_white {
             // Generate horizontal moves to the left
             for i in (0..(pos % 8)).rev() {

@@ -1,7 +1,7 @@
 use std::io::{self, BufRead};
 use std::collections::HashMap;
 use crate::board::Chessboard;
-use crate::cic::search_best_move;
+use crate::engine::search_best_move;
 
 pub fn uci_loop(mut board: Chessboard) {
     let stdin = io::stdin();

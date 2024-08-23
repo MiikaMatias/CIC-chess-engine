@@ -1,7 +1,11 @@
 mod board;
 mod precomps;
 mod uci_wrapper;
-mod cic;
+mod engine;
+mod precomps_knight_logic;
+mod precomps_bishop_logic;
+mod precomps_rook_logic;
+mod masks;
 
 use board::Chessboard; 
 #[allow(unused_imports)]
