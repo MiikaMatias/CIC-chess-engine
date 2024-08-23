@@ -5,7 +5,6 @@ use crate::precomps_knight_logic::init_knight_and_masks;
 use crate::precomps_rook_logic::init_rook_magics;
 use crate::precomps_rook_logic::init_rook_and_masks;
 
-pub const ROOK_MOVE_TABLE_SIZE: usize = 102400;
 pub const BISHOP_MOVE_TABLE_SIZE: usize = 5248;
 
 

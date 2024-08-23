@@ -3,6 +3,8 @@ use rayon::{result, vec};
 use crate::masks::*;
 use std::collections::HashMap;
 
+pub const ROOK_MOVE_TABLE_SIZE: usize = 102400;
+
 pub fn init_rook_magics() -> Vec<u64>{
     vec![0;64]
 }
@@ -46,6 +48,56 @@ pub fn get_rook_and_mask(pos: u64) -> u64 {
     return board;
 }
 
+pub fn get_rook_move_from_and_mask(pos: u64, and_mask: u64) -> u64 {
+    let mut board = 0;
+
+    // Generate horizontal moves to the left
+    for i in (0..(pos % 8)).rev() {
+        let square = pos / 8 * 8 + i;
+        if (and_mask & (1 << square)) == 0 {
+            board |= 1 << square;
+        } else {
+            board |= 1 << square;
+            break;
+        }
+    }
+
+    // Generate horizontal moves to the right
+    for i in ((pos % 8) + 1)..8 {
+        let square = pos / 8 * 8 + i;
+        if (and_mask & (1 << square)) == 0 {
+            board |= 1 << square;
+        } else {
+            board |= 1 << square;
+            break;
+        }
+    }
+
+    // Generate vertical moves upwards
+    for i in (0..(pos / 8)).rev() {
+        let square = i * 8 + pos % 8;
+        if (and_mask & (1 << square)) == 0 {
+            board |= 1 << square;
+        } else {
+            board |= 1 << square;
+            break;
+        }
+    }
+
+    // Generate vertical moves downwards
+    for i in ((pos / 8) + 1)..8 {
+        let square = i * 8 + pos % 8;
+        if (and_mask & (1 << square)) == 0 {
+            board |= 1 << square;
+        } else {
+            board |= 1 << square;       
+            break;
+        }
+    }
+
+    board
+}
+
 pub fn get_rook_and_result(and_mask: u64, index: u64) -> u64 {
     let mut result = 0;
     let mut a = and_mask;
@@ -67,7 +119,7 @@ pub fn init_rook_and_results() -> Vec<Vec<u64>> {
     for i in 0..rook_and_masks.len() {
         let mut and_result_vector = Vec::new();
         let and_mask = rook_and_masks[i];
-        let amount_of_and_results = 2^and_mask.count_ones() as u64;
+        let amount_of_and_results = (2 as u64).pow(and_mask.count_ones() as u32);
 
         for index in 0..amount_of_and_results {
             and_result_vector.push(get_rook_and_result(and_mask, index));
@@ -79,23 +131,32 @@ pub fn init_rook_and_results() -> Vec<Vec<u64>> {
 }
 
 // maps the and results to the rook moves
-pub fn init_rook_and_attack_map() -> HashMap<u64, u64> {
+pub fn init_rook_and_attack_map() -> HashMap<u64, Vec<u64>> {
     let rook_and_results = init_rook_and_results();
-    let mut rook_and_attack_map = HashMap::new();
-    for i in 0..rook_and_results.len() {
-        for j in 0..rook_and_results[i].len() {
-        }
+    let mut rook_and_attack_map = HashMap::<u64, Vec<u64>>::new();
+
+    for pos in 0..rook_and_results.len() {
+        for index in 0..rook_and_results[pos].len() {
+            let move_from_and = get_rook_move_from_and_mask(pos as u64, 
+                                                            rook_and_results[pos][index]);
+            if rook_and_attack_map.contains_key(&move_from_and) {
+                rook_and_attack_map.get_mut(&move_from_and).unwrap().push(rook_and_results[pos][index]);
+            } else {
+                let mut new_vec = Vec::<u64>::new();
+                new_vec.push(rook_and_results[pos][index]);
+                rook_and_attack_map.insert(move_from_and, new_vec.clone());
+            }
+        } 
     }
     return rook_and_attack_map;
 }
 
 
+
 #[cfg(test)]
 mod tests {
     use crate::board::display_bit_board;
-    use crate::precomps_rook_logic::{get_rook_and_mask, 
-                                    init_rook_and_masks,
-                                    get_rook_and_result};
+    use crate::precomps_rook_logic::*;
 
     #[test]
     fn test_rook_move_mask() {
@@ -110,7 +171,6 @@ mod tests {
         let rook_moves = init_rook_and_masks();
     
         for r in rook_moves {
-            println!("{}", display_bit_board(r));
         }
         let rook_moves = init_rook_and_masks();
 
@@ -120,10 +180,26 @@ mod tests {
     #[test]
     fn test_handles_maximum_possible_value_for_and_mask() {
         let and_mask = get_rook_and_mask(44); // Maximum possible value for and_mask
-        println!("{}", display_bit_board(and_mask));
         let result = get_rook_and_result(and_mask, 3);
-        println!("{}\n{}", display_bit_board(result), result);
-        assert_eq!(result, 1052672);
+        assert_eq!(result, 4624614894338048);
     }   
+
+    #[test]
+    fn test_init_rook_and_results() {
+        let rook_and_results = init_rook_and_results();
+        let mut sum = 0;
+        for r in rook_and_results {
+            sum += r.len();
+        }
+        let rook_and_results = init_rook_and_results();
+        assert_eq!(rook_and_results.len(), 64);
+        assert_eq!(sum, ROOK_MOVE_TABLE_SIZE)
+    }
+
+    #[test]
+    fn test_init_rook_and_attack_map() {
+        let rook_and_attack_map = init_rook_and_attack_map();
+        assert_eq!(rook_and_attack_map.len(), 4900);
+    }
 
 }
