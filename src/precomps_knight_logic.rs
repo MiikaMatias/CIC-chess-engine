@@ -2,7 +2,7 @@ use crate::masks::*;
 
 use std::collections::HashMap;
 
-pub fn init_knight_unobstructed_masks() -> HashMap<u64,u64> {
+pub fn init_knight_and_masks() -> HashMap<u64,u64> {
     let mut knight_table: HashMap<u64, u64> = HashMap::new();
     for pos in 0..64 {
         knight_table.insert(pos, precompute_knight_move(pos));
