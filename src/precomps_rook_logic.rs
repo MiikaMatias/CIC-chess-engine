@@ -1,24 +1,69 @@
+use rand::seq::index;
 use rayon::{result, vec};
 
 use crate::masks::*;
+use crate::board::display_bit_board;
 use std::collections::HashMap;
 
-struct RookMagic {
-    magic: u64,
-    mask: u64,
-    shift: u8,
-    offset: u32,
+#[derive(Clone)]
+#[derive(Copy)]
+pub struct MagicEntry {
+    pub magic: u64,
+    pub mask: u64,
+    pub shift: u8,
 }
 
-pub fn init_rook_magics() -> Vec<u64>{
-    vec![0;64]
-}
-pub fn init_rook_and_masks() -> Vec<u64>{
-    let mut vec = Vec::<u64>::with_capacity(64);
-    for i in 0..64 {
-        vec.push(get_rook_and_mask(i as u64));
+pub fn init_rook_magics() -> ([MagicEntry; 64], Vec<Vec<u64>>) {
+    let mut magic_entries = [MagicEntry{ magic: 0, mask: 0, shift: 0 }; 64];
+    let mut move_table = vec![Vec::<u64>::new(); 64];
+    let blocker_list = &init_rook_and_results();
+    
+    let mut pos = 0;
+    for and_mask_vec in blocker_list {
+        let mask = get_rook_and_mask(pos as u64);
+        let index_bits = mask.count_ones(); // should this be count_ones() ?
+        let shift = 64 - index_bits;
+        let mut magic_entry = MagicEntry{magic: 0, 
+                                        mask: mask, 
+                                        shift: shift  as u8 };
+
+        let mut tries = 0;
+        loop {
+            let mut still_looking = true;
+            tries += 1;
+            let mut table = vec![0; 1 << index_bits];
+            let magic_candidate: u64 = rand::random::<u64>() & rand::random::<u64>() & rand::random::<u64>();
+            magic_entry.magic = magic_candidate;
+
+            for and_mask in and_mask_vec {
+                still_looking = true;
+    
+                let table_entry = &mut table[magic_index(&magic_entry, *and_mask) as usize];
+                let moves = get_rook_move_from_and_mask(pos, *and_mask);
+        
+                if *table_entry == 0 {
+                    *table_entry = moves;
+                } else if *table_entry != moves {
+                    still_looking = false;
+                    break;
+                }
+            }
+            if still_looking {
+                println!("Found a table for {} {} at try {}", pos+1, magic_entry.magic, tries);
+                magic_entries[pos as usize] = magic_entry; 
+                move_table[pos as usize] = table;
+                pos += 1;
+                break;
+            }
+        }
     }
-    return vec;
+    return (magic_entries, move_table);
+}
+
+pub fn magic_index(entry: &MagicEntry, blockers: u64) -> u64{
+    let blockers_that_matter = blockers & entry.mask;
+    let magic_mul = blockers_that_matter.wrapping_mul(entry.magic);
+    return magic_mul >> (entry.shift);
 }
 
 pub fn get_rook_and_mask(pos: u64) -> u64 {
@@ -52,6 +97,15 @@ pub fn get_rook_and_mask(pos: u64) -> u64 {
     }
     return board;
 }
+
+pub fn init_rook_and_masks() -> [u64; 64] {
+    let mut rook_masks = [0; 64];
+    for i in 0..64 {
+        rook_masks[i] = get_rook_and_mask(i as u64);
+    }
+    return rook_masks;
+}
+
 
 pub fn get_rook_move_from_and_mask(pos: u64, and_mask: u64) -> u64 {
     let mut board = 0;
@@ -140,7 +194,7 @@ pub fn init_rook_and_attack_map() -> HashMap<u64, Vec<u64>> {
     let rook_and_results = init_rook_and_results();
     let mut rook_and_attack_map = HashMap::<u64, Vec<u64>>::new();
 
-    for pos in 0..rook_and_results.len() {
+    for pos in 0..64 {
         for index in 0..rook_and_results[pos].len() {
             let move_from_and = get_rook_move_from_and_mask(pos as u64, 
                                                             rook_and_results[pos][index]);
@@ -201,6 +255,14 @@ mod tests {
     fn test_init_rook_and_attack_map() {
         let rook_and_attack_map = init_rook_and_attack_map();
         assert_eq!(rook_and_attack_map.len(), 4900);
+    }
+
+    #[test]
+    fn test_init_rook_magics() {
+        println!("init_rook_magics");
+        let (rook_magics, rook_table) = init_rook_magics();
+        assert_eq!(rook_magics.len(), 64);
+        assert_eq!(rook_table[0].len(), 64);
     }
 
 }
