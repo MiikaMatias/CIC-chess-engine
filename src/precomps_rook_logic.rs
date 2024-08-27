@@ -1,8 +1,4 @@
-use rand::seq::index;
-use rayon::{result, vec};
-
 use crate::masks::*;
-use crate::board::display_bit_board;
 use std::collections::HashMap;
 
 #[derive(Clone)]
@@ -189,32 +185,9 @@ pub fn init_rook_and_results() -> Vec<Vec<u64>> {
     return rook_and_results;
 }
 
-// maps the and results to the rook moves
-pub fn init_rook_and_attack_map() -> HashMap<u64, Vec<u64>> {
-    let rook_and_results = init_rook_and_results();
-    let mut rook_and_attack_map = HashMap::<u64, Vec<u64>>::new();
-
-    for pos in 0..64 {
-        for index in 0..rook_and_results[pos].len() {
-            let move_from_and = get_rook_move_from_and_mask(pos as u64, 
-                                                            rook_and_results[pos][index]);
-            if rook_and_attack_map.contains_key(&move_from_and) {
-                rook_and_attack_map.get_mut(&move_from_and).unwrap().push(rook_and_results[pos][index]);
-            } else {
-                let mut new_vec = Vec::<u64>::new();
-                new_vec.push(rook_and_results[pos][index]);
-                rook_and_attack_map.insert(move_from_and, new_vec.clone());
-            }
-        } 
-    }
-    return rook_and_attack_map;
-}
-
-
 #[cfg(test)]
 mod tests {
     pub const ROOK_MOVE_TABLE_SIZE: usize = 102400;
-    use crate::board::display_bit_board;
     use crate::precomps_rook_logic::*;
 
     #[test]
@@ -251,11 +224,6 @@ mod tests {
         assert_eq!(sum, ROOK_MOVE_TABLE_SIZE)
     }
 
-    #[test]
-    fn test_init_rook_and_attack_map() {
-        let rook_and_attack_map = init_rook_and_attack_map();
-        assert_eq!(rook_and_attack_map.len(), 4900);
-    }
 
     #[test]
     fn test_init_rook_magics() {
