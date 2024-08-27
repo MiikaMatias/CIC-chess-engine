@@ -101,152 +101,12 @@ impl Chessboard {
         0
     }
 
-    pub fn _get_bishop_move_mask(&self, pos: u64, is_white: bool) -> u64 {
-        let mut board: u64 = 0;
-    
-        if is_white {
-            // Generate moves to the top-left
-            for i in 1..8 {
-                let file = (pos % 8) as i64 - i;
-                let rank = (pos / 8) as i64 - i;
-                if file < 0 || rank < 0 {
-                    break;
-                }
-                let square = (rank * 8 + file) as u64;
-                if (self._get_all_piece_mask() & (1 << square)) == 0 {
-                    board |= 1 << square;
-                } else {
-                    board |= 1 << square;
-                    break;
-                }
-            }
-    
-            // Generate moves to the top-right
-            for i in 1..8 {
-                let file = (pos % 8) as i64 + i;
-                let rank = (pos / 8) as i64 - i;
-                if file >= 8 || rank < 0 {
-                    break;
-                }
-                let square = (rank * 8 + file) as u64;
-                if (self._get_all_piece_mask() & (1 << square)) == 0 {
-                    board |= 1 << square;
-                } else {
-                    board |= 1 << square;
-                    break;
-                }
-            }
-    
-            // Generate moves to the bottom-left
-            for i in 1..8 {
-                let file = (pos % 8) as i64 - i;
-                let rank = (pos / 8) as i64 + i;
-                if file < 0 || rank >= 8 {
-                    break;
-                }
-                let square = (rank * 8 + file) as u64;
-                if (self._get_all_piece_mask() & (1 << square)) == 0 {
-                    board |= 1 << square;
-                } else {
-                    board |= 1 << square;
-                    break;
-                }
-            }
-    
-            // Generate moves to the bottom-right
-            for i in 1..8 {
-                let file = (pos % 8) as i64 + i;
-                let rank = (pos / 8) as i64 + i;
-                if file >= 8 || rank >= 8 {
-                    break;
-                }
-                let square = (rank * 8 + file) as u64;
-                if (self._get_all_piece_mask() & (1 << square)) == 0 {
-                    board |= 1 << square;
-                } else {
-                    board |= 1 << square;
-                    break;
-                }
-            }
-    
-            board & !self.get_white_pieces()
-        } else {
-            // Generate moves to the top-left
-            for i in 1..8 {
-                let file = (pos % 8) as i64 - i;
-                let rank = (pos / 8) as i64 - i;
-                if file < 0 || rank < 0 {
-                    break;
-                }
-                let square = (rank * 8 + file) as u64;
-                if (self._get_all_piece_mask() & (1 << square)) == 0 {
-                    board |= 1 << square;
-                } else {
-                    board |= 1 << square;
-                    break;
-                }
-            }
-    
-            // Generate moves to the top-right
-            for i in 1..8 {
-                let file = (pos % 8) as i64 + i;
-                let rank = (pos / 8) as i64 - i;
-                if file >= 8 || rank < 0 {
-                    break;
-                }
-                let square = (rank * 8 + file) as u64;
-                if (self._get_all_piece_mask() & (1 << square)) == 0 {
-                    board |= 1 << square;
-                } else {
-                    board |= 1 << square;
-                    break;
-                }
-            }
-    
-            // Generate moves to the bottom-left
-            for i in 1..8 {
-                let file = (pos % 8) as i64 - i;
-                let rank = (pos / 8) as i64 + i;
-                if file < 0 || rank >= 8 {
-                    break;
-                }
-                let square = (rank * 8 + file) as u64;
-                if (self._get_all_piece_mask() & (1 << square)) == 0 {
-                    board |= 1 << square;
-                } else {
-                    board |= 1 << square;
-                    break;
-                }
-            }
-    
-            // Generate moves to the bottom-right
-            for i in 1..8 {
-                let file = (pos % 8) as i64 + i;
-                let rank = (pos / 8) as i64 + i;
-                if file >= 8 || rank >= 8 {
-                    break;
-                }
-                let square = (rank * 8 + file) as u64;
-                if (self._get_all_piece_mask() & (1 << square)) == 0 {
-                    board |= 1 << square;
-                } else {
-                    board |= 1 << square;
-                    break;
-                }
-            }
-    
-            board & !self.get_black_pieces()
-        }
-    }    
-
-    pub fn _get_queen_move_mask(&self, pos: u64, is_white: bool) -> u64 {
-        self.precomps.get_rook_move_mask(pos, self._get_all_piece_mask()) | self._get_bishop_move_mask(pos, is_white)
+    pub fn _get_queen_move_mask(&self, pos: u64) -> u64 {
+        self.precomps.get_rook_move_mask(pos, self._get_all_piece_mask()) | self.precomps.get_bishop_move_mask(pos, self._get_all_piece_mask())
     }
 
     pub fn _get_king_move_mask(&self, pos: u64) -> u64 {
         let mut mask: u64 = 0;
-
-        // Replace with precomputed values to improve performance
     
         // Generate moves to the left
         if pos % 8 > 0 {
@@ -296,13 +156,13 @@ impl Chessboard {
         } else if (rook & pos_mask) == pos_mask {
             find_set_bits_positions(self.precomps.get_rook_move_mask(pos, self._get_all_piece_mask()) & empty_squares)
         } else if (bishop & pos_mask) == pos_mask {
-            find_set_bits_positions(self._get_bishop_move_mask(pos, is_white) & empty_squares)
+            find_set_bits_positions(self.precomps.get_bishop_move_mask(pos, self._get_all_piece_mask()) & empty_squares)
         } else if (king & pos_mask) == pos_mask {
             find_set_bits_positions(self._get_king_move_mask(pos) & empty_squares)
         } else if (knight & pos_mask) == pos_mask {
             find_set_bits_positions(self.precomps.get_knight_move_mask(pos) & empty_squares)
         } else {
-            find_set_bits_positions(self._get_queen_move_mask(pos, is_white) & empty_squares)
+            find_set_bits_positions(self._get_queen_move_mask(pos) & empty_squares)
         }
     }
     
@@ -561,7 +421,7 @@ impl Chessboard {
                         self._take_piece_at_spot(to, is_white);
                         return true;
                     }  
-                } else if (self._get_bishop_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                } else if (self.precomps.get_bishop_move_mask(from, self._get_all_piece_mask()) >> to) & 1u64 == 1 {
                     self.white_bishop = (self.white_bishop & !(1u64 << from)) | (1u64 << to);
                     self.last_captured = 0;
                     self.last_capturee = 0;
@@ -575,7 +435,7 @@ impl Chessboard {
                         self._take_piece_at_spot(to, is_white);
                         return true;
                     }  
-                } else if (self._get_queen_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                } else if (self._get_queen_move_mask(from) >> to) & 1u64 == 1 {
                     self.white_queen = (self.white_queen & !(1u64 << from)) | (1u64 << to);
                     self.last_captured = 0;
                     self.last_capturee = 0;
@@ -679,7 +539,7 @@ impl Chessboard {
                         self._take_piece_at_spot(to, is_white);
                         return true;
                     }  
-                } else if (self._get_bishop_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                } else if (self.precomps.get_bishop_move_mask(from, self._get_all_piece_mask()) >> to) & 1u64 == 1 {
                     self.black_bishop = (self.black_bishop & !(1u64 << from)) | (1u64 << to);
                     self.last_captured = 0;
                     self.last_capturee = 0;
@@ -693,7 +553,7 @@ impl Chessboard {
                         self._take_piece_at_spot(to, is_white);
                         return true;
                     }  
-                } else if (self._get_queen_move_mask(from, is_white) >> to) & 1u64 == 1 {
+                } else if (self._get_queen_move_mask(from) >> to) & 1u64 == 1 {
                     self.black_queen = (self.black_queen & !(1u64 << from)) | (1u64 << to);
                     self.last_captured = 0;
                     self.last_capturee = 0;
@@ -752,9 +612,9 @@ POS 0 ->    r n b k q b n r
             } else if ((self.white_rook >> pos) & 1u64) == 1 {   
                 return self.precomps.get_rook_move_mask(pos, self._get_all_piece_mask()) & self.get_black_pieces()
             } else if ((self.white_bishop >> pos) & 1u64) == 1 {   
-                return self._get_bishop_move_mask(pos, is_white) & self.get_black_pieces()
+                return self.precomps.get_bishop_move_mask(pos, self._get_all_piece_mask()) & self.get_black_pieces()
             } else if ((self.white_queen >> pos) & 1u64) == 1 {   
-                return self._get_queen_move_mask(pos, is_white) & self.get_black_pieces()
+                return self._get_queen_move_mask(pos) & self.get_black_pieces()
             } else if ((self.white_king >> pos) & 1u64) == 1 {   
                 return self._get_king_move_mask(pos) & self.get_black_pieces()
             } 
@@ -773,9 +633,9 @@ POS 0 ->    r n b k q b n r
         } else if ((self.black_rook >> pos) & 1u64) == 1 {   
             return self.precomps.get_rook_move_mask(pos, self._get_all_piece_mask()) & self.get_white_pieces()
         } else if ((self.black_bishop >> pos) & 1u64) == 1 {   
-            return self._get_bishop_move_mask(pos, is_white) & self.get_white_pieces()
+            return self.precomps.get_bishop_move_mask(pos, self._get_all_piece_mask()) & self.get_white_pieces()
         } else if ((self.black_queen >> pos) & 1u64) == 1 {   
-            return self._get_queen_move_mask(pos, is_white) & self.get_white_pieces()
+            return self._get_queen_move_mask(pos) & self.get_white_pieces()
         } else if ((self.black_king >> pos) & 1u64) == 1 {   
             return self._get_king_move_mask(pos) & self.get_white_pieces()
         }

@@ -1,15 +1,22 @@
 use std::collections::HashMap;
+use crate::precomps_bishop_logic::*;
 use crate::precomps_knight_logic::*;
 use crate::precomps_rook_logic::*;
 use crate::config::*;
-use crate::rook_magics::*;
+use crate::precomps_rook::*;
+use crate::precomps_bishop::*;
 
 #[derive(Clone)]
 pub struct Precomps {
     knight_table: HashMap<u64, u64>,
+
     rook_entries: [MagicEntry; 64],
     rook_table: [u64; 102400],
-    rook_table_offsets: [usize; 64]
+    rook_table_offsets: [usize; 64],
+
+    bishop_entries: [MagicEntry; 64],
+    bishop_table: [u64; 5248],
+    bishop_table_offsets: [usize; 64]
 }
 
 #[derive(Clone)]
@@ -24,11 +31,17 @@ pub struct MagicEntry {
 impl Precomps {
     pub fn new() -> Precomps {
         if PRECOMP_ROOK {init_rook_magics(ROOK_FILE_PATH);};
+        if PRECOMP_BISHOP {init_bishop_magics(BISHOP_FILE_PATH);};
         Precomps {
             knight_table: init_knight_and_masks(),
+
             rook_entries: ROOK_MAGIC_ENTRIES,
             rook_table: ROOK_MOVE_TABLE,
             rook_table_offsets: ROOK_MOVE_TABLE_OFFSETS,
+
+            bishop_entries: BISHOP_MAGIC_ENTRIES,
+            bishop_table: BISHOP_MOVE_TABLE,
+            bishop_table_offsets: BISHOP_MOVE_TABLE_OFFSETS,
         }
     }
 
@@ -47,6 +60,13 @@ impl Precomps {
         let index = self.magic_index(&self.rook_entries[pos as usize], blockers) as usize;
     
         self.rook_table[offset + index]
+    }
+
+    pub fn get_bishop_move_mask(&self, pos: u64, blockers: u64) -> u64 {
+        let offset = self.bishop_table_offsets[pos as usize];
+        let index = self.magic_index(&self.bishop_entries[pos as usize], blockers) as usize;
+    
+        self.bishop_table[offset + index]
     }
 
 }

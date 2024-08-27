@@ -1,5 +1,5 @@
-pub const ROOK_FILE_PATH: &'static str = "rook_magics.rs";
-pub const BISHOP_FILE_PATH: &'static str = "bishop_magics.rs";
+pub const ROOK_FILE_PATH: &'static str = "/home/miika/Projects/CIC-chess-engine/src/precomps_rook.rs";
+pub const BISHOP_FILE_PATH: &'static str = "/home/miika/Projects/CIC-chess-engine/src/precomps_bishop.rs";
 pub const PRECOMP_ROOK: bool = false;
 pub const PRECOMP_BISHOP: bool = false;
 

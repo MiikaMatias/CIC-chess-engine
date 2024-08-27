@@ -39,3 +39,5 @@ depth: 3 	 time_taken: 25.952468637s	evaluation: 0.046875
 depth: 3 	 time_taken: 31.795658653s	evaluation: 0.046875
 depth: 3 	 time_taken: 32.37909741s	evaluation: 0.046875
 depth: 3 	 time_taken: 36.514612512s	evaluation: 0.046875
+depth: 3 	 time_taken: 23.321833749s	evaluation: 0.046875
+depth: 3 	 time_taken: 22.164696869s	evaluation: 0.046875

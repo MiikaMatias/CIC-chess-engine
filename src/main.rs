@@ -7,7 +7,8 @@ mod precomps_bishop_logic;
 mod config;
 mod precomps_rook_logic;
 mod masks;
-mod rook_magics;
+mod precomps_rook;
+mod precomps_bishop;
 
 use board::Chessboard; 
 #[allow(unused_imports)]

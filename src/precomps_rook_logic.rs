@@ -1,16 +1,9 @@
 use crate::masks::*;
+use crate::precomps::*;
 use rand;
 use std::fs::File;
 use std::io::{self, Write};
 use std::path::Path;
-
-#[derive(Clone)]
-#[derive(Copy)]
-pub struct MagicEntry {
-    pub magic: u64,
-    pub mask: u64,
-    pub shift: u8,
-}
 
 pub fn init_rook_magics(output_path: &str) -> io::Result<()> {    
     let mut magic_entries = [MagicEntry{ magic: 0, mask: 0, shift: 0 }; 64];
@@ -56,10 +49,10 @@ pub fn init_rook_magics(output_path: &str) -> io::Result<()> {
             }
         }
     }
-    write_magic_data(output_path, &magic_entries, &move_table)
+    write_rook_data(output_path, &magic_entries, &move_table)
 }
 
-fn write_magic_data(
+fn write_rook_data(
     path: &str,
     magic_entries: &[MagicEntry; 64],
     move_table: &[Vec<u64>],
@@ -67,7 +60,7 @@ fn write_magic_data(
     let path = Path::new(path);
     let mut file = File::create(path)?;
 
-    writeln!(file, "use crate::precomps_rook_logic::*;\n")?;
+    writeln!(file, "use crate::precomps::*;\n")?;
     writeln!(file, "pub const ROOK_MAGIC_ENTRIES: [MagicEntry; 64] = [")?;
     for entry in magic_entries.iter() {
         writeln!(
@@ -80,16 +73,25 @@ fn write_magic_data(
 
     let mut tail = String::new();
     let mut total_len = 0;
-    let mut i = 0;
-    for table in move_table.iter() {
-        total_len += table.len();
+    let mut offsets = String::new();
+    let mut current_offset = 0;
+
+    for (i, table) in move_table.iter().enumerate() {
+        offsets += &format!("    {},\n", current_offset);
+
         for entry in table.iter() {
             tail += &format!("    {},", entry);
         }
-        i += 1;
+
+        total_len += table.len();
+        current_offset += table.len();
     }
+
     writeln!(file, "pub const ROOK_MOVE_TABLE: [u64; {}] = [{}];", total_len, tail)?;
 
+    writeln!(file, "\npub const ROOK_MOVE_TABLE_OFFSETS: [usize; 64] = [")?;
+    writeln!(file, "{}", offsets)?;
+    writeln!(file, "];")?;
 
     Ok(())
 }
