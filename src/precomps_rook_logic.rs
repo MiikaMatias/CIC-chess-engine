@@ -1,5 +1,8 @@
 use crate::masks::*;
-use std::collections::HashMap;
+use rand;
+use std::fs::File;
+use std::io::{self, Write};
+use std::path::Path;
 
 #[derive(Clone)]
 #[derive(Copy)]
@@ -9,7 +12,7 @@ pub struct MagicEntry {
     pub shift: u8,
 }
 
-pub fn init_rook_magics() -> ([MagicEntry; 64], Vec<Vec<u64>>) {
+pub fn init_rook_magics(output_path: &str) -> io::Result<()> {    
     let mut magic_entries = [MagicEntry{ magic: 0, mask: 0, shift: 0 }; 64];
     let mut move_table = vec![Vec::<u64>::new(); 64];
     let blocker_list = &init_rook_and_results();
@@ -17,7 +20,7 @@ pub fn init_rook_magics() -> ([MagicEntry; 64], Vec<Vec<u64>>) {
     let mut pos = 0;
     for and_mask_vec in blocker_list {
         let mask = get_rook_and_mask(pos as u64);
-        let index_bits = mask.count_ones(); // should this be count_ones() ?
+        let index_bits = mask.count_ones();
         let shift = 64 - index_bits;
         let mut magic_entry = MagicEntry{magic: 0, 
                                         mask: mask, 
@@ -53,7 +56,42 @@ pub fn init_rook_magics() -> ([MagicEntry; 64], Vec<Vec<u64>>) {
             }
         }
     }
-    return (magic_entries, move_table);
+    write_magic_data(output_path, &magic_entries, &move_table)
+}
+
+fn write_magic_data(
+    path: &str,
+    magic_entries: &[MagicEntry; 64],
+    move_table: &[Vec<u64>],
+) -> io::Result<()> {
+    let path = Path::new(path);
+    let mut file = File::create(path)?;
+
+    writeln!(file, "use crate::precomps_rook_logic::*;\n")?;
+    writeln!(file, "pub const ROOK_MAGIC_ENTRIES: [MagicEntry; 64] = [")?;
+    for entry in magic_entries.iter() {
+        writeln!(
+            file,
+            "    MagicEntry {{ magic: {}, mask: {}, shift: {} }},",
+            entry.magic, entry.mask, entry.shift
+        )?;
+    }
+    writeln!(file, "];\n")?;
+
+    let mut tail = String::new();
+    let mut total_len = 0;
+    let mut i = 0;
+    for table in move_table.iter() {
+        total_len += table.len();
+        for entry in table.iter() {
+            tail += &format!("    {},", entry);
+        }
+        i += 1;
+    }
+    writeln!(file, "pub const ROOK_MOVE_TABLE: [u64; {}] = [{}];", total_len, tail)?;
+
+
+    Ok(())
 }
 
 pub fn magic_index(entry: &MagicEntry, blockers: u64) -> u64{
@@ -185,6 +223,7 @@ pub fn init_rook_and_results() -> Vec<Vec<u64>> {
     return rook_and_results;
 }
 
+
 #[cfg(test)]
 mod tests {
     pub const ROOK_MOVE_TABLE_SIZE: usize = 102400;
@@ -224,13 +263,5 @@ mod tests {
         assert_eq!(sum, ROOK_MOVE_TABLE_SIZE)
     }
 
-
-    #[test]
-    fn test_init_rook_magics() {
-        println!("init_rook_magics");
-        let (rook_magics, rook_table) = init_rook_magics();
-        assert_eq!(rook_magics.len(), 64);
-        assert_eq!(rook_table[0].len(), 64);
-    }
 
 }

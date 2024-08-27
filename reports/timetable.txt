@@ -1,0 +1,41 @@
+
+depth: 2 	 time_taken: 1.930064461s	evaluation: 0.5
+depth: 2 	 time_taken: 2.1709080099999998s	evaluation: 0.5
+depth: 2 	 time_taken: 1.9804545070000001s	evaluation: 0.5
+depth: 2 	 time_taken: 2.013201302s	evaluation: 0.5
+depth: 2 	 time_taken: 1.951981213s	evaluation: 0.5
+depth: 3 	 time_taken: 7.202271905s	evaluation: 0.5416666666666666
+depth: 4 	 time_taken: 74.401393149s	evaluation: 0.5
+depth: 4 	 time_taken: 5.183339795s	evaluation: 0.5
+depth: 5 	 time_taken: 49.474353023s	evaluation: 0.16666666666666666
+depth: 3 	 time_taken: 5.051581523s	evaluation: 0.375
+depth: 3 	 time_taken: 4.8280493s	evaluation: 0.375
+depth: 3 	 time_taken: 4.554824238s	evaluation: 0.375
+depth: 4 	 time_taken: 82.583852025s	evaluation: -0.020833333333333332
+depth: 4 	 time_taken: 70.207461184s	evaluation: -0.020833333333333332
+depth: 4 	 time_taken: 78.68538808s	evaluation: -0.020833333333333332
+depth: 4 	 time_taken: 338.32638632s	evaluation: -0.020833333333333332
+depth: 4 	 time_taken: 398.725805672s	evaluation: -0.020833333333333332
+depth: 2 	 time_taken: 3.139597834s	evaluation: -0.020833333333333332
+depth: 2 	 time_taken: 10.204490329s	evaluation: 3.484375
+depth: 2 	 time_taken: 37.08319185s	evaluation: 3.484375
+depth: 2 	 time_taken: 26.176560018s	evaluation: 5.5
+depth: 2 	 time_taken: 18.571579041s	evaluation: 3.484375
+depth: 2 	 time_taken: 10.415123764s	evaluation: 3.484375
+depth: 2 	 time_taken: 8.197109351s	evaluation: 3.484375
+depth: 2 	 time_taken: 8.059828993s	evaluation: 3.484375
+depth: 2 	 time_taken: 8.03210449s	evaluation: 3.484375
+depth: 2 	 time_taken: 7.977102557s	evaluation: 3.484375
+depth: 2 	 time_taken: 8.3835716s	evaluation: 3.484375
+depth: 2 	 time_taken: 0.863551066s	evaluation: 3
+depth: 2 	 time_taken: 0.798314864s	evaluation: 3
+depth: 2 	 time_taken: 0.867082636s	evaluation: 3
+depth: 2 	 time_taken: 0.951411295s	evaluation: 3
+depth: 2 	 time_taken: 0.947007922s	evaluation: 3
+depth: 3 	 time_taken: 22.551521594s	evaluation: 0.046875
+time: 03.08.24:15.27.18	 depth: 3 	 time_taken: 27.735897039s	evaluation: 0.046875
+time: 03.08.24:17.38.28	 depth: 3 	 time_taken: 23.834238328s	evaluation: 0.041666666666666664
+depth: 3 	 time_taken: 25.952468637s	evaluation: 0.046875
+depth: 3 	 time_taken: 31.795658653s	evaluation: 0.046875
+depth: 3 	 time_taken: 32.37909741s	evaluation: 0.046875
+depth: 3 	 time_taken: 36.514612512s	evaluation: 0.046875

@@ -1,0 +1,520 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 3K of event 'cycles:Pu'
+# Event count (approx.): 3380435771
+#
+# Children      Self  Command  Shared Object         Symbol                                                                                                                                  
+# ........  ........  .......  ....................  ........................................................................................................................................
+#
+    99.95%     0.00%  main     main                  [.] _start
+            |
+            ---_start
+               __libc_start_main
+               std::rt::lang_start
+               |          
+               |--35.04%--main::board::Chessboard::_get_threat_masks
+               |          
+               |--11.40%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+               |          
+               |--5.78%--main::board::Chessboard::_get_bishop_move_mask
+               |          
+               |--5.34%--main::board::Chessboard::_get_attack_mask
+               |          
+               |--4.61%--<u64 as core::iter::range::Step>::forward_unchecked
+               |          
+               |--4.38%--main::board::Chessboard::_get_rook_move_mask
+               |          
+               |--2.73%--0x7953e8eab551
+               |          
+               |--2.43%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+               |          
+               |--2.39%--core::num::<impl u64>::unchecked_add::precondition_check
+               |          
+               |--2.18%--core::iter::range::<impl core::iter::traits::iterator::Iterator for core::ops::range::Range<A>>::next
+               |          
+               |--2.16%--<i64 as core::iter::range::Step>::forward_unchecked
+               |          
+               |--2.12%--main::board::Chessboard::_get_knight_move_mask
+               |          
+               |--1.92%--main::board::Chessboard::_check_en_passant
+               |          
+               |--1.67%--main::board::find_set_bits_positions
+               |          
+               |--1.39%--main::board::Chessboard::get_white_pieces
+               |          
+               |--1.19%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next_back
+               |          
+               |--1.16%--main::board::Chessboard::get_black_pieces
+               |          
+               |--1.08%--main::board::Chessboard::_move_piece
+               |          
+               |--0.92%--main::board::Chessboard::_get_all_piece_mask
+               |          
+               |--0.78%--<core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::fold
+               |          
+               |--0.70%--main::board::Chessboard::_get_king_move_mask
+               |          
+               |--0.69%--core::iter::adapters::map::map_fold::_$u7b$$u7b$closure$u7d$$u7d$::h1cc707c317885ac8
+               |          
+               |--0.57%--core::ops::function::FnMut::call_mut
+               |          
+                --0.51%--<u64 as core::iter::range::Step>::backward_unchecked
+
+    99.95%     0.00%  main     libc.so.6             [.] __libc_start_main
+            |
+            ---__libc_start_main
+               std::rt::lang_start
+               |          
+               |--35.04%--main::board::Chessboard::_get_threat_masks
+               |          
+               |--11.40%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+               |          
+               |--5.78%--main::board::Chessboard::_get_bishop_move_mask
+               |          
+               |--5.34%--main::board::Chessboard::_get_attack_mask
+               |          
+               |--4.61%--<u64 as core::iter::range::Step>::forward_unchecked
+               |          
+               |--4.38%--main::board::Chessboard::_get_rook_move_mask
+               |          
+               |--2.73%--0x7953e8eab551
+               |          
+               |--2.43%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+               |          
+               |--2.39%--core::num::<impl u64>::unchecked_add::precondition_check
+               |          
+               |--2.18%--core::iter::range::<impl core::iter::traits::iterator::Iterator for core::ops::range::Range<A>>::next
+               |          
+               |--2.16%--<i64 as core::iter::range::Step>::forward_unchecked
+               |          
+               |--2.12%--main::board::Chessboard::_get_knight_move_mask
+               |          
+               |--1.92%--main::board::Chessboard::_check_en_passant
+               |          
+               |--1.67%--main::board::find_set_bits_positions
+               |          
+               |--1.39%--main::board::Chessboard::get_white_pieces
+               |          
+               |--1.19%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next_back
+               |          
+               |--1.16%--main::board::Chessboard::get_black_pieces
+               |          
+               |--1.08%--main::board::Chessboard::_move_piece
+               |          
+               |--0.92%--main::board::Chessboard::_get_all_piece_mask
+               |          
+               |--0.78%--<core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::fold
+               |          
+               |--0.70%--main::board::Chessboard::_get_king_move_mask
+               |          
+               |--0.69%--core::iter::adapters::map::map_fold::_$u7b$$u7b$closure$u7d$$u7d$::h1cc707c317885ac8
+               |          
+               |--0.57%--core::ops::function::FnMut::call_mut
+               |          
+                --0.51%--<u64 as core::iter::range::Step>::backward_unchecked
+
+    99.95%     0.00%  main     main                  [.] std::rt::lang_start
+            |
+            ---std::rt::lang_start
+               |          
+               |--35.04%--main::board::Chessboard::_get_threat_masks
+               |          
+               |--11.40%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+               |          
+               |--5.78%--main::board::Chessboard::_get_bishop_move_mask
+               |          
+               |--5.34%--main::board::Chessboard::_get_attack_mask
+               |          
+               |--4.61%--<u64 as core::iter::range::Step>::forward_unchecked
+               |          
+               |--4.38%--main::board::Chessboard::_get_rook_move_mask
+               |          
+               |--2.73%--0x7953e8eab551
+               |          
+               |--2.43%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+               |          
+               |--2.39%--core::num::<impl u64>::unchecked_add::precondition_check
+               |          
+               |--2.18%--core::iter::range::<impl core::iter::traits::iterator::Iterator for core::ops::range::Range<A>>::next
+               |          
+               |--2.16%--<i64 as core::iter::range::Step>::forward_unchecked
+               |          
+               |--2.12%--main::board::Chessboard::_get_knight_move_mask
+               |          
+               |--1.92%--main::board::Chessboard::_check_en_passant
+               |          
+               |--1.67%--main::board::find_set_bits_positions
+               |          
+               |--1.39%--main::board::Chessboard::get_white_pieces
+               |          
+               |--1.19%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next_back
+               |          
+               |--1.16%--main::board::Chessboard::get_black_pieces
+               |          
+               |--1.08%--main::board::Chessboard::_move_piece
+               |          
+               |--0.92%--main::board::Chessboard::_get_all_piece_mask
+               |          
+               |--0.78%--<core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::fold
+               |          
+               |--0.70%--main::board::Chessboard::_get_king_move_mask
+               |          
+               |--0.69%--core::iter::adapters::map::map_fold::_$u7b$$u7b$closure$u7d$$u7d$::h1cc707c317885ac8
+               |          
+               |--0.57%--core::ops::function::FnMut::call_mut
+               |          
+                --0.51%--<u64 as core::iter::range::Step>::backward_unchecked
+
+    35.95%    35.25%  main     main                  [.] main::board::Chessboard::_get_threat_masks
+            |          
+            |--35.25%--_start
+            |          __libc_start_main
+            |          std::rt::lang_start
+            |          |          
+            |          |--34.34%--main::board::Chessboard::_get_threat_masks
+            |          |          
+            |           --0.77%--core::iter::range::<impl core::iter::traits::iterator::Iterator for core::ops::range::Range<A>>::next
+            |          
+             --0.70%--main::board::Chessboard::_get_threat_masks
+
+    11.95%    10.21%  main     main                  [.] <core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+            |          
+            |--10.21%--_start
+            |          __libc_start_main
+            |          std::rt::lang_start
+            |          |          
+            |           --9.65%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+            |          
+             --1.74%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+
+     6.18%     5.68%  main     main                  [.] main::board::Chessboard::_get_bishop_move_mask
+            |          
+             --5.68%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --5.29%--main::board::Chessboard::_get_bishop_move_mask
+
+     5.69%     5.63%  main     main                  [.] <u64 as core::iter::range::Step>::forward_unchecked
+            |          
+             --5.63%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                       |--4.55%--<u64 as core::iter::range::Step>::forward_unchecked
+                       |          
+                       |--0.56%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+                       |          
+                        --0.52%--core::num::<impl u64>::unchecked_add::precondition_check
+
+     5.59%     5.41%  main     main                  [.] main::board::Chessboard::_get_attack_mask
+            |          
+             --5.41%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --5.17%--main::board::Chessboard::_get_attack_mask
+
+     4.73%     4.36%  main     main                  [.] main::board::Chessboard::_get_rook_move_mask
+            |          
+             --4.36%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --4.02%--main::board::Chessboard::_get_rook_move_mask
+
+     3.94%     2.55%  main     main                  [.] core::iter::range::<impl core::iter::traits::iterator::Iterator for core::ops::range::Range<A>>::next
+            |          
+            |--2.55%--_start
+            |          __libc_start_main
+            |          std::rt::lang_start
+            |          |          
+            |          |--1.19%--<core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+            |          |          
+            |          |--0.79%--core::iter::range::<impl core::iter::traits::iterator::Iterator for core::ops::range::Range<A>>::next
+            |          |          
+            |           --0.51%--main::board::Chessboard::_get_threat_masks
+            |          
+             --1.39%--core::iter::range::<impl core::iter::traits::iterator::Iterator for core::ops::range::Range<A>>::next
+
+     2.73%     2.73%  main     libc.so.6             [.] 0x000000000016c54d
+            |
+            ---_start
+               __libc_start_main
+               std::rt::lang_start
+               0x7953e8eab551
+
+     2.73%     0.00%  main     libc.so.6             [.] 0x00007953e8eab551
+            |
+            ---0x7953e8eab551
+
+     2.43%     2.12%  main     main                  [.] <core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+            |          
+             --2.12%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       <core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+
+     2.39%     1.87%  main     main                  [.] core::num::<impl u64>::unchecked_add::precondition_check
+            |          
+            |--1.87%--_start
+            |          __libc_start_main
+            |          std::rt::lang_start
+            |          core::num::<impl u64>::unchecked_add::precondition_check
+            |          
+             --0.52%--core::num::<impl u64>::unchecked_add::precondition_check
+
+     2.16%     2.16%  main     main                  [.] <i64 as core::iter::range::Step>::forward_unchecked
+            |
+            ---_start
+               __libc_start_main
+               std::rt::lang_start
+               <i64 as core::iter::range::Step>::forward_unchecked
+
+     2.12%     2.06%  main     main                  [.] main::board::Chessboard::_get_knight_move_mask
+            |          
+             --2.06%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       main::board::Chessboard::_get_knight_move_mask
+
+     1.95%     1.92%  main     main                  [.] main::board::Chessboard::_check_en_passant
+            |          
+             --1.92%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.89%--main::board::Chessboard::_check_en_passant
+
+     1.67%     1.64%  main     main                  [.] main::board::find_set_bits_positions
+            |          
+             --1.64%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       main::board::find_set_bits_positions
+
+     1.48%     1.39%  main     main                  [.] main::board::Chessboard::get_white_pieces
+            |          
+             --1.39%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.30%--main::board::Chessboard::get_white_pieces
+
+     1.19%     1.06%  main     main                  [.] main::board::Chessboard::get_black_pieces
+            |          
+             --1.06%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.02%--main::board::Chessboard::get_black_pieces
+
+     1.19%     0.93%  main     main                  [.] <core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next_back
+            |          
+             --0.93%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       <core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next_back
+
+     1.14%     1.14%  main     main                  [.] main::board::Chessboard::_move_piece
+            |
+            ---_start
+               __libc_start_main
+               std::rt::lang_start
+               |          
+                --1.08%--main::board::Chessboard::_move_piece
+
+     0.99%     0.99%  main     main                  [.] main::board::Chessboard::_get_all_piece_mask
+            |
+            ---_start
+               __libc_start_main
+               std::rt::lang_start
+               |          
+                --0.92%--main::board::Chessboard::_get_all_piece_mask
+
+     0.91%     0.81%  main     main                  [.] core::iter::adapters::map::map_fold::_$u7b$$u7b$closure$u7d$$u7d$::h1cc707c317885ac8
+            |          
+             --0.81%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.59%--core::iter::adapters::map::map_fold::_$u7b$$u7b$closure$u7d$$u7d$::h1cc707c317885ac8
+
+     0.87%     0.76%  main     main                  [.] <core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::fold
+            |          
+             --0.76%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.67%--<core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::fold
+
+     0.70%     0.67%  main     main                  [.] main::board::Chessboard::_get_king_move_mask
+            |          
+             --0.67%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       main::board::Chessboard::_get_king_move_mask
+
+     0.63%     0.51%  main     main                  [.] core::iter::range::<impl core::iter::traits::iterator::Iterator for core::ops::range::Range<A>>::next
+            |          
+             --0.51%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+
+     0.57%     0.50%  main     main                  [.] core::ops::function::FnMut::call_mut
+            |          
+             --0.50%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       core::ops::function::FnMut::call_mut
+
+     0.54%     0.54%  main     main                  [.] <u64 as core::iter::range::Step>::backward_unchecked
+            |
+            ---_start
+               __libc_start_main
+               std::rt::lang_start
+               |          
+                --0.51%--<u64 as core::iter::range::Step>::backward_unchecked
+
+     0.54%     0.29%  main     main                  [.] <I as core::iter::traits::collect::IntoIterator>::into_iter
+     0.47%     0.44%  main     main                  [.] main::board::Chessboard::_get_all_possible_moves
+     0.46%     0.37%  main     main                  [.] core::iter::range::<impl core::iter::traits::double_ended::DoubleEndedIterator for core::ops::range::Range<A>>::next_back
+     0.42%     0.36%  main     main                  [.] <alloc::vec::into_iter::IntoIter<T,A> as core::iter::traits::iterator::Iterator>::next
+     0.40%     0.28%  main     main                  [.] <I as core::iter::traits::collect::IntoIterator>::into_iter
+     0.35%     0.35%  main     main                  [.] main::board::Chessboard::_get_pawn_move_mask
+     0.34%     0.34%  main     main                  [.] core::alloc::layout::Layout::array::inner
+     0.33%     0.03%  main     main                  [.] <alloc::alloc::Global as core::alloc::Allocator>::deallocate
+     0.30%     0.06%  main     libc.so.6             [.] cfree
+     0.30%     0.27%  main     main                  [.] core::slice::<impl [T]>::iter
+     0.30%     0.09%  main     main                  [.] alloc::alloc::Global::grow_impl
+     0.22%     0.22%  main     main                  [.] alloc::raw_vec::finish_grow
+     0.21%     0.15%  main     main                  [.] <core::iter::adapters::rev::Rev<I> as core::iter::traits::iterator::Iterator>::next
+     0.21%     0.21%  main     main                  [.] main::board::is_check
+     0.19%     0.15%  main     main                  [.] <core::iter::adapters::cloned::Cloned<I> as core::iter::traits::iterator::Iterator>::fold
+     0.18%     0.18%  main     main                  [.] alloc::vec::Vec<T,A>::push
+     0.18%     0.15%  main     main                  [.] core::iter::traits::iterator::Iterator::rev
+     0.18%     0.03%  main     libc.so.6             [.] realloc
+     0.17%     0.11%  main     main                  [.] main::board::Chessboard::threatened_squares
+     0.16%     0.07%  main     main                  [.] main::board::Chessboard::threatened_squares::_$u7b$$u7b$closure$u7d$$u7d$::h670df079501bdb89
+     0.15%     0.09%  main     main                  [.] core::num::<impl usize>::unchecked_add::precondition_check
+     0.14%     0.14%  main     main                  [.] alloc::raw_vec::RawVec<T,A>::current_memory
+     0.13%     0.13%  main     main                  [.] main::board::Chessboard::_get_all_moves_at_position
+     0.13%     0.10%  main     main                  [.] <alloc::vec::Vec<T,A> as core::iter::traits::collect::IntoIterator>::into_iter
+     0.12%     0.12%  main     main                  [.] core::cmp::max_by
+     0.12%     0.12%  main     main                  [.] <core::ops::index_range::IndexRange as core::iter::traits::iterator::Iterator>::next
+     0.12%     0.09%  main     main                  [.] <alloc::vec::into_iter::IntoIter<T,A> as core::iter::traits::iterator::Iterator>::size_hint
+     0.12%     0.12%  main     main                  [.] alloc::raw_vec::RawVec<T,A>::grow_one
+     0.12%     0.12%  main     main                  [.] alloc::vec::Vec<T,A>::push
+     0.12%     0.06%  main     main                  [.] <I as core::iter::traits::collect::IntoIterator>::into_iter
+     0.09%     0.09%  main     main                  [.] core::cmp::impls::<impl core::cmp::Ord for usize>::cmp
+     0.09%     0.09%  main     main                  [.] <alloc::vec::into_iter::IntoIter<T,A> as core::ops::drop::Drop>::drop
+     0.09%     0.09%  main     libc.so.6             [.] 0x00000000000a13e9
+     0.09%     0.00%  main     libc.so.6             [.] 0x00007953e8de03ed
+     0.07%     0.07%  main     main                  [.] alloc::raw_vec::RawVec<T,A>::grow_amortized
+     0.06%     0.00%  main     libc.so.6             [.] 0x00007953e8de3902
+     0.06%     0.06%  main     main                  [.] main::board::Chessboard::_self_check_check
+     0.06%     0.06%  main     main                  [.] alloc::alloc::Global::alloc_impl
+     0.06%     0.06%  main     main                  [.] core::num::<impl usize>::unchecked_mul::precondition_check
+     0.06%     0.06%  main     main                  [.] core::ptr::const_ptr::<impl *const T>::sub_ptr
+     0.06%     0.06%  main     main                  [.] main::cic::eval_material
+     0.06%     0.03%  main     main                  [.] core::iter::traits::iterator::Iterator::map
+     0.06%     0.06%  main     libc.so.6             [.] 0x000000000016c540
+     0.06%     0.00%  main     libc.so.6             [.] 0x00007953e8eab544
+     0.06%     0.03%  main     main                  [.] core::ptr::const_ptr::<impl *const T>::sub_ptr::precondition_check
+     0.06%     0.00%  main     libc.so.6             [.] 0x00007953e8de1620
+     0.06%     0.06%  main     main                  [.] core::iter::traits::exact_size::ExactSizeIterator::len
+     0.06%     0.06%  main     main                  [.] core::ptr::read_volatile::precondition_check
+     0.06%     0.06%  main     libc.so.6             [.] 0x000000000016c616
+     0.06%     0.00%  main     libc.so.6             [.] 0x00007953e8eab61b
+     0.06%     0.06%  main     main                  [.] main::board::Chessboard::_take_piece_at_spot
+     0.06%     0.03%  main     main                  [.] <<alloc::vec::into_iter::IntoIter<T,A> as core::ops::drop::Drop>::drop::DropGuard<T,A> as core::ops::drop::Drop>::drop
+     0.05%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8fa2dc8
+     0.05%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8fa40de
+     0.04%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8fa2786
+     0.04%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8f93f87
+     0.03%     0.00%  main     main                  [.] core::iter::traits::iterator::Iterator::cloned
+     0.03%     0.03%  main     libc.so.6             [.] 0x00000000000a2a8a
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8de1a8e
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8de2c60
+     0.03%     0.03%  main     libc.so.6             [.] 0x000000000016c5e6
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8eab5ec
+     0.03%     0.03%  main     libc.so.6             [.] malloc
+     0.03%     0.00%  main     main                  [.] alloc::alloc::alloc
+     0.03%     0.03%  main     main                  [.] main::board::Chessboard::_get_queen_move_mask
+     0.03%     0.00%  main     main                  [.] memcpy@plt
+     0.03%     0.03%  main     libc.so.6             [.] 0x00000000000a2a85
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8de1a8a
+     0.03%     0.03%  main     libc.so.6             [.] 0x000000000016c5d7
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8eab5dd
+     0.03%     0.03%  main     libc.so.6             [.] 0x000000000016cf6a
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8eabf6d
+     0.03%     0.03%  main     libc.so.6             [.] 0x00000000000a2c25
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8de1c29
+     0.03%     0.03%  main     libc.so.6             [.] 0x00000000000a36e0
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8de26e9
+     0.03%     0.00%  main     main                  [.] core::ptr::drop_in_place<alloc::vec::into_iter::IntoIter<u64>>
+     0.03%     0.03%  main     libc.so.6             [.] 0x00000000000a372e
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8de2732
+     0.03%     0.03%  main     libc.so.6             [.] 0x000000000016c5dd
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8eab5e1
+     0.03%     0.03%  main     libc.so.6             [.] 0x000000000016c547
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8eab54d
+     0.03%     0.03%  main     libc.so.6             [.] 0x000000000016c5e1
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8eab5e6
+     0.03%     0.03%  main     libc.so.6             [.] 0x00000000000a2b25
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8de1b29
+     0.03%     0.03%  main     libc.so.6             [.] 0x000000000016c55b
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8eab561
+     0.03%     0.03%  main     libc.so.6             [.] 0x00000000000a4810
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8de3811
+     0.03%     0.03%  main     main                  [.] alloc::raw_vec::RawVec<T,A>::current_memory
+     0.03%     0.00%  main     main                  [.] alloc::raw_vec::RawVec<T,A>::grow_amortized
+     0.03%     0.03%  main     [unknown]             [k] 0xffffffff87801968
+     0.03%     0.03%  main     libc.so.6             [.] 0x00000000000a2ac8
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8de1acf
+     0.03%     0.03%  main     main                  [.] core::ptr::drop_in_place<<alloc::vec::into_iter::IntoIter<T,A> as core::ops::drop::Drop>::drop::DropGuard<u64,alloc::alloc::Global>>
+     0.03%     0.00%  main     main                  [.] main::board::Chessboard::check_win
+     0.03%     0.03%  main     libc.so.6             [.] 0x000000000016c684
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8eab68b
+     0.03%     0.03%  main     libc.so.6             [.] 0x00000000000a23d1
+     0.03%     0.00%  main     libc.so.6             [.] 0x00007953e8de13da
+     0.02%     0.02%  main     ld-linux-x86-64.so.2  [.] 0x00000000000099a6
+     0.02%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8fa5fde
+     0.02%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8f8f9ab
+     0.02%     0.02%  main     ld-linux-x86-64.so.2  [.] 0x00000000000090cc
+     0.02%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8fa6071
+     0.02%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8f8faae
+     0.02%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8f8f0d0
+     0.02%     0.02%  main     main                  [.] <core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::fold
+     0.01%     0.01%  main     ld-linux-x86-64.so.2  [.] 0x0000000000015e6a
+     0.01%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8fa273d
+     0.01%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8f9d2d2
+     0.01%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8f9c02c
+     0.01%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8f9be6c
+     0.01%     0.01%  main     libc.so.6             [.] 0x000000000016cf40
+     0.01%     0.00%  main     libc.so.6             [.] 0x00007953e8eabf44
+     0.01%     0.00%  main     main                  [.] __rdl_alloc
+     0.01%     0.01%  main     main                  [.] __rust_alloc
+     0.01%     0.01%  main     main                  [.] core::hint::assert_unchecked::precondition_check
+     0.01%     0.01%  main     libc.so.6             [.] 0x00000000000a493c
+     0.01%     0.00%  main     libc.so.6             [.] 0x00007953e8eab540
+     0.01%     0.01%  main     libc.so.6             [.] 0x00000000000a2b8f
+     0.01%     0.00%  main     libc.so.6             [.] 0x00007953e8de3952
+     0.01%     0.00%  main     libc.so.6             [.] 0x00007953e8de1b90
+     0.01%     0.01%  main     main                  [.] __rdl_realloc
+     0.00%     0.00%  main     ld-linux-x86-64.so.2  [.] 0x00007953e8fa2dc0
+     0.00%     0.00%  main     main                  [.] <core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::next
+     0.00%     0.00%  main     main                  [.] <std::io::Lines<B> as core::iter::traits::iterator::Iterator>::next
+     0.00%     0.00%  main     main                  [.] <std::io::stdio::StdinLock as std::io::BufRead>::read_line
+     0.00%     0.00%  main     main                  [.] std::io::read_until
+     0.00%     0.00%  main     main                  [.] alloc::raw_vec::RawVec<T,A>::reserve::do_reserve_and_handle
+     0.00%     0.00%  main     libc.so.6             [.] read
+     0.00%     0.00%  main     [unknown]             [k] 0xffffffff878001c8
+
+
+#
+# (Tip: Print event counts in machine readable CSV format with: perf stat -x\;)
+#

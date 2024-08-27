@@ -4,8 +4,10 @@ mod uci_wrapper;
 mod engine;
 mod precomps_knight_logic;
 mod precomps_bishop_logic;
+mod config;
 mod precomps_rook_logic;
 mod masks;
+mod rook_magics;
 
 use board::Chessboard; 
 #[allow(unused_imports)]
