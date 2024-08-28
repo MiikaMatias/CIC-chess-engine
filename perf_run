@@ -1,0 +1,4 @@
+#!/bin/bash
+cargo build
+echo go | perf record -g ./target/debug/cic_bitboard
+perf report > reports/report_$(ls -1q reports | wc -l)

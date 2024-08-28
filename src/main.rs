@@ -9,10 +9,11 @@ mod precomps_rook_logic;
 mod masks;
 mod precomps_rook;
 mod precomps_bishop;
+mod graphics;
 
 use board::Chessboard; 
 #[allow(unused_imports)]
-use board::display_bit_board;
+use graphics::display_bit_board;
 use uci_wrapper::uci_loop;
 use std::sync::LazyLock;
 

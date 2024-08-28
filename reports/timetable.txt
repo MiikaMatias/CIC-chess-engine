@@ -41,3 +41,9 @@ depth: 3 	 time_taken: 32.37909741s	evaluation: 0.046875
 depth: 3 	 time_taken: 36.514612512s	evaluation: 0.046875
 depth: 3 	 time_taken: 23.321833749s	evaluation: 0.046875
 depth: 3 	 time_taken: 22.164696869s	evaluation: 0.046875
+depth: 3 	 time_taken: 22.881316822s	evaluation: 0.046875
+depth: 3 	 time_taken: 21.345611456s	evaluation: 0.046875
+depth: 3 	 time_taken: 21.63602408s	evaluation: 0.046875
+depth: 3 	 time_taken: 23.072841122s	evaluation: 0.046875
+depth: 3 	 time_taken: 21.312505147s	evaluation: 0.046875
+depth: 3 	 time_taken: 23.308265305s	evaluation: 0.046875

@@ -1,6 +1,8 @@
 use std::io::{self, BufRead};
 use std::collections::HashMap;
+use std::mem::size_of;
 use crate::board::Chessboard;
+use crate::graphics::display_board;
 use crate::engine::search_best_move;
 
 pub fn uci_loop(mut board: Chessboard) {
@@ -42,7 +44,7 @@ pub fn uci_loop(mut board: Chessboard) {
                             continue;
                         } else {
                             println!("moved from {} to {}", move_to_play[0], move_to_play[1]);
-                            println!("{}", board._display_board());
+                            println!("{}", display_board(&board));
                         }
                         is_white_turn = !is_white_turn;
                     }
@@ -63,9 +65,11 @@ pub fn uci_loop(mut board: Chessboard) {
                 board._move_piece(16, 9, true, false);
                 board._move_piece(9, 2, true, false);
                 board._move_piece(3, 2, false, false);
-                println!("{}", board._display_board());
+                let size_of_board_bytes = size_of::<Chessboard>();
+                println!("The size of the board is {} B", size_of_board_bytes);
+                println!("{}", display_board(&board));
                 board = search_best_move(board, is_white_turn);
-                println!("{}", board._display_board());
+                println!("{}", display_board(&board));
             }
             "quit" => {
                 break;

@@ -285,7 +285,7 @@ pub fn init_bishop_and_results() -> Vec<Vec<u64>> {
 mod tests {
     pub const BISHOP_MOVE_TABLE_SIZE: usize = 5248;
     use crate::precomps_bishop_logic::*;
-    use crate::board::display_bit_board;
+    use crate::graphics::display_bit_board;
 
     #[test]
     fn test_bishop_move_mask() {

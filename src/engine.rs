@@ -16,7 +16,7 @@
 // - add counting so that each move computes material in board.rs
 
 use crate::board::Chessboard;
-use crate::board::display_bit_board;
+use crate::graphics::display_bit_board;
 use crate::config::*;
 use std::sync::LazyLock;
 
@@ -198,6 +198,7 @@ pub fn search_best_move(board: Chessboard, is_white_turn: bool) -> Chessboard {
 
 mod tests {
     use crate::precomps;
+    use crate::graphics::display_board;
 
     use super::*;
 
@@ -232,9 +233,9 @@ mod tests {
         let (board_3, _) = init_minimax(chessboard, true, 3);
         chessboard._move_piece(31, 13, true, true);
 
-        assert_eq!(board_1._display_board(), chessboard._display_board());
-        assert_eq!(board_2._display_board(), chessboard._display_board());
-        assert_eq!(board_3._display_board(), chessboard._display_board());
+        assert_eq!(display_board(&board_1), display_board(&chessboard));
+        assert_eq!(display_board(&board_2), display_board(&chessboard));
+        assert_eq!(display_board(&board_3), display_board(&chessboard));
     }
 
     #[test]
@@ -262,8 +263,8 @@ mod tests {
         let (board_3, _) = init_minimax(chessboard, false, 3);
 
         chessboard._move_piece(17, 33, false, true); 
-        assert_eq!(board_1._display_board(), chessboard._display_board());
-        assert_eq!(board_2._display_board(), chessboard._display_board());
-        assert_eq!(board_3._display_board(), chessboard._display_board());
+        assert_eq!(display_board(&board_1), display_board(&chessboard));
+        assert_eq!(display_board(&board_2), display_board(&chessboard));
+        assert_eq!(display_board(&board_3), display_board(&chessboard));
     }
 }
