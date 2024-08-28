@@ -55,3 +55,10 @@ depth: 3 	 time_taken: 8.458488705s	evaluation: 0.046875
 depth: 3 	 time_taken: 8.832889038s	evaluation: 0.046875
 depth: 3 	 time_taken: 8.201169454s	evaluation: 0.046875
 depth: 3 	 time_taken: 8.388894704s	evaluation: 0.046875
+depth: 3 	 time_taken: 8.110816007s	evaluation: 0.046875
+depth: 3 	 time_taken: 7.981807036s	evaluation: 0.046875
+depth: 3 	 time_taken: 2.818071276s	evaluation: 0
+depth: 3 	 time_taken: 0.141406785s	evaluation: 0
+depth: 3 	 time_taken: 2.749058105s	evaluation: 0
+depth: 3 	 time_taken: 0.310352978s	evaluation: 0.046875
+depth: 3 	 time_taken: 2.702055625s	evaluation: 0

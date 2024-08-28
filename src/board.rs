@@ -104,7 +104,7 @@ impl Chessboard {
     }
     
 
-    pub fn _get_all_possible_moves(&self, is_white: bool) -> Vec<Chessboard> {
+    pub fn get_all_possible_moves(&self, is_white: bool) -> Vec<Chessboard> {
         // this will very likely get rough with memory; consider having an array of values instead
 
         // TRY OPTIMISING
@@ -134,9 +134,10 @@ impl Chessboard {
         board_array
     }
 
+    // FASTER WAY TO DO THIS
     pub fn check_win(&self, is_white: bool) -> bool {
-        return (self._get_all_possible_moves(!is_white).len() == 0) &&
-                (self._get_all_possible_moves(is_white).len() != 0)
+        return (self.get_all_possible_moves(!is_white).len() == 0) &&
+                (self.get_all_possible_moves(is_white).len() != 0)
     }
 
     pub fn get_threat_masks(&self, is_white: bool) -> [u64; 6] {
@@ -1083,16 +1084,16 @@ mod tests {
     fn test_get_board_states_initial_state() {
         let precomps = &PRECOMPS;
         let chessboard: Chessboard = Chessboard::new(precomps);
-        assert_eq!(20, chessboard._get_all_possible_moves(true).len());
-        assert_eq!(20, chessboard._get_all_possible_moves(false).len());
+        assert_eq!(20, chessboard.get_all_possible_moves(true).len());
+        assert_eq!(20, chessboard.get_all_possible_moves(false).len());
     }
 
     #[test]
     fn check_checkmate_checker() {
         let precomps = &PRECOMPS;
         let chessboard: Chessboard = Chessboard::new(precomps);
-        assert_eq!(20, chessboard._get_all_possible_moves(true).len());
-        assert_eq!(20, chessboard._get_all_possible_moves(false).len());
+        assert_eq!(20, chessboard.get_all_possible_moves(true).len());
+        assert_eq!(20, chessboard.get_all_possible_moves(false).len());
     }
 
     #[test]
@@ -1107,7 +1108,7 @@ mod tests {
         chessboard.move_piece(16, 24, false);
         chessboard.move_piece(31, 13, true);
         
-        assert_eq!(0, chessboard._get_all_possible_moves(false).len());
+        assert_eq!(0, chessboard.get_all_possible_moves(false).len());
     }
 
     #[test]
