@@ -48,17 +48,17 @@ fn eval_mvv_lva(state: Chessboard) -> f64 {
 }
 
 fn eval_material(state: Chessboard, is_white_turn: bool) -> f64 {
-    let white_val = state.white_knight.count_ones() * KNIGHT_VAL 
-    + state.white_bishop.count_ones() * BISHOP_VAL 
-    + state.white_rook.count_ones() * ROOK_VAL 
-    + state.white_queen.count_ones() * QUEEN_VAL 
-    + state.white_pawn.count_ones() * PAWN_VAL; 
+    let white_val = state.get_white_knights().count_ones() * KNIGHT_VAL 
+    + state.get_white_bishops().count_ones() * BISHOP_VAL 
+    + state.get_white_rooks().count_ones() * ROOK_VAL 
+    + state.get_white_queens().count_ones() * QUEEN_VAL 
+    + state.get_white_pawns().count_ones() * PAWN_VAL; 
 
-    let black_val = state.black_knight.count_ones() * KNIGHT_VAL
-    + state.black_bishop.count_ones() * BISHOP_VAL
-    + state.black_rook.count_ones() * ROOK_VAL
-    + state.black_queen.count_ones() * QUEEN_VAL
-    + state.black_pawn.count_ones() * PAWN_VAL;
+    let black_val = state.get_black_knights().count_ones() * KNIGHT_VAL
+    + state.get_black_bishops().count_ones() * BISHOP_VAL
+    + state.get_black_rooks().count_ones() * ROOK_VAL
+    + state.get_black_queens().count_ones() * QUEEN_VAL
+    + state.get_black_pawns().count_ones() * PAWN_VAL;
 
     if is_white_turn {
         return f64::from(white_val / black_val);
@@ -208,13 +208,13 @@ mod tests {
     fn test_heuristic_eval_win() {
         let precomps: &precomps::Precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard._move_piece(52, 36, true, true);
-        chessboard._move_piece(12, 28, false, true);
-        chessboard._move_piece(59, 31, true, true);
-        chessboard._move_piece(8, 16, false, true);
-        chessboard._move_piece(61, 34, true, true);
-        chessboard._move_piece(16, 24, false, true);
-        chessboard._move_piece(31, 13, true, true);
+        chessboard.move_piece(52, 36, true);
+        chessboard.move_piece(12, 28, false);
+        chessboard.move_piece(59, 31, true);
+        chessboard.move_piece(8, 16, false);
+        chessboard.move_piece(61, 34, true);
+        chessboard.move_piece(16, 24, false);
+        chessboard.move_piece(31, 13, true);
         assert_eq!(primitive_heuristic_eval(chessboard, true), f64::INFINITY);
         assert_eq!(primitive_heuristic_eval(chessboard, false), f64::NEG_INFINITY);
     }
@@ -222,16 +222,16 @@ mod tests {
     fn test_minimax_pick_checkmate_white() {
         let precomps: &precomps::Precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard._move_piece(52, 36, true, true);
-        chessboard._move_piece(12, 28, false, true);
-        chessboard._move_piece(59, 31, true, true);
-        chessboard._move_piece(8, 16, false, true);
-        chessboard._move_piece(61, 34, true, true);
-        chessboard._move_piece(16, 24, false, true);
+        chessboard.move_piece(52, 36, true);
+        chessboard.move_piece(12, 28, false);
+        chessboard.move_piece(59, 31, true);
+        chessboard.move_piece(8, 16, false);
+        chessboard.move_piece(61, 34, true);
+        chessboard.move_piece(16, 24, false);
         let (board_1, _) = init_minimax(chessboard, true, 1);
         let (board_2, _) = init_minimax(chessboard, true, 2);
         let (board_3, _) = init_minimax(chessboard, true, 3);
-        chessboard._move_piece(31, 13, true, true);
+        chessboard.move_piece(31, 13, true);
 
         assert_eq!(display_board(&board_1), display_board(&chessboard));
         assert_eq!(display_board(&board_2), display_board(&chessboard));
@@ -243,26 +243,26 @@ mod tests {
         let precomps: &precomps::Precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
 
-        chessboard._move_piece(52, 36, true, true); 
-        chessboard._move_piece(60, 52, true, true); 
-        chessboard._move_piece(52, 43, true, true); 
-        chessboard._move_piece(43, 42, true, true); 
-        chessboard._move_piece(42, 41, true, true); 
-        chessboard._move_piece(41, 40, true, true); 
-        chessboard._move_piece(11, 19, false, true); 
-        chessboard._move_piece(3, 11, false, true); 
-        chessboard._move_piece(11, 18, false, true); 
-        chessboard._move_piece(18, 17, false, true); 
-        chessboard._move_piece(12, 20, false, true);
-        chessboard._move_piece(19, 27, false, true); 
-        chessboard._move_piece(8, 24, false, true);  
-        chessboard._move_piece(49, 33, true, true); 
+        chessboard.move_piece(52, 36, true); 
+        chessboard.move_piece(60, 52, true); 
+        chessboard.move_piece(52, 43, true); 
+        chessboard.move_piece(43, 42, true); 
+        chessboard.move_piece(42, 41, true); 
+        chessboard.move_piece(41, 40, true); 
+        chessboard.move_piece(11, 19, false); 
+        chessboard.move_piece(3, 11, false); 
+        chessboard.move_piece(11, 18, false); 
+        chessboard.move_piece(18, 17, false); 
+        chessboard.move_piece(12, 20, false);
+        chessboard.move_piece(19, 27, false); 
+        chessboard.move_piece(8, 24, false);  
+        chessboard.move_piece(49, 33, true); 
     
         let (board_1, _) = init_minimax(chessboard, false, 1);
         let (board_2, _) = init_minimax(chessboard, false, 2);
         let (board_3, _) = init_minimax(chessboard, false, 3);
 
-        chessboard._move_piece(17, 33, false, true); 
+        chessboard.move_piece(17, 33, false); 
         assert_eq!(display_board(&board_1), display_board(&chessboard));
         assert_eq!(display_board(&board_2), display_board(&chessboard));
         assert_eq!(display_board(&board_3), display_board(&chessboard));

@@ -47,3 +47,11 @@ depth: 3 	 time_taken: 21.63602408s	evaluation: 0.046875
 depth: 3 	 time_taken: 23.072841122s	evaluation: 0.046875
 depth: 3 	 time_taken: 21.312505147s	evaluation: 0.046875
 depth: 3 	 time_taken: 23.308265305s	evaluation: 0.046875
+depth: 3 	 time_taken: 30.274811484s	evaluation: 0.046875
+depth: 3 	 time_taken: 8.729413504s	evaluation: 0.046875
+depth: 3 	 time_taken: 9.375714076s	evaluation: 0.046875
+depth: 3 	 time_taken: 8.580701254s	evaluation: 0.046875
+depth: 3 	 time_taken: 8.458488705s	evaluation: 0.046875
+depth: 3 	 time_taken: 8.832889038s	evaluation: 0.046875
+depth: 3 	 time_taken: 8.201169454s	evaluation: 0.046875
+depth: 3 	 time_taken: 8.388894704s	evaluation: 0.046875

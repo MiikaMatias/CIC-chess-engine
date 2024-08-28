@@ -38,7 +38,7 @@ pub fn uci_loop(mut board: Chessboard) {
                     for movestr in input_split.iter().skip(3) {
                         let move_to_play = translate_move(movestr);
 
-                        let piece_moved = board._move_piece(move_to_play[0], move_to_play[1], is_white_turn, true);
+                        let piece_moved = board.move_piece(move_to_play[0], move_to_play[1], is_white_turn);
                         if !piece_moved {
                             println!("The move {} -> {} was not successful", move_to_play[0], move_to_play[1]);
                             continue;
@@ -51,20 +51,20 @@ pub fn uci_loop(mut board: Chessboard) {
                 }
             }
             "go" => {
-                board._move_piece(51, 35, true, false);
-                board._move_piece(35, 27, true, false);
-                board._move_piece(8, 24, false, false);
-                board._move_piece(24, 32, false, false);
-                board._move_piece(49, 33, true, false);
-                board._move_piece(32, 41, false, false);
-                board._move_piece(12, 28, false, false);
-                board._move_piece(27, 20, true, false);
-                board._move_piece(55, 39, true, false);
-                board._move_piece(59, 43, true, false);
-                board._move_piece(43, 16, true, false);
-                board._move_piece(16, 9, true, false);
-                board._move_piece(9, 2, true, false);
-                board._move_piece(3, 2, false, false);
+                board.move_piece(51, 35, true);
+                board.move_piece(35, 27, true);
+                board.move_piece(8, 24, false);
+                board.move_piece(24, 32, false);
+                board.move_piece(49, 33, true);
+                board.move_piece(32, 41, false);
+                board.move_piece(12, 28, false);
+                board.move_piece(27, 20, true);
+                board.move_piece(55, 39, true);
+                board.move_piece(59, 43, true);
+                board.move_piece(43, 16, true);
+                board.move_piece(16, 9, true);
+                board.move_piece(9, 2, true);
+                board.move_piece(3, 2, false);
                 let size_of_board_bytes = size_of::<Chessboard>();
                 println!("The size of the board is {} B", size_of_board_bytes);
                 println!("{}", display_board(&board));
