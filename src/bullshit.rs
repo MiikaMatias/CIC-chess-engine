@@ -1,3 +1,31 @@
+pub fn _get_all_moves_at_position(&self, pos: u64, is_white: bool) -> Vec<u64> {
+    let (pawn, knight, bishop, rook, king, pieces) = if is_white {
+        (self.get_white_pawns(), self.get_white_knights(), self.get_white_bishops(), self.get_white_rooks(), self.get_white_kings(), self.white_pieces)
+    } else {
+        (self.get_black_pawns(), self.get_black_knights(), self.get_black_bishops(), self.get_black_rooks(), self.get_black_kings(), self.black_pieces)
+    };
+
+    let pos_mask = 1u64 << pos;
+    let empty_squares = !pieces;
+
+    if (pawn & pos_mask) == pos_mask {
+        find_set_bits_positions(self.get_pawn_move_mask(pos, is_white) & empty_squares)
+    } else if (rook & pos_mask) == pos_mask {
+        find_set_bits_positions(self.precomps.get_rook_move_mask(pos, self.get_all_pieces()) & empty_squares)
+    } else if (bishop & pos_mask) == pos_mask {
+        find_set_bits_positions(self.precomps.get_bishop_move_mask(pos, self.get_all_pieces()) & empty_squares)
+    } else if (king & pos_mask) == pos_mask {
+        find_set_bits_positions(get_king_move_mask(pos) & empty_squares)
+    } else if (knight & pos_mask) == pos_mask {
+        find_set_bits_positions(self.precomps.get_knight_move_mask(pos) & empty_squares)
+    } else {
+        find_set_bits_positions(self._get_queen_move_mask(pos) & empty_squares)
+    }
+}
+
+
+
+
 if is_white {
     if ((self.get_white_pawns() >> pos) & 1u64) == 1 {
         if (1u64 << pos | RANK_2_MASK) == RANK_2_MASK {

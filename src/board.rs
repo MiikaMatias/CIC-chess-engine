@@ -80,31 +80,26 @@ impl Chessboard {
         self.precomps.get_rook_move_mask(pos, self.get_all_pieces()) | self.precomps.get_bishop_move_mask(pos, self.get_all_pieces())
     }
 
-    pub fn _get_all_moves_at_position(&self, pos: u64, is_white: bool) -> Vec<u64> {
-        let (pawn, knight, bishop, rook, king, pieces) = if is_white {
-            (self.get_white_pawns(), self.get_white_knights(), self.get_white_bishops(), self.get_white_rooks(), self.get_white_kings(), self.white_pieces)
-        } else {
-            (self.get_black_pawns(), self.get_black_knights(), self.get_black_bishops(), self.get_black_rooks(), self.get_black_kings(), self.black_pieces)
-        };
-    
+    pub fn get_all_moves_at_position(&self, pos: u64, is_white: bool) -> Vec<u64> {
+        let white_mask = -(is_white as i64) as u64;
+        let black_mask = !white_mask; 
+        
+        let pieces = (self.white_pieces & white_mask) | (self.black_pieces & black_mask);
+        
         let pos_mask = 1u64 << pos;
         let empty_squares = !pieces;
     
-        if (pawn & pos_mask) == pos_mask {
-            find_set_bits_positions(self.get_pawn_move_mask(pos, is_white) & empty_squares)
-        } else if (rook & pos_mask) == pos_mask {
-            find_set_bits_positions(self.precomps.get_rook_move_mask(pos, self.get_all_pieces()) & empty_squares)
-        } else if (bishop & pos_mask) == pos_mask {
-            find_set_bits_positions(self.precomps.get_bishop_move_mask(pos, self.get_all_pieces()) & empty_squares)
-        } else if (king & pos_mask) == pos_mask {
-            find_set_bits_positions(get_king_move_mask(pos) & empty_squares)
-        } else if (knight & pos_mask) == pos_mask {
-            find_set_bits_positions(self.precomps.get_knight_move_mask(pos) & empty_squares)
-        } else {
-            find_set_bits_positions(self._get_queen_move_mask(pos) & empty_squares)
-        }
+        let pawn_moves = (self.get_pawn_move_mask(pos, is_white) & empty_squares) * ((self.pawn & pos_mask) >> pos);
+        let knight_moves = (self.precomps.get_knight_move_mask(pos) & empty_squares) * ((self.knight & pos_mask) >> pos);
+        let bishop_moves = (self.precomps.get_bishop_move_mask(pos, self.get_all_pieces()) & empty_squares) * ((self.bishop & pos_mask) >> pos);
+        let rook_moves = (self.precomps.get_rook_move_mask(pos, self.get_all_pieces()) & empty_squares) * ((self.rook & pos_mask) >> pos);
+        let king_moves = (get_king_move_mask(pos) & empty_squares) * ((self.king & pos_mask) >> pos);
+        let queen_moves = (self._get_queen_move_mask(pos) & empty_squares) * (((!(self.pawn | self.knight | self.bishop | self.rook | self.king) & pos_mask) >> pos));
+        
+        let all_moves = pawn_moves | knight_moves | bishop_moves | rook_moves | king_moves | queen_moves;
+        
+        find_set_bits_positions(all_moves)
     }
-    
 
     pub fn get_all_possible_moves(&self, is_white: bool) -> Vec<Chessboard> {
         // this will very likely get rough with memory; consider having an array of values instead
@@ -122,11 +117,11 @@ impl Chessboard {
         for piece in pieces {
             let positions_of_pieces = find_set_bits_positions(piece);
             for position in positions_of_pieces {
-                let moves_of_position = self._get_all_moves_at_position(position, is_white);
+                let moves_of_position = self.get_all_moves_at_position(position, is_white);
                 for move_target in moves_of_position {
                     let mut new_chessboard = *self;
                     let is_legal = new_chessboard.move_piece(position, move_target, is_white);
-                    if is_legal & !is_check(new_chessboard, is_white) {
+                    if is_legal {
                         board_array.push(new_chessboard);
                     }
                 }

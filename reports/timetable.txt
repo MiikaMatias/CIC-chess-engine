@@ -87,3 +87,14 @@ depth: 3 	 time_taken: 2.020965936s	evaluation: -51  minimax_calls: 20946
 depth: 3 	 time_taken: 2.02887648s	evaluation: -51  minimax_calls: 20946
 depth: 3 	 time_taken: 2.080157206s	evaluation: -51  minimax_calls: 20946
 depth: 4 	 time_taken: 13.17677433s	evaluation: -41  minimax_calls: 129164
+depth: 4 	 time_taken: 14.168740408s	evaluation: -41  minimax_calls: 129163
+depth: 4 	 time_taken: 14.810522382s	evaluation: -41  minimax_calls: 127706
+depth: 4 	 time_taken: 15.770453026s	evaluation: -41  minimax_calls: 129163
+depth: 4 	 time_taken: 14.068557311s	evaluation: -41  minimax_calls: 129164
+depth: 4 	 time_taken: 13.670816412s	evaluation: -41  minimax_calls: 128820
+depth: 4 	 time_taken: 14.065433709s	evaluation: -41  minimax_calls: 129164
+depth: 4 	 time_taken: 13.673021519s	evaluation: -41  minimax_calls: 129164
+depth: 4 	 time_taken: 13.96049113s	evaluation: -41  minimax_calls: 129163
+depth: 4 	 time_taken: 14.322351296s	evaluation: -41  minimax_calls: 129164
+depth: 4 	 time_taken: 8.435007865s	evaluation: -41  minimax_calls: 129164
+depth: 4 	 time_taken: 8.459459989s	evaluation: -41  minimax_calls: 129164
