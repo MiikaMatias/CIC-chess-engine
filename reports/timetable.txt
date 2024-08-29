@@ -62,3 +62,13 @@ depth: 3 	 time_taken: 0.141406785s	evaluation: 0
 depth: 3 	 time_taken: 2.749058105s	evaluation: 0
 depth: 3 	 time_taken: 0.310352978s	evaluation: 0.046875
 depth: 3 	 time_taken: 2.702055625s	evaluation: 0
+depth: 3 	 time_taken: 0.253911667s	evaluation: 0.125
+depth: 3 	 time_taken: 8.450756334s	evaluation: 0.125
+depth: 3 	 time_taken: 8.67513825s	evaluation: 0.125
+depth: 3 	 time_taken: 8.240262689s	evaluation: 0.125
+depth: 3 	 time_taken: 18.331963409s	evaluation: -58
+depth: 3 	 time_taken: 19.351440759s	evaluation: -58
+depth: 3 	 time_taken: 16.16170083s	evaluation: -60
+depth: 3 	 time_taken: 15.989246617s	evaluation: -60
+depth: 3 	 time_taken: 0.37433913s	evaluation: -60
+depth: 3 	 time_taken: 15.729021949s	evaluation: -60

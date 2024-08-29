@@ -6,13 +6,13 @@ pub const PRECOMP_BISHOP: bool = false;
 
 pub const EXTENDED_CENTER:u64 = 66229406269440;
 pub const PIECE_COUNT_EC: u64 = 16;
-pub const DEPTH: u16 = 3;
+pub const DEPTH: i8 = 3;
 
-pub const PAWN_VAL:u32 = 100;
-pub const KNIGHT_VAL:u32 = 300;
-pub const BISHOP_VAL:u32 = 300;
-pub const ROOK_VAL:u32 = 500;
-pub const QUEEN_VAL:u32 = 900;
+pub const PAWN_VAL:i32 = 10;
+pub const KNIGHT_VAL:i32 = 30;
+pub const BISHOP_VAL:i32 = 30;
+pub const ROOK_VAL:i32 = 50;
+pub const QUEEN_VAL:i32 = 90;
 
 pub const MVV_LVA_TABLE : [[f64; 8]; 8] = [
     [0.0,0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],       // None, victim None, attacker K, Q, R, B, N, P, None

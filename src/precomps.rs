@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use crate::precomps_bishop_logic::*;
 use crate::precomps_knight_logic::*;
 use crate::precomps_rook_logic::*;
+use crate::precomps_pawn_logic::*;
 use crate::config::*;
 use crate::precomps_rook::*;
 use crate::precomps_bishop::*;
@@ -9,6 +10,7 @@ use crate::precomps_bishop::*;
 #[derive(Clone)]
 pub struct Precomps {
     knight_table: HashMap<u64, u64>,
+    pawn_table: [(u64, u64); 128],
 
     rook_entries: [MagicEntry; 64],
     rook_table: [u64; 102400],
@@ -35,6 +37,8 @@ impl Precomps {
         Precomps {
             knight_table: init_knight_and_masks(),
 
+            pawn_table: init_pawn_and_masks(),
+
             rook_entries: ROOK_MAGIC_ENTRIES,
             rook_table: ROOK_MOVE_TABLE,
             rook_table_offsets: ROOK_MOVE_TABLE_OFFSETS,
@@ -47,6 +51,13 @@ impl Precomps {
 
     pub fn get_knight_move_mask(&self, pos: u64) -> u64 {
         return self.knight_table.get(&pos).unwrap().clone();
+    }
+
+    pub fn get_pawn_move_mask(&self, mut pos: u64, is_white: bool) -> (u64, u64) {
+        if !is_white {
+            pos += 64; // add offset for black
+        }
+        return self.pawn_table[pos as usize];
     }
 
     pub fn magic_index(&self, entry: &MagicEntry, blockers: u64) -> u64{
@@ -70,3 +81,4 @@ impl Precomps {
     }
 
 }
+

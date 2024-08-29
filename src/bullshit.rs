@@ -1,4 +1,31 @@
 if is_white {
+    if ((self.get_white_pawns() >> pos) & 1u64) == 1 {
+        if (1u64 << pos | RANK_2_MASK) == RANK_2_MASK {
+            // check for piece in the way
+            if 1u64 << (pos-8) | self.get_all_pieces() == self.get_all_pieces(){
+                return 0;
+            }
+            return ((1u64 << (pos-8))|(1u64 << (pos-16))) & !self.get_all_pieces();
+        } else {
+            return (1u64 << (pos-8)) & !self.get_all_pieces();
+        }
+    }
+} else if ((self.get_black_pawns() >> pos) & 1u64) == 1 {
+    if (1u64 << pos | RANK_7_MASK) == RANK_7_MASK {
+        if 1u64 << (pos+8) | self.get_all_pieces() == self.get_all_pieces(){
+            return 0;
+        }                 
+        return ((1u64 << (pos+8))|(1u64 << (pos+16))) & !self.get_all_pieces();
+    } else {
+        return (1u64 << (pos+8)) & !self.get_all_pieces();
+    }     
+}      
+0
+
+
+
+
+if is_white {
     if (self.get_white_pawns() | (1u64 << from)) == self.get_white_pawns() {
         println!("pawn");
         if self.black_pieces | (1u64 << to) == self.black_pieces {
