@@ -44,6 +44,15 @@ impl Chessboard {
         }
     }
 
+    pub fn get_hash(&self) -> u64 {
+        self.pawn.wrapping_mul(self.precomps.pawn_hash)
+            .wrapping_add(self.rook.wrapping_mul(self.precomps.rook_hash))
+            .wrapping_add(self.knight.wrapping_mul(self.precomps.knight_hash))
+            .wrapping_add(self.bishop.wrapping_mul(self.precomps.bishop_hash))
+            .wrapping_add(self.queen.wrapping_mul(self.precomps.queen_hash))
+            .wrapping_add(self.king.wrapping_mul(self.precomps.king_hash))
+    }
+    
     pub fn get_pawn_move_mask(&self, pos: u64, is_white: bool) -> u64 {
         if self.pawn | (1u64 << pos) != self.pawn {
             return 0

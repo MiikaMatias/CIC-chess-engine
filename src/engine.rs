@@ -2,10 +2,6 @@
 
 // improvement ideas
 
-// first optimise search
-// then finish board
-
-// - cache
 // - iterative 
 // - sorting MVV-LVA
 // - dynamic programming
@@ -20,9 +16,16 @@ use crate::board::Chessboard;
 use crate::config::*;
 use std::sync::LazyLock;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::collections::HashMap;
 
 // Define a static atomic counter to track the number of minimax calls.
 static MINIMAX_CALL_COUNT: AtomicUsize = AtomicUsize::new(0);
+
+
+// if this shit starts making bizarre errors try googling zobrist hashing
+// castling, en passant not supported
+// Fix via Zobrist hashing |                                        pawn knight bishop rook queen king mover
+static MINIMAX_HASH_TABLE: std::sync::LazyLock<std::sync::Mutex<HashMap<u64, i32>>> = std::sync::LazyLock::new(|| std::sync::Mutex::new(HashMap::new()));
 
 // shamelessly stolen from: https://rustic-chess.org/search/ordering/mvv_lva.html
 
@@ -59,14 +62,12 @@ fn eval_material(state: Chessboard) -> i32 {
     - state.get_black_queens().count_ones() as i32 * QUEEN_VAL
     - state.get_black_pawns().count_ones() as i32 * PAWN_VAL) as i32;
 }
-
 fn primitive_heuristic_eval(state: Chessboard) -> i32 {
-    let win = eval_win_threat(state);
-    if win != 0 {
-        return win;
-    }
-    return  (eval_extended_center(state) + eval_material(state))
+    eval_win_threat(state)
+        .saturating_add(eval_extended_center(state))
+        .saturating_add(eval_material(state))
 }
+
 
 fn order_by_mvv_lva(states: Vec<Chessboard>) -> Vec<Chessboard> {
     let mut evaluated_states = states.iter().map(|s| (s, eval_mvv_lva(*s))).collect::<Vec<_>>();
@@ -101,7 +102,10 @@ fn minimax(board: Chessboard, mut a: i32, mut b: i32, depth: i8, is_white_turn: 
         return primitive_heuristic_eval(board);
     }
 
-    let legal_moves = (board.get_all_possible_moves(is_white_turn));
+    let legal_moves = board.get_all_possible_moves(is_white_turn);
+    if MINIMAX_HASH_TABLE.lock().unwrap().contains_key(&board.get_hash()) {
+        return *MINIMAX_HASH_TABLE.lock().unwrap().get(&board.get_hash()).unwrap();
+    }
 
     if is_white_turn {
         let mut current_eval = i32::MIN;
@@ -115,6 +119,7 @@ fn minimax(board: Chessboard, mut a: i32, mut b: i32, depth: i8, is_white_turn: 
                 break;
             }
         }
+        MINIMAX_HASH_TABLE.lock().unwrap().insert(board.get_hash(), current_eval);
         return current_eval;
     } else {
         let mut current_eval = i32::MAX;
@@ -128,6 +133,7 @@ fn minimax(board: Chessboard, mut a: i32, mut b: i32, depth: i8, is_white_turn: 
                 break;
             }
         }
+        MINIMAX_HASH_TABLE.lock().unwrap().insert(board.get_hash(), current_eval);
         return current_eval;
     }
 }

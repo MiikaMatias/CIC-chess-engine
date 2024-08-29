@@ -18,7 +18,15 @@ pub struct Precomps {
 
     bishop_entries: [MagicEntry; 64],
     bishop_table: [u64; 5248],
-    bishop_table_offsets: [usize; 64]
+    bishop_table_offsets: [usize; 64],
+
+    pub pawn_hash: u64,
+    pub knight_hash: u64,
+    pub bishop_hash: u64,
+    pub rook_hash: u64,
+    pub queen_hash: u64,
+    pub king_hash: u64,
+    pub turn_hash: u64,
 }
 
 #[derive(Clone)]
@@ -46,6 +54,14 @@ impl Precomps {
             bishop_entries: BISHOP_MAGIC_ENTRIES,
             bishop_table: BISHOP_MOVE_TABLE,
             bishop_table_offsets: BISHOP_MOVE_TABLE_OFFSETS,
+
+            pawn_hash: rand::random::<u64>(),
+            knight_hash: rand::random::<u64>(),
+            bishop_hash: rand::random::<u64>(),
+            rook_hash: rand::random::<u64>(),
+            queen_hash: rand::random::<u64>(),
+            king_hash: rand::random::<u64>(),
+            turn_hash: rand::random::<u64>(),
         }
     }
 

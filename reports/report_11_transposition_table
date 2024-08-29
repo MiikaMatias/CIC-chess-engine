@@ -1,0 +1,985 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 9K of event 'cycles:Pu'
+# Event count (approx.): 9441505909
+#
+# Children      Self  Command       Shared Object         Symbol                                                                                                                                                        
+# ........  ........  ............  ....................  ..............................................................................................................................................................
+#
+    99.98%     0.00%  cic_bitboard  cic_bitboard          [.] _start
+            |
+            ---_start
+               __libc_start_main
+               std::rt::lang_start
+               |          
+               |--9.62%--cic_bitboard::board::Chessboard::get_attack_mask
+               |          
+               |--7.35%--<core::hash::sip::Sip13Rounds as core::hash::sip::Sip>::d_rounds
+               |          
+               |--5.46%--cic_bitboard::board::Chessboard::get_threat_masks::process_threats
+               |          
+               |--4.71%--<core::hash::sip::Sip13Rounds as core::hash::sip::Sip>::c_rounds
+               |          
+               |--4.08%--hashbrown::raw::RawTable<T,A>::find
+               |          
+               |--3.51%--core::intrinsics::copy_nonoverlapping::precondition_check
+               |          
+               |--3.04%--0x7db41ec17611
+               |          
+               |--2.84%--cic_bitboard::board::Chessboard::_check_en_passant
+               |          
+               |--2.72%--cic_bitboard::board::find_set_bits_positions
+               |          
+               |--2.71%--core::core_arch::x86::sse2::_mm_movemask_epi8
+               |          
+               |--2.47%--core::core_arch::x86::sse2::_mm_set1_epi8
+               |          
+               |--2.29%--<core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::fold
+               |          
+               |--1.94%--core::core_arch::x86::sse2::_mm_loadu_si128
+               |          
+               |--1.69%--cic_bitboard::precomps::Precomps::get_rook_move_mask
+               |          
+               |--1.60%--core::ub_checks::is_nonoverlapping::runtime
+               |          
+               |--1.57%--core::iter::adapters::map::map_fold::_$u7b$$u7b$closure$u7d$$u7d$::hd6d92e8e2ef40d82
+               |          
+               |--1.54%--cic_bitboard::board::Chessboard::move_piece
+               |          
+               |--1.49%--cic_bitboard::precomps::Precomps::magic_index
+               |          
+               |--1.44%--<hashbrown::raw::bitmask::BitMaskIter as core::iter::traits::iterator::Iterator>::next
+               |          
+               |--1.40%--cic_bitboard::board::get_king_move_mask
+               |          
+               |--1.35%--<core::hash::sip::Hasher<S> as core::hash::Hasher>::write
+               |          
+               |--1.28%--<std::hash::random::RandomState as core::hash::BuildHasher>::build_hasher
+               |          
+               |--1.25%--cic_bitboard::board::Chessboard::get_threat_masks
+               |          
+               |--1.16%--core::ops::function::FnMut::call_mut
+               |          
+               |--1.15%--cic_bitboard::board::Chessboard::get_all_possible_moves
+               |          
+               |--1.13%--alloc::alloc::Global::grow_impl
+               |          |          
+               |           --0.81%--realloc
+               |          
+               |--1.09%--cic_bitboard::precomps::Precomps::get_bishop_move_mask
+               |          
+               |--0.93%--core::core_arch::x86::sse2::_mm_cmpeq_epi8
+               |          
+               |--0.89%--hashbrown::raw::RawTable$LT$T$C$A$GT$::find::_$u7b$$u7b$closure$u7d$$u7d$::h5ebd74ec0ea6fc36
+               |          
+               |--0.87%--hashbrown::raw::Bucket<T>::from_base_index
+               |          
+               |--0.86%--core::core_arch::x86::m128iExt::as_i8x16
+               |          
+               |--0.85%--hashbrown::raw::RawTable<T,A>::get
+               |          
+               |--0.80%--cic_bitboard::board::Chessboard::get_piece_type
+               |          
+               |--0.73%--hashbrown::map::HashMap<K,V,S,A>::get
+               |          
+               |--0.70%--<alloc::vec::into_iter::IntoIter<T,A> as core::iter::traits::iterator::Iterator>::next
+               |          
+               |--0.69%--core::hash::sip::u8to64_le
+               |          
+               |--0.57%--core::cmp::impls::<impl core::cmp::PartialEq for u64>::eq
+               |          
+               |--0.56%--alloc::raw_vec::RawVec<T,A>::grow_amortized
+               |          
+               |--0.56%--cic_bitboard::board::Chessboard::get_white_pawns
+               |          
+               |--0.55%--<alloc::alloc::Global as core::alloc::Allocator>::deallocate
+               |          
+               |--0.55%--<core::hash::sip::Hasher<S> as core::hash::Hasher>::finish
+               |          
+               |--0.54%--alloc::raw_vec::finish_grow
+               |          
+               |--0.54%--<Q as hashbrown::Equivalent<K>>::equivalent
+               |          
+                --0.53%--cic_bitboard::board::Chessboard::_self_check_check
+
+    99.98%     0.00%  cic_bitboard  libc.so.6             [.] __libc_start_main
+            |
+            ---__libc_start_main
+               std::rt::lang_start
+               |          
+               |--9.62%--cic_bitboard::board::Chessboard::get_attack_mask
+               |          
+               |--7.35%--<core::hash::sip::Sip13Rounds as core::hash::sip::Sip>::d_rounds
+               |          
+               |--5.46%--cic_bitboard::board::Chessboard::get_threat_masks::process_threats
+               |          
+               |--4.71%--<core::hash::sip::Sip13Rounds as core::hash::sip::Sip>::c_rounds
+               |          
+               |--4.08%--hashbrown::raw::RawTable<T,A>::find
+               |          
+               |--3.51%--core::intrinsics::copy_nonoverlapping::precondition_check
+               |          
+               |--3.04%--0x7db41ec17611
+               |          
+               |--2.84%--cic_bitboard::board::Chessboard::_check_en_passant
+               |          
+               |--2.72%--cic_bitboard::board::find_set_bits_positions
+               |          
+               |--2.71%--core::core_arch::x86::sse2::_mm_movemask_epi8
+               |          
+               |--2.47%--core::core_arch::x86::sse2::_mm_set1_epi8
+               |          
+               |--2.29%--<core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::fold
+               |          
+               |--1.94%--core::core_arch::x86::sse2::_mm_loadu_si128
+               |          
+               |--1.69%--cic_bitboard::precomps::Precomps::get_rook_move_mask
+               |          
+               |--1.60%--core::ub_checks::is_nonoverlapping::runtime
+               |          
+               |--1.57%--core::iter::adapters::map::map_fold::_$u7b$$u7b$closure$u7d$$u7d$::hd6d92e8e2ef40d82
+               |          
+               |--1.54%--cic_bitboard::board::Chessboard::move_piece
+               |          
+               |--1.49%--cic_bitboard::precomps::Precomps::magic_index
+               |          
+               |--1.44%--<hashbrown::raw::bitmask::BitMaskIter as core::iter::traits::iterator::Iterator>::next
+               |          
+               |--1.40%--cic_bitboard::board::get_king_move_mask
+               |          
+               |--1.35%--<core::hash::sip::Hasher<S> as core::hash::Hasher>::write
+               |          
+               |--1.28%--<std::hash::random::RandomState as core::hash::BuildHasher>::build_hasher
+               |          
+               |--1.25%--cic_bitboard::board::Chessboard::get_threat_masks
+               |          
+               |--1.16%--core::ops::function::FnMut::call_mut
+               |          
+               |--1.15%--cic_bitboard::board::Chessboard::get_all_possible_moves
+               |          
+               |--1.13%--alloc::alloc::Global::grow_impl
+               |          |          
+               |           --0.81%--realloc
+               |          
+               |--1.09%--cic_bitboard::precomps::Precomps::get_bishop_move_mask
+               |          
+               |--0.93%--core::core_arch::x86::sse2::_mm_cmpeq_epi8
+               |          
+               |--0.89%--hashbrown::raw::RawTable$LT$T$C$A$GT$::find::_$u7b$$u7b$closure$u7d$$u7d$::h5ebd74ec0ea6fc36
+               |          
+               |--0.87%--hashbrown::raw::Bucket<T>::from_base_index
+               |          
+               |--0.86%--core::core_arch::x86::m128iExt::as_i8x16
+               |          
+               |--0.85%--hashbrown::raw::RawTable<T,A>::get
+               |          
+               |--0.80%--cic_bitboard::board::Chessboard::get_piece_type
+               |          
+               |--0.73%--hashbrown::map::HashMap<K,V,S,A>::get
+               |          
+               |--0.70%--<alloc::vec::into_iter::IntoIter<T,A> as core::iter::traits::iterator::Iterator>::next
+               |          
+               |--0.69%--core::hash::sip::u8to64_le
+               |          
+               |--0.57%--core::cmp::impls::<impl core::cmp::PartialEq for u64>::eq
+               |          
+               |--0.56%--alloc::raw_vec::RawVec<T,A>::grow_amortized
+               |          
+               |--0.56%--cic_bitboard::board::Chessboard::get_white_pawns
+               |          
+               |--0.55%--<alloc::alloc::Global as core::alloc::Allocator>::deallocate
+               |          
+               |--0.55%--<core::hash::sip::Hasher<S> as core::hash::Hasher>::finish
+               |          
+               |--0.54%--alloc::raw_vec::finish_grow
+               |          
+               |--0.54%--<Q as hashbrown::Equivalent<K>>::equivalent
+               |          
+                --0.53%--cic_bitboard::board::Chessboard::_self_check_check
+
+    99.98%     0.00%  cic_bitboard  cic_bitboard          [.] std::rt::lang_start
+            |
+            ---std::rt::lang_start
+               |          
+               |--9.62%--cic_bitboard::board::Chessboard::get_attack_mask
+               |          
+               |--7.35%--<core::hash::sip::Sip13Rounds as core::hash::sip::Sip>::d_rounds
+               |          
+               |--5.46%--cic_bitboard::board::Chessboard::get_threat_masks::process_threats
+               |          
+               |--4.71%--<core::hash::sip::Sip13Rounds as core::hash::sip::Sip>::c_rounds
+               |          
+               |--4.08%--hashbrown::raw::RawTable<T,A>::find
+               |          
+               |--3.51%--core::intrinsics::copy_nonoverlapping::precondition_check
+               |          
+               |--3.04%--0x7db41ec17611
+               |          
+               |--2.84%--cic_bitboard::board::Chessboard::_check_en_passant
+               |          
+               |--2.72%--cic_bitboard::board::find_set_bits_positions
+               |          
+               |--2.71%--core::core_arch::x86::sse2::_mm_movemask_epi8
+               |          
+               |--2.47%--core::core_arch::x86::sse2::_mm_set1_epi8
+               |          
+               |--2.29%--<core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::fold
+               |          
+               |--1.94%--core::core_arch::x86::sse2::_mm_loadu_si128
+               |          
+               |--1.69%--cic_bitboard::precomps::Precomps::get_rook_move_mask
+               |          
+               |--1.60%--core::ub_checks::is_nonoverlapping::runtime
+               |          
+               |--1.57%--core::iter::adapters::map::map_fold::_$u7b$$u7b$closure$u7d$$u7d$::hd6d92e8e2ef40d82
+               |          
+               |--1.54%--cic_bitboard::board::Chessboard::move_piece
+               |          
+               |--1.49%--cic_bitboard::precomps::Precomps::magic_index
+               |          
+               |--1.44%--<hashbrown::raw::bitmask::BitMaskIter as core::iter::traits::iterator::Iterator>::next
+               |          
+               |--1.40%--cic_bitboard::board::get_king_move_mask
+               |          
+               |--1.35%--<core::hash::sip::Hasher<S> as core::hash::Hasher>::write
+               |          
+               |--1.28%--<std::hash::random::RandomState as core::hash::BuildHasher>::build_hasher
+               |          
+               |--1.25%--cic_bitboard::board::Chessboard::get_threat_masks
+               |          
+               |--1.16%--core::ops::function::FnMut::call_mut
+               |          
+               |--1.15%--cic_bitboard::board::Chessboard::get_all_possible_moves
+               |          
+               |--1.13%--alloc::alloc::Global::grow_impl
+               |          |          
+               |           --0.81%--realloc
+               |          
+               |--1.09%--cic_bitboard::precomps::Precomps::get_bishop_move_mask
+               |          
+               |--0.93%--core::core_arch::x86::sse2::_mm_cmpeq_epi8
+               |          
+               |--0.89%--hashbrown::raw::RawTable$LT$T$C$A$GT$::find::_$u7b$$u7b$closure$u7d$$u7d$::h5ebd74ec0ea6fc36
+               |          
+               |--0.87%--hashbrown::raw::Bucket<T>::from_base_index
+               |          
+               |--0.86%--core::core_arch::x86::m128iExt::as_i8x16
+               |          
+               |--0.85%--hashbrown::raw::RawTable<T,A>::get
+               |          
+               |--0.80%--cic_bitboard::board::Chessboard::get_piece_type
+               |          
+               |--0.73%--hashbrown::map::HashMap<K,V,S,A>::get
+               |          
+               |--0.70%--<alloc::vec::into_iter::IntoIter<T,A> as core::iter::traits::iterator::Iterator>::next
+               |          
+               |--0.69%--core::hash::sip::u8to64_le
+               |          
+               |--0.57%--core::cmp::impls::<impl core::cmp::PartialEq for u64>::eq
+               |          
+               |--0.56%--alloc::raw_vec::RawVec<T,A>::grow_amortized
+               |          
+               |--0.56%--cic_bitboard::board::Chessboard::get_white_pawns
+               |          
+               |--0.55%--<alloc::alloc::Global as core::alloc::Allocator>::deallocate
+               |          
+               |--0.55%--<core::hash::sip::Hasher<S> as core::hash::Hasher>::finish
+               |          
+               |--0.54%--alloc::raw_vec::finish_grow
+               |          
+               |--0.54%--<Q as hashbrown::Equivalent<K>>::equivalent
+               |          
+                --0.53%--cic_bitboard::board::Chessboard::_self_check_check
+
+    10.36%     9.95%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_attack_mask
+            |          
+             --9.95%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --9.21%--cic_bitboard::board::Chessboard::get_attack_mask
+
+     7.35%     7.29%  cic_bitboard  cic_bitboard          [.] <core::hash::sip::Sip13Rounds as core::hash::sip::Sip>::d_rounds
+            |          
+             --7.29%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       <core::hash::sip::Sip13Rounds as core::hash::sip::Sip>::d_rounds
+
+     5.85%     5.82%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_threat_masks::process_threats
+            |          
+             --5.82%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --5.43%--cic_bitboard::board::Chessboard::get_threat_masks::process_threats
+
+     4.72%     4.68%  cic_bitboard  cic_bitboard          [.] <core::hash::sip::Sip13Rounds as core::hash::sip::Sip>::c_rounds
+            |          
+             --4.68%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --4.67%--<core::hash::sip::Sip13Rounds as core::hash::sip::Sip>::c_rounds
+
+     4.32%     4.20%  cic_bitboard  cic_bitboard          [.] hashbrown::raw::RawTable<T,A>::find
+            |          
+             --4.20%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --3.96%--hashbrown::raw::RawTable<T,A>::find
+
+     3.70%     3.69%  cic_bitboard  cic_bitboard          [.] core::intrinsics::copy_nonoverlapping::precondition_check
+            |          
+             --3.69%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --3.50%--core::intrinsics::copy_nonoverlapping::precondition_check
+
+     3.05%     3.05%  cic_bitboard  libc.so.6             [.] 0x000000000016c60d
+            |
+            ---_start
+               __libc_start_main
+               std::rt::lang_start
+               |          
+                --3.04%--0x7db41ec17611
+
+     3.05%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec17611
+            |
+            ---0x7db41ec17611
+
+     2.84%     2.72%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::_check_en_passant
+            |          
+             --2.72%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       cic_bitboard::board::Chessboard::_check_en_passant
+
+     2.72%     2.68%  cic_bitboard  cic_bitboard          [.] core::core_arch::x86::sse2::_mm_movemask_epi8
+            |          
+             --2.68%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --2.67%--core::core_arch::x86::sse2::_mm_movemask_epi8
+
+     2.72%     2.72%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::find_set_bits_positions
+            |
+            ---_start
+               __libc_start_main
+               std::rt::lang_start
+               cic_bitboard::board::find_set_bits_positions
+
+     2.47%     2.41%  cic_bitboard  cic_bitboard          [.] core::core_arch::x86::sse2::_mm_set1_epi8
+            |          
+             --2.41%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       core::core_arch::x86::sse2::_mm_set1_epi8
+
+     2.30%     2.11%  cic_bitboard  cic_bitboard          [.] <core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::fold
+            |          
+             --2.11%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --2.09%--<core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::fold
+
+     1.94%     1.90%  cic_bitboard  cic_bitboard          [.] core::core_arch::x86::sse2::_mm_loadu_si128
+            |          
+             --1.90%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       core::core_arch::x86::sse2::_mm_loadu_si128
+
+     1.90%     1.69%  cic_bitboard  cic_bitboard          [.] core::iter::adapters::map::map_fold::_$u7b$$u7b$closure$u7d$$u7d$::hd6d92e8e2ef40d82
+            |          
+             --1.69%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.35%--core::iter::adapters::map::map_fold::_$u7b$$u7b$closure$u7d$$u7d$::hd6d92e8e2ef40d82
+
+     1.70%     1.67%  cic_bitboard  cic_bitboard          [.] cic_bitboard::precomps::Precomps::get_rook_move_mask
+            |          
+             --1.67%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.66%--cic_bitboard::precomps::Precomps::get_rook_move_mask
+
+     1.60%     1.51%  cic_bitboard  cic_bitboard          [.] core::ub_checks::is_nonoverlapping::runtime
+            |          
+             --1.51%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       core::ub_checks::is_nonoverlapping::runtime
+
+     1.58%     1.54%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::move_piece
+            |          
+             --1.54%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.50%--cic_bitboard::board::Chessboard::move_piece
+
+     1.53%     1.53%  cic_bitboard  cic_bitboard          [.] <hashbrown::raw::bitmask::BitMaskIter as core::iter::traits::iterator::Iterator>::next
+            |
+            ---_start
+               __libc_start_main
+               std::rt::lang_start
+               |          
+                --1.44%--<hashbrown::raw::bitmask::BitMaskIter as core::iter::traits::iterator::Iterator>::next
+
+     1.50%     1.49%  cic_bitboard  cic_bitboard          [.] cic_bitboard::precomps::Precomps::magic_index
+            |          
+             --1.49%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.48%--cic_bitboard::precomps::Precomps::magic_index
+
+     1.43%     1.20%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_threat_masks
+            |          
+             --1.20%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.01%--cic_bitboard::board::Chessboard::get_threat_masks
+
+     1.43%     1.41%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::get_king_move_mask
+            |          
+             --1.41%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.38%--cic_bitboard::board::get_king_move_mask
+
+     1.41%     1.29%  cic_bitboard  cic_bitboard          [.] <core::hash::sip::Hasher<S> as core::hash::Hasher>::write
+            |          
+             --1.29%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.23%--<core::hash::sip::Hasher<S> as core::hash::Hasher>::write
+
+     1.37%     1.34%  cic_bitboard  cic_bitboard          [.] <std::hash::random::RandomState as core::hash::BuildHasher>::build_hasher
+            |          
+             --1.34%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.24%--<std::hash::random::RandomState as core::hash::BuildHasher>::build_hasher
+
+     1.26%     1.25%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_all_possible_moves
+            |          
+             --1.25%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.13%--cic_bitboard::board::Chessboard::get_all_possible_moves
+
+     1.18%     1.04%  cic_bitboard  cic_bitboard          [.] core::ops::function::FnMut::call_mut
+            |          
+             --1.04%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --1.01%--core::ops::function::FnMut::call_mut
+
+     1.14%     0.30%  cic_bitboard  cic_bitboard          [.] alloc::alloc::Global::grow_impl
+            |          
+             --0.84%--alloc::alloc::Global::grow_impl
+                       |          
+                        --0.81%--realloc
+
+     1.09%     1.03%  cic_bitboard  cic_bitboard          [.] cic_bitboard::precomps::Precomps::get_bishop_move_mask
+            |          
+             --1.03%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       cic_bitboard::precomps::Precomps::get_bishop_move_mask
+
+     1.01%     0.90%  cic_bitboard  cic_bitboard          [.] core::core_arch::x86::m128iExt::as_i8x16
+            |          
+             --0.90%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.75%--core::core_arch::x86::m128iExt::as_i8x16
+
+     0.96%     0.90%  cic_bitboard  cic_bitboard          [.] core::core_arch::x86::sse2::_mm_cmpeq_epi8
+            |          
+             --0.90%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.88%--core::core_arch::x86::sse2::_mm_cmpeq_epi8
+
+     0.91%     0.84%  cic_bitboard  cic_bitboard          [.] hashbrown::raw::RawTable<T,A>::get
+            |          
+             --0.84%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.77%--hashbrown::raw::RawTable<T,A>::get
+
+     0.91%     0.90%  cic_bitboard  cic_bitboard          [.] hashbrown::raw::RawTable$LT$T$C$A$GT$::find::_$u7b$$u7b$closure$u7d$$u7d$::h5ebd74ec0ea6fc36
+            |          
+             --0.90%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.88%--hashbrown::raw::RawTable$LT$T$C$A$GT$::find::_$u7b$$u7b$closure$u7d$$u7d$::h5ebd74ec0ea6fc36
+
+     0.88%     0.82%  cic_bitboard  cic_bitboard          [.] hashbrown::raw::Bucket<T>::from_base_index
+            |          
+             --0.82%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.81%--hashbrown::raw::Bucket<T>::from_base_index
+
+     0.84%     0.13%  cic_bitboard  libc.so.6             [.] realloc
+            |          
+             --0.71%--realloc
+
+     0.81%     0.80%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_piece_type
+            |          
+             --0.80%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.79%--cic_bitboard::board::Chessboard::get_piece_type
+
+     0.75%     0.60%  cic_bitboard  cic_bitboard          [.] hashbrown::map::HashMap<K,V,S,A>::get
+            |          
+             --0.60%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.58%--hashbrown::map::HashMap<K,V,S,A>::get
+
+     0.73%     0.70%  cic_bitboard  cic_bitboard          [.] core::hash::sip::u8to64_le
+            |          
+             --0.70%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.67%--core::hash::sip::u8to64_le
+
+     0.71%     0.68%  cic_bitboard  cic_bitboard          [.] <alloc::vec::into_iter::IntoIter<T,A> as core::iter::traits::iterator::Iterator>::next
+            |          
+             --0.68%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.67%--<alloc::vec::into_iter::IntoIter<T,A> as core::iter::traits::iterator::Iterator>::next
+
+     0.64%     0.62%  cic_bitboard  cic_bitboard          [.] <Q as hashbrown::Equivalent<K>>::equivalent
+            |          
+             --0.62%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.52%--<Q as hashbrown::Equivalent<K>>::equivalent
+
+     0.62%     0.62%  cic_bitboard  cic_bitboard          [.] <core::hash::sip::Hasher<S> as core::hash::Hasher>::finish
+            |
+            ---_start
+               __libc_start_main
+               std::rt::lang_start
+               |          
+                --0.55%--<core::hash::sip::Hasher<S> as core::hash::Hasher>::finish
+
+     0.58%     0.41%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_white_pawns
+     0.57%     0.54%  cic_bitboard  cic_bitboard          [.] core::cmp::impls::<impl core::cmp::PartialEq for u64>::eq
+            |          
+             --0.54%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       core::cmp::impls::<impl core::cmp::PartialEq for u64>::eq
+
+     0.57%     0.53%  cic_bitboard  cic_bitboard          [.] alloc::raw_vec::RawVec<T,A>::grow_amortized
+            |          
+             --0.53%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+                       |          
+                        --0.52%--alloc::raw_vec::RawVec<T,A>::grow_amortized
+
+     0.57%     0.51%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::_self_check_check
+            |          
+             --0.51%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+
+     0.56%     0.14%  cic_bitboard  cic_bitboard          [.] <alloc::alloc::Global as core::alloc::Allocator>::deallocate
+     0.56%     0.51%  cic_bitboard  cic_bitboard          [.] core::hash::BuildHasher::hash_one
+            |          
+             --0.51%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+
+     0.55%     0.55%  cic_bitboard  cic_bitboard          [.] alloc::raw_vec::finish_grow
+            |
+            ---_start
+               __libc_start_main
+               std::rt::lang_start
+               |          
+                --0.54%--alloc::raw_vec::finish_grow
+
+     0.54%     0.52%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::is_check
+            |          
+             --0.52%--_start
+                       __libc_start_main
+                       std::rt::lang_start
+
+     0.52%     0.46%  cic_bitboard  cic_bitboard          [.] cic_bitboard::precomps::Precomps::get_knight_move_mask
+     0.50%     0.50%  cic_bitboard  cic_bitboard          [.] core::num::<impl usize>::unchecked_add::precondition_check
+     0.50%     0.38%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::threatened_squares::_$u7b$$u7b$closure$u7d$$u7d$::hcda7c0cb4378a1ee
+     0.50%     0.50%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::move_pawn
+     0.44%     0.12%  cic_bitboard  libc.so.6             [.] cfree
+     0.43%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f902
+     0.41%     0.39%  cic_bitboard  cic_bitboard          [.] alloc::alloc::Global::alloc_impl
+     0.39%     0.38%  cic_bitboard  cic_bitboard          [.] core::alloc::layout::Layout::array::inner
+     0.37%     0.28%  cic_bitboard  cic_bitboard          [.] <core::iter::adapters::cloned::Cloned<I> as core::iter::traits::iterator::Iterator>::fold
+     0.37%     0.37%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::_get_all_moves_at_position
+     0.36%     0.35%  cic_bitboard  cic_bitboard          [.] core::cmp::max_by
+     0.35%     0.21%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_all_pieces
+     0.34%     0.24%  cic_bitboard  cic_bitboard          [.] memcpy@plt
+     0.34%     0.32%  cic_bitboard  cic_bitboard          [.] alloc::raw_vec::RawVec<T,A>::grow_amortized
+     0.34%     0.22%  cic_bitboard  cic_bitboard          [.] core::hash::impls::<impl core::hash::Hash for u64>::hash
+     0.33%     0.27%  cic_bitboard  cic_bitboard          [.] core::ptr::const_ptr::<impl *const T>::sub_ptr
+     0.33%     0.33%  cic_bitboard  cic_bitboard          [.] alloc::vec::Vec<T,A>::push
+     0.32%     0.32%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_black_pawns
+     0.30%     0.19%  cic_bitboard  cic_bitboard          [.] <core::core_arch::x86::__m128i as core::core_arch::x86::m128iExt>::as_m128i
+     0.30%     0.28%  cic_bitboard  cic_bitboard          [.] alloc::raw_vec::RawVec<T,A>::current_memory
+     0.29%     0.24%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::threatened_squares
+     0.28%     0.12%  cic_bitboard  cic_bitboard          [.] core::hash::impls::<impl core::hash::Hash for &T>::hash
+     0.27%     0.25%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::move_knight
+     0.25%     0.23%  cic_bitboard  cic_bitboard          [.] <alloc::vec::Vec<T,A> as core::iter::traits::collect::IntoIterator>::into_iter
+     0.25%     0.09%  cic_bitboard  cic_bitboard          [.] alloc::alloc::alloc
+     0.24%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec17600
+     0.24%     0.22%  cic_bitboard  cic_bitboard          [.] core::hash::Hasher::write_u64
+     0.23%     0.23%  cic_bitboard  cic_bitboard          [.] hashbrown::map::equivalent_key::_$u7b$$u7b$closure$u7d$$u7d$::hc26e8a8fdcd95cd7
+     0.23%     0.23%  cic_bitboard  libc.so.6             [.] 0x000000000016c6b2
+     0.23%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec176b5
+     0.23%     0.23%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::move_rook
+     0.23%     0.20%  cic_bitboard  cic_bitboard          [.] alloc::vec::Vec<T,A>::push
+     0.22%     0.15%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_white_knights
+     0.21%     0.21%  cic_bitboard  cic_bitboard          [.] <core::option::Option<T> as core::cmp::PartialEq>::eq
+     0.20%     0.18%  cic_bitboard  cic_bitboard          [.] std::collections::hash::map::HashMap<K,V,S>::get
+     0.20%     0.09%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_black_knights
+     0.18%     0.18%  cic_bitboard  cic_bitboard          [.] core::slice::<impl [T]>::iter
+     0.18%     0.16%  cic_bitboard  cic_bitboard          [.] <alloc::vec::into_iter::IntoIter<T,A> as core::ops::drop::Drop>::drop
+     0.17%     0.15%  cic_bitboard  cic_bitboard          [.] core::ptr::const_ptr::<impl *const T>::sub_ptr::precondition_check
+     0.17%     0.17%  cic_bitboard  libc.so.6             [.] 0x000000000016c697
+     0.17%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec1769d
+     0.17%     0.17%  cic_bitboard  cic_bitboard          [.] <std::hash::random::DefaultHasher as core::hash::Hasher>::write
+     0.17%     0.16%  cic_bitboard  cic_bitboard          [.] <<alloc::vec::into_iter::IntoIter<T,A> as core::ops::drop::Drop>::drop::DropGuard<T,A> as core::ops::drop::Drop>::drop
+     0.16%     0.08%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_white_bishops
+     0.16%     0.15%  cic_bitboard  cic_bitboard          [.] core::cmp::impls::<impl core::cmp::Ord for usize>::cmp
+     0.16%     0.13%  cic_bitboard  cic_bitboard          [.] <std::hash::random::DefaultHasher as core::hash::Hasher>::finish
+     0.16%     0.16%  cic_bitboard  libc.so.6             [.] 0x000000000016c6a1
+     0.16%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec176a6
+     0.16%     0.16%  cic_bitboard  libc.so.6             [.] 0x000000000016c61b
+     0.16%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec17621
+     0.15%     0.15%  cic_bitboard  cic_bitboard          [.] core::ptr::read_volatile::precondition_check
+     0.15%     0.14%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::move_bishop
+     0.15%     0.12%  cic_bitboard  cic_bitboard          [.] <alloc::raw_vec::RawVec<T,A> as core::ops::drop::Drop>::drop
+     0.15%     0.08%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_white_rooks
+     0.14%     0.14%  cic_bitboard  cic_bitboard          [.] core::hint::assert_unchecked::precondition_check
+     0.14%     0.12%  cic_bitboard  cic_bitboard          [.] core::iter::traits::exact_size::ExactSizeIterator::len
+     0.13%     0.13%  cic_bitboard  libc.so.6             [.] 0x000000000016c69d
+     0.13%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec176a1
+     0.13%     0.12%  cic_bitboard  cic_bitboard          [.] core::ptr::non_null::NonNull<T>::new_unchecked::precondition_check
+     0.13%     0.13%  cic_bitboard  cic_bitboard          [.] <alloc::vec::into_iter::IntoIter<T,A> as core::iter::traits::iterator::Iterator>::size_hint
+     0.13%     0.10%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_white_kings
+     0.13%     0.13%  cic_bitboard  libc.so.6             [.] 0x000000000016c691
+     0.13%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec17697
+     0.13%     0.11%  cic_bitboard  libc.so.6             [.] malloc
+     0.13%     0.13%  cic_bitboard  cic_bitboard          [.] cic_bitboard::engine::minimax
+     0.12%     0.12%  cic_bitboard  libc.so.6             [.] 0x000000000016c6a6
+     0.12%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec176ac
+     0.12%     0.12%  cic_bitboard  libc.so.6             [.] 0x000000000016c6d6
+     0.12%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec176db
+     0.11%     0.11%  cic_bitboard  cic_bitboard          [.] cic_bitboard::precomps::Precomps::get_pawn_move_mask
+     0.11%     0.11%  cic_bitboard  libc.so.6             [.] 0x000000000016c625
+     0.11%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec1762b
+     0.11%     0.08%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_black_rooks
+     0.11%     0.11%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::_get_queen_move_mask
+     0.11%     0.11%  cic_bitboard  cic_bitboard          [.] alloc::raw_vec::RawVec<T,A>::grow_one
+     0.11%     0.10%  cic_bitboard  cic_bitboard          [.] core::num::<impl usize>::unchecked_mul::precondition_check
+     0.11%     0.11%  cic_bitboard  cic_bitboard          [.] alloc::raw_vec::RawVec<T,A>::current_memory
+     0.11%     0.11%  cic_bitboard  libc.so.6             [.] 0x000000000016c6cd
+     0.11%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec176d6
+     0.10%     0.10%  cic_bitboard  cic_bitboard          [.] core::iter::traits::iterator::Iterator::map
+     0.10%     0.10%  cic_bitboard  cic_bitboard          [.] core::ops::function::FnOnce::call_once
+     0.10%     0.10%  cic_bitboard  libc.so.6             [.] 0x00000000000a13e9
+     0.10%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c3ed
+     0.10%     0.06%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_black_kings
+     0.09%     0.02%  cic_bitboard  cic_bitboard          [.] <T as core::borrow::Borrow<T>>::borrow
+     0.09%     0.08%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_pawn_move_mask
+     0.09%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4ec60
+     0.09%     0.07%  cic_bitboard  cic_bitboard          [.] alloc::raw_vec::RawVec<T,A>::grow_one
+     0.09%     0.09%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::move_queen
+     0.08%     0.08%  cic_bitboard  libc.so.6             [.] 0x000000000016c6ac
+     0.08%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec176b2
+     0.08%     0.06%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::check_win
+     0.08%     0.07%  cic_bitboard  cic_bitboard          [.] <core::array::iter::IntoIter<T,_> as core::iter::traits::iterator::Iterator>::next
+     0.07%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4d97a
+     0.07%     0.07%  cic_bitboard  cic_bitboard          [.] <core::ops::index_range::IndexRange as core::iter::traits::iterator::Iterator>::next
+     0.07%     0.05%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_black_queens
+     0.06%     0.05%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_black_bishops
+     0.06%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f952
+     0.06%     0.06%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::move_king
+     0.05%     0.05%  cic_bitboard  libc.so.6             [.] 0x000000000016d020
+     0.05%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec18024
+     0.05%     0.04%  cic_bitboard  cic_bitboard          [.] core::ptr::drop_in_place<alloc::raw_vec::RawVec<u64>>
+     0.05%     0.03%  cic_bitboard  cic_bitboard          [.] core::iter::traits::iterator::Iterator::cloned
+     0.04%     0.04%  cic_bitboard  libc.so.6             [.] 0x00000000000a2ab7
+     0.04%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4dabc
+     0.04%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec1760d
+     0.04%     0.04%  cic_bitboard  cic_bitboard          [.] core::num::<impl usize>::unchecked_sub::precondition_check
+     0.04%     0.04%  cic_bitboard  [unknown]             [k] 0xffffffffa7401968
+     0.03%     0.03%  cic_bitboard  libc.so.6             [.] 0x00000000000a2b64
+     0.03%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4db66
+     0.03%     0.03%  cic_bitboard  libc.so.6             [.] 0x000000000016d02a
+     0.03%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec1802d
+     0.03%     0.03%  cic_bitboard  libc.so.6             [.] 0x00000000000a3ad1
+     0.03%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4ead5
+     0.03%     0.03%  cic_bitboard  cic_bitboard          [.] cic_bitboard::engine::eval_material
+     0.03%     0.02%  cic_bitboard  cic_bitboard          [.] core::cmp::impls::<impl core::cmp::PartialEq for usize>::eq
+     0.03%     0.01%  cic_bitboard  cic_bitboard          [.] core::ptr::drop_in_place<<alloc::vec::into_iter::IntoIter<T,A> as core::ops::drop::Drop>::drop::DropGuard<u64,alloc::alloc::Global>>
+     0.03%     0.03%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_white_queens
+     0.03%     0.03%  cic_bitboard  libc.so.6             [.] 0x000000000016c62b
+     0.03%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec1762e
+     0.03%     0.02%  cic_bitboard  cic_bitboard          [.] memset@plt
+     0.03%     0.03%  cic_bitboard  cic_bitboard          [.] core::sync::atomic::atomic_load
+     0.03%     0.03%  cic_bitboard  libc.so.6             [.] 0x00000000000a12e0
+     0.03%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c2e1
+     0.03%     0.03%  cic_bitboard  libc.so.6             [.] 0x00000000000a2adc
+     0.03%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4dae0
+     0.03%     0.03%  cic_bitboard  libc.so.6             [.] 0x000000000016c615
+     0.03%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec176c0
+     0.03%     0.03%  cic_bitboard  cic_bitboard          [.] core::sync::atomic::atomic_compare_exchange
+     0.03%     0.03%  cic_bitboard  cic_bitboard          [.] core::ptr::drop_in_place<alloc::vec::into_iter::IntoIter<u64>>
+     0.03%     0.02%  cic_bitboard  cic_bitboard          [.] __rdl_dealloc
+     0.03%     0.03%  cic_bitboard  libc.so.6             [.] 0x000000000016c607
+     0.03%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4d620
+     0.03%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f25a
+     0.03%     0.03%  cic_bitboard  libc.so.6             [.] 0x000000000016d000
+     0.03%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec18004
+     0.03%     0.03%  cic_bitboard  cic_bitboard          [.] __rdl_alloc
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x00000000000a2a4e
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4da51
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x000000000016c6c0
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec176c7
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x00000000000a4014
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f018
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x000000000016c6b5
+     0.02%     0.02%  cic_bitboard  cic_bitboard          [.] cic_bitboard::engine::eval_win_threat
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f998
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x000000000016c7a9
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec177ae
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x000000000016c820
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec17825
+     0.02%     0.02%  cic_bitboard  cic_bitboard          [.] hashbrown::raw::RawTable<T,A>::insert_in_slot
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec18000
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x00000000000a23d1
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4d3da
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x00000000000a49a0
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f9a3
+     0.02%     0.02%  cic_bitboard  cic_bitboard          [.] hashbrown::raw::RawTableInner::find_or_find_insert_slot_inner
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x00000000000a3e80
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4ee84
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x000000000016c7ae
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec177b3
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x000000000016d00b
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec18015
+     0.02%     0.02%  cic_bitboard  cic_bitboard          [.] cic_bitboard::board::Chessboard::get_hash
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x00000000000a1584
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c58a
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x000000000016c600
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec17604
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x00000000000a3941
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4e945
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x000000000016c621
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec17625
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x00000000000a2aa2
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4daa9
+     0.02%     0.02%  cic_bitboard  libc.so.6             [.] 0x00000000000a48ea
+     0.02%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f8f0
+     0.02%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ece1dc8
+     0.02%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ece30de
+     0.02%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ece1786
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a3847
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4ef68
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a15d8
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c5dd
+     0.01%     0.00%  cic_bitboard  cic_bitboard          [.] __rust_alloc
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a3b40
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4eb5a
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x000000000016c7ff
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec17807
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] cic_bitboard::engine::eval_extended_center
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a2aee
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4dafb
+     0.01%     0.00%  cic_bitboard  cic_bitboard          [.] __rust_realloc
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] cic_bitboard::engine::init_minimax
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a39a0
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4e9a4
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a39f4
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4e9f7
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a2a51
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4da5a
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4da30
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] <core::ops::index_range::IndexRange as core::slice::index::SliceIndex<[T]>>::get_unchecked_mut
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a4048
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f190
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a2c0f
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4dc12
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x000000000016d008
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec1800b
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a3c43
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4ec48
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a4952
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f956
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] core::ptr::drop_in_place<alloc::vec::Vec<cic_bitboard::board::Chessboard>>
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] <alloc::raw_vec::RawVec<T,A> as core::ops::drop::Drop>::drop
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a396c
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4e976
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] <alloc::alloc::Global as core::alloc::Allocator>::grow
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x000000000016c7d3
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec177d8
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a3dd4
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4eddd
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] <std::sync::lazy_lock::LazyLock<T,F> as core::ops::deref::Deref>::deref
+     0.01%     0.00%  cic_bitboard  cic_bitboard          [.] hashbrown::raw::RawTable<T,A>::reserve_rehash
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a2aad
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4dab7
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a2c08
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4dc0f
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a09a0
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4b9a6
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] <std::sync::mutex::MutexGuard<T> as core::ops::drop::Drop>::drop
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a233c
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4d340
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a3e7e
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4ee70
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a131b
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c320
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a2b05
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4db0d
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x000000000016c60b
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] hashbrown::map::HashMap<K,V,S,A>::contains_key
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] <alloc::alloc::Global as core::alloc::Allocator>::allocate
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a448a
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f48f
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a4475
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f479
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a3ae2
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4eae6
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a148b
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c48f
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] core::sync::atomic::AtomicUsize::fetch_add
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a2b5d
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4db61
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] <alloc::vec::into_iter::IntoIter<T,A> as core::iter::traits::iterator::Iterator>::next
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a42c0
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f2c3
+     0.01%     0.00%  cic_bitboard  [unknown]             [.] 0xffffffffa74015f0
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a2c19
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4dc1d
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a1329
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c32d
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a399b
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4e9a0
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a3afd
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4eb01
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] alloc::vec::Vec<T>::new
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a4291
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f296
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] alloc::vec::Vec<T,A>::len
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a263c
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4d643
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a3d5b
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4ed5d
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a48bb
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f8c0
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a15b1
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c5b7
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a1307
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f9b8
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c30d
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] hashbrown::raw::RawTable<T,A>::find
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a3bb0
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4ebb6
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f810
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a40d0
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f0d3
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x000000000016d024
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec1802a
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] hashbrown::raw::RawTableInner::find_insert_slot_in_group
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a4230
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f234
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] std::sync::once::Once::call_once
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a15dd
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c5e1
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a48e0
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4f8ea
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a12e1
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c2e5
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] hashbrown::map::HashMap<K,V,S,A>::insert
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] hashbrown::raw::Bucket<T>::from_base_index
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] core::ptr::drop_in_place<alloc::vec::into_iter::IntoIter<cic_bitboard::board::Chessboard>>
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] _$LT$core..array..iter..IntoIter$LT$T$C$_$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$::next::_$u7b$$u7b$closure$u7d$$u7d$::h49af9053e51fd6b8
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a1342
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c347
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a2c25
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4dc29
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] std::sync::mutex::Mutex<T>::lock
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] __rust_dealloc
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a2c1d
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4dc25
+     0.01%     0.01%  cic_bitboard  cic_bitboard          [.] std::sync::poison::Flag::guard
+     0.01%     0.01%  cic_bitboard  libc.so.6             [.] 0x00000000000a13ed
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4c3f2
+     0.01%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec17907
+     0.01%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ece4fde
+     0.01%     0.01%  cic_bitboard  libgcc_s.so.1         [.] __cpu_indicator_init@GCC_4.8.0
+     0.01%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ece1e20
+     0.01%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ecc96ad
+     0.01%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ecc95b7
+     0.00%     0.00%  cic_bitboard  cic_bitboard          [.] std::sync::lazy_lock::LazyLock$LT$T$C$F$GT$::force::_$u7b$$u7b$closure$u7d$$u7d$::h72cb35824d85e205
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x000000000000dd99
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ece5071
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ecd2d9d
+     0.00%     0.00%  cic_bitboard  libc.so.6             [.] 0x00000000000a28d0
+     0.00%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41eb4d8d1
+     0.00%     0.00%  cic_bitboard  libc.so.6             [.] 0x000000000016c907
+     0.00%     0.00%  cic_bitboard  libc.so.6             [.] 0x00007db41ec17909
+     0.00%     0.00%  cic_bitboard  cic_bitboard          [.] <core::ops::range::Range<T> as core::iter::range::RangeIteratorImpl>::spec_next
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ecd2867
+     0.00%     0.00%  cic_bitboard  libc.so.6             [.] strpbrk
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x0000000000026d64
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ece48a7
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ecceaae
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ecce11b
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ecebd68
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00000000000167ff
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ece173d
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ecdb801
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ece2df3
+     0.00%     0.00%  cic_bitboard  ld-linux-x86-64.so.2  [.] 0x00007db41ece1dc0
+
+
+#
+# (Tip: To show assembler sample context control flow use perf record -b / perf report --samples 10 and then browse context)
+#

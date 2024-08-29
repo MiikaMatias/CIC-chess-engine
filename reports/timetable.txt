@@ -1,5 +1,4 @@
 
-<<<<<<< HEAD
 depth: 2 	 time_taken: 1.930064461s	evaluation: 0.5
 depth: 2 	 time_taken: 2.1709080099999998s	evaluation: 0.5
 depth: 2 	 time_taken: 1.9804545070000001s	evaluation: 0.5
@@ -73,7 +72,18 @@ depth: 3 	 time_taken: 16.16170083s	evaluation: -60
 depth: 3 	 time_taken: 15.989246617s	evaluation: -60
 depth: 3 	 time_taken: 0.37433913s	evaluation: -60
 depth: 3 	 time_taken: 15.729021949s	evaluation: -60
-=======
+depth: 3 	 time_taken: 78.022115609s	evaluation: -51
+depth: 3 	 time_taken: 80.052041629s	evaluation: -51
+depth: 3 	 time_taken: 71.980162068s	evaluation: -51
+depth: 3 	 time_taken: 2.884396835s	evaluation: -51
+depth: 3 	 time_taken: 2.896489004s	evaluation: -51
 depth: 3 	 time_taken: 2.850234177s	evaluation: -51  minimax_calls: 29107
 depth: 3 	 time_taken: 2.867566671s	evaluation: -51  minimax_calls: 29107
->>>>>>> fb1eea7 (pawn precomps)
+depth: 3 	 time_taken: 2.052591452s	evaluation: -51  minimax_calls: 20946
+depth: 3 	 time_taken: 2.323658066s	evaluation: -51  minimax_calls: 20946
+depth: 3 	 time_taken: 2.006058091s	evaluation: -51  minimax_calls: 20664
+depth: 3 	 time_taken: 2.021733641s	evaluation: -51  minimax_calls: 20946
+depth: 3 	 time_taken: 2.020965936s	evaluation: -51  minimax_calls: 20946
+depth: 3 	 time_taken: 2.02887648s	evaluation: -51  minimax_calls: 20946
+depth: 3 	 time_taken: 2.080157206s	evaluation: -51  minimax_calls: 20946
+depth: 4 	 time_taken: 13.17677433s	evaluation: -41  minimax_calls: 129164
