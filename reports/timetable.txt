@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 depth: 2 	 time_taken: 1.930064461s	evaluation: 0.5
 depth: 2 	 time_taken: 2.1709080099999998s	evaluation: 0.5
 depth: 2 	 time_taken: 1.9804545070000001s	evaluation: 0.5
@@ -72,3 +73,7 @@ depth: 3 	 time_taken: 16.16170083s	evaluation: -60
 depth: 3 	 time_taken: 15.989246617s	evaluation: -60
 depth: 3 	 time_taken: 0.37433913s	evaluation: -60
 depth: 3 	 time_taken: 15.729021949s	evaluation: -60
+=======
+depth: 3 	 time_taken: 2.850234177s	evaluation: -51  minimax_calls: 29107
+depth: 3 	 time_taken: 2.867566671s	evaluation: -51  minimax_calls: 29107
+>>>>>>> fb1eea7 (pawn precomps)
