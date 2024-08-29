@@ -62,9 +62,6 @@ pub fn uci_loop(mut board: Chessboard) {
                 board.move_piece(55, 39, true);
                 board.move_piece(59, 43, true);
                 board.move_piece(43, 16, true);
-                board.move_piece(16, 9, true);
-                board.move_piece(9, 2, true);
-                board.move_piece(3, 2, false);
                 let size_of_board_bytes = size_of::<Chessboard>();
                 println!("The size of the board is {} B", size_of_board_bytes);
                 println!("{}", display_board(&board));

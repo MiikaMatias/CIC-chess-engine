@@ -22,6 +22,12 @@ pub struct Chessboard {
     pub precomps: &'static precomps::Precomps,
 }
 
+impl PartialEq for Chessboard {
+    fn eq(&self, other: &Self) -> bool {
+        return (self.pawn != other.pawn) | (self.rook != other.rook) | (self.knight != other.knight) | (self.bishop != other.bishop) | (self.queen != other.queen) | (self.king != other.king);
+    }
+}
+
 impl Chessboard {
     pub fn new(precomps: &'static precomps::Precomps) -> Chessboard {
         Chessboard {
@@ -44,13 +50,13 @@ impl Chessboard {
         }
     }
 
-    pub fn get_hash(&self) -> u64 {
+    pub fn get_hash(&self, depth:u64) -> u64 {
         self.pawn.wrapping_mul(self.precomps.pawn_hash)
             .wrapping_add(self.rook.wrapping_mul(self.precomps.rook_hash))
             .wrapping_add(self.knight.wrapping_mul(self.precomps.knight_hash))
             .wrapping_add(self.bishop.wrapping_mul(self.precomps.bishop_hash))
             .wrapping_add(self.queen.wrapping_mul(self.precomps.queen_hash))
-            .wrapping_add(self.king.wrapping_mul(self.precomps.king_hash))
+            .wrapping_add(self.king.wrapping_mul(self.precomps.king_hash)).wrapping_add(depth.wrapping_mul(self.precomps.turn_hash))
     }
     
     pub fn get_pawn_move_mask(&self, pos: u64, is_white: bool) -> u64 {

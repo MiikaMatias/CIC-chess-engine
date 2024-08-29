@@ -70,12 +70,14 @@ fn primitive_heuristic_eval(state: Chessboard) -> i32 {
 }
 
 
-fn order_by_mvv_lva(states: Vec<Chessboard>) -> Vec<Chessboard> {
-    let mut evaluated_states = states.iter().map(|s| (s, eval_mvv_lva(*s))).collect::<Vec<_>>();
+fn order_by_mvv_lva(moves: Vec<Chessboard>) -> Vec<Chessboard> {
+    // Your existing sorting logic...
 
-    evaluated_states.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+    // Add logging to check the order of moves
+    let mut ordered_moves = moves.iter().map(|s| (s, eval_mvv_lva(*s))).collect::<Vec<_>>();
+    ordered_moves.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+    let result: Vec<_> = ordered_moves.into_iter().map(|(first, _)| *first).collect();
 
-    let result: Vec<_> = evaluated_states.into_iter().map(|(first, _)| *first).collect();
     return result;
 }
 
@@ -94,7 +96,6 @@ fn mini(a: i32, b : i32) -> i32 {
     return b;
 }
 
-
 fn minimax(board: Chessboard, mut a: i32, mut b: i32, depth: i8, is_white_turn: bool) -> i32 {
     // Increment the minimax call counter.
     MINIMAX_CALL_COUNT.fetch_add(1, Ordering::Relaxed);
@@ -104,8 +105,8 @@ fn minimax(board: Chessboard, mut a: i32, mut b: i32, depth: i8, is_white_turn: 
     }
 
     let legal_moves = board.get_all_possible_moves(is_white_turn);
-    if MINIMAX_HASH_TABLE.lock().unwrap().contains_key(&board.get_hash()) {
-        return *MINIMAX_HASH_TABLE.lock().unwrap().get(&board.get_hash()).unwrap();
+    if MINIMAX_HASH_TABLE.lock().unwrap().contains_key(&board.get_hash(depth as u64)) {
+        return *MINIMAX_HASH_TABLE.lock().unwrap().get(&board.get_hash(depth as u64)).unwrap();
     }
 
     if is_white_turn {
@@ -120,7 +121,7 @@ fn minimax(board: Chessboard, mut a: i32, mut b: i32, depth: i8, is_white_turn: 
                 break;
             }
         }
-        MINIMAX_HASH_TABLE.lock().unwrap().insert(board.get_hash(), current_eval);
+        MINIMAX_HASH_TABLE.lock().unwrap().insert(board.get_hash(depth as u64), current_eval);
         return current_eval;
     } else {
         let mut current_eval = i32::MAX;
@@ -134,40 +135,45 @@ fn minimax(board: Chessboard, mut a: i32, mut b: i32, depth: i8, is_white_turn: 
                 break;
             }
         }
-        MINIMAX_HASH_TABLE.lock().unwrap().insert(board.get_hash(), current_eval);
+        MINIMAX_HASH_TABLE.lock().unwrap().insert(board.get_hash(depth as u64), current_eval);
         return current_eval;
     }
 }
 
-fn init_minimax(board: Chessboard, is_white_turn: bool, depth: i8) -> (Chessboard, i32) {
-    let mut best_move: Option<Chessboard> = None;
-    if is_white_turn {
-        let mut eval = i32::MIN;
-        let moves = board.get_all_possible_moves(is_white_turn);
+fn init_minimax(board: Chessboard, is_white_turn: bool, depth_max: i8) -> (Chessboard, i32) {
+    let mut best_moves: Vec<Option<Chessboard>> = Vec::with_capacity(5);
+    let mut eval = if is_white_turn { i32::MIN } else { i32::MAX };
+    let mut moves = board.get_all_possible_moves(is_white_turn);
+    moves = order_by_mvv_lva(moves);
 
-        for m in moves {
-            let new_eval = minimax(m, i32::MIN, i32::MAX, depth, !is_white_turn);
-            if new_eval > eval {
-                best_move = Some(m);
-                eval = new_eval;
+    for depth in 1..=depth_max {
+        if is_white_turn {
+            for m in &moves {
+                let new_eval = minimax(*m, i32::MIN, i32::MAX, depth, !is_white_turn);
+                if new_eval > eval {
+                    best_moves.push(Some(*m));
+                    eval = new_eval;
+                }
             }
-        }
-        return (best_move.unwrap(), eval);
-
-    } else {
-        let mut eval = i32::MAX;
-        let moves = board.get_all_possible_moves(is_white_turn);
-
-        for m in moves {
-            let new_eval = minimax(m, i32::MIN, i32::MAX, depth, !is_white_turn);
-            if new_eval < eval {
-                best_move = Some(m);
-                eval = new_eval;
+            eval = eval;
+        } else {            
+            for m in &moves {
+                let new_eval = minimax(*m, i32::MIN, i32::MAX, depth, !is_white_turn);
+                if new_eval < eval {
+                    best_moves.push(Some(*m));
+                    eval = new_eval;
+                }
             }
+            eval = eval;
         }
-    
-        return (best_move.unwrap(), eval);
+        println!("depth: {}", depth);
+
+        for mv in best_moves.iter() {
+            moves.retain(|m| *m != *mv.as_ref().unwrap());
+            moves.insert(0, mv.as_ref().unwrap().clone());
+        }
     }
+    return (best_moves[0].as_ref().unwrap().clone(), eval);
 }
 
 

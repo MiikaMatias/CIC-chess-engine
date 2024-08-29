@@ -98,3 +98,16 @@ depth: 4 	 time_taken: 13.96049113s	evaluation: -41  minimax_calls: 129163
 depth: 4 	 time_taken: 14.322351296s	evaluation: -41  minimax_calls: 129164
 depth: 4 	 time_taken: 8.435007865s	evaluation: -41  minimax_calls: 129164
 depth: 4 	 time_taken: 8.459459989s	evaluation: -41  minimax_calls: 129164
+depth: 4 	 time_taken: 0.09092347s	evaluation: -51  minimax_calls: 1157
+depth: 7 	 time_taken: 0.092201681s	evaluation: -51  minimax_calls: 1253
+depth: 7 	 time_taken: 0.089736435s	evaluation: -51  minimax_calls: 1253
+depth: 127 	 time_taken: 0.262587779s	evaluation: -51  minimax_calls: 5093
+depth: 127 	 time_taken: 0.276787952s	evaluation: -51  minimax_calls: 5093
+depth: 4 	 time_taken: 11.239082109s	evaluation: -51  minimax_calls: 182878
+depth: 4 	 time_taken: 11.398167257s	evaluation: -51  minimax_calls: 182876
+depth: 5 	 time_taken: 117.582910177s	evaluation: -51  minimax_calls: 1729503
+depth: 5 	 time_taken: 365.673658844s	evaluation: 51  minimax_calls: 5031069
+depth: 4 	 time_taken: 2.373616098s	evaluation: 68  minimax_calls: 32650
+depth: 4 	 time_taken: 2.526509697s	evaluation: 68  minimax_calls: 32387
+depth: 4 	 time_taken: 2.383769913s	evaluation: 68  minimax_calls: 32646
+depth: 6 	 time_taken: 161.991482787s	evaluation: 68  minimax_calls: 2223192
