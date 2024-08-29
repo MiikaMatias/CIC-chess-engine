@@ -2,7 +2,8 @@
 
 // improvement ideas
 
-// - ELIMINATE BRANCHES
+// - contain dynamic allocation; make-unmake instead of creating new board
+// - eliminate branches
 // - iterative 
 // - sorting MVV-LVA
 // - dynamic programming
@@ -173,7 +174,7 @@ fn init_minimax(board: Chessboard, is_white_turn: bool, depth_max: i8) -> (Chess
             moves.insert(0, mv.as_ref().unwrap().clone());
         }
     }
-    return (best_moves[0].as_ref().unwrap().clone(), eval);
+    return (best_moves[best_moves.len() -1].as_ref().unwrap().clone(), eval);
 }
 
 

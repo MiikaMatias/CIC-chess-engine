@@ -111,3 +111,4 @@ depth: 4 	 time_taken: 2.373616098s	evaluation: 68  minimax_calls: 32650
 depth: 4 	 time_taken: 2.526509697s	evaluation: 68  minimax_calls: 32387
 depth: 4 	 time_taken: 2.383769913s	evaluation: 68  minimax_calls: 32646
 depth: 6 	 time_taken: 161.991482787s	evaluation: 68  minimax_calls: 2223192
+depth: 5 	 time_taken: 12.017508727s	evaluation: 68  minimax_calls: 188285

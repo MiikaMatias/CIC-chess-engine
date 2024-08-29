@@ -6,7 +6,7 @@ pub const PRECOMP_BISHOP: bool = false;
 
 pub const EXTENDED_CENTER:u64 = 66229406269440;
 pub const PIECE_COUNT_EC: u64 = 16;
-pub const DEPTH: i8 = 6;
+pub const DEPTH: i8 = 5;
 
 pub const PAWN_VAL:i32 = 10;
 pub const KNIGHT_VAL:i32 = 30;
