@@ -92,24 +92,16 @@ fn mini(a: i32, b : i32) -> i32 {
     return b;
 }
 
-<<<<<<< HEAD
-fn minimax(board: Chessboard, mut a: i32, mut b : i32, depth: i8, is_white_turn: bool) -> i32 {
-=======
 
 fn minimax(board: Chessboard, mut a: i32, mut b: i32, depth: i8, is_white_turn: bool) -> i32 {
     // Increment the minimax call counter.
     MINIMAX_CALL_COUNT.fetch_add(1, Ordering::Relaxed);
 
->>>>>>> fb1eea7 (pawn precomps)
     if depth == 0 {
         return primitive_heuristic_eval(board);
     }
 
-<<<<<<< HEAD
-    let legal_moves = order_by_mvv_lva(board.get_all_possible_moves(is_white_turn));
-=======
     let legal_moves = (board.get_all_possible_moves(is_white_turn));
->>>>>>> fb1eea7 (pawn precomps)
 
     if is_white_turn {
         let mut current_eval = i32::MIN;
