@@ -548,7 +548,6 @@ pub fn find_set_bits_positions(mut num: u64) -> Vec<u64> {
 
 pub fn is_check(state: Chessboard, is_white: bool) -> bool {
     let opponent_threatens: u64 = state.threatened_squares(is_white);
-
     if is_white {
         (state.get_white_kings() & opponent_threatens) == state.get_white_kings()
     } else {
@@ -1008,7 +1007,7 @@ mod tests {
         chessboard.move_piece(44, 43, true);
         chessboard.move_piece(2, 29, true);
         println!("{}", display_board(&chessboard));
-        let legal = chessboard.move_piece(36, 27, false);    
+        let legal = chessboard.move_piece(36, 27, true);    
         println!("{}", display_board(&chessboard));
         assert_eq!(legal, false);
     }
@@ -1077,10 +1076,6 @@ mod tests {
         let chessboard: Chessboard = Chessboard::new(precomps);
 
         let white_states = chessboard.get_all_possible_moves(true);
-        let black_states = chessboard.get_all_possible_moves(false);
-        for board in black_states {
-            println!("{}", display_board(&board));
-        }
         let black_states = chessboard.get_all_possible_moves(false);
         assert_eq!(20, white_states.len());
         assert_eq!(20, black_states.len());
