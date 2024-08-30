@@ -2,16 +2,17 @@
 
 // improvement ideas
 
+// - make playable
 // - contain dynamic allocation; make-unmake instead of creating new board
 // - eliminate branches
 // - iterative 
 // - sorting MVV-LVA
 // - dynamic programming
 // - nuanced heuristics (killer?)
-// - parallel processing or whatever
 // - handle ties
-// - add opening book 
+// - add opening book, mobility, pawn position, king position, passed pawns. 
 // - test some obvious evals
+// - parallel processing or whatever
 // - add counting so that each move computes material in board.rs
 
 use crate::board::Chessboard;

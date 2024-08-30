@@ -19,6 +19,8 @@ pub struct Chessboard {
     pub last_captured:u8,
     pub last_capturee:u8,
 
+    pub is_white: bool,
+
     pub precomps: &'static precomps::Precomps,
 }
 
@@ -45,6 +47,8 @@ impl Chessboard {
 
             last_captured: 0,
             last_capturee: 0,
+
+            is_white: true,
 
             precomps: precomps
         }

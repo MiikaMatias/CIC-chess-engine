@@ -112,3 +112,7 @@ depth: 4 	 time_taken: 2.526509697s	evaluation: 68  minimax_calls: 32387
 depth: 4 	 time_taken: 2.383769913s	evaluation: 68  minimax_calls: 32646
 depth: 6 	 time_taken: 161.991482787s	evaluation: 68  minimax_calls: 2223192
 depth: 5 	 time_taken: 12.017508727s	evaluation: 68  minimax_calls: 188285
+depth: 2 	 time_taken: 0.17653535s	evaluation: 51  minimax_calls: 2041
+depth: 5 	 time_taken: 12.861052516s	evaluation: 68  minimax_calls: 187891
+depth: 5 	 time_taken: 16.732518561s	evaluation: 0  minimax_calls: 246198
+depth: 4 	 time_taken: 1.3132284140000001s	evaluation: 0  minimax_calls: 20698
