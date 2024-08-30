@@ -100,6 +100,36 @@ pub fn translate_move(uci: &str) -> [u64; 2] {
     return [10000, 100000];
 }
 
+pub fn get_uci_move(cb_before: &Chessboard, cb_after: &Chessboard) -> String {
+    let mut from_square: u64 = 0;
+    let mut to_square: u64 = 0;
+
+    for pos in 0..64 {
+        let mask = 1u64 << pos;
+        let piece_before = cb_before.white_pieces & mask != 0 || cb_before.black_pieces & mask != 0;
+        let piece_after = cb_after.white_pieces & mask != 0 || cb_after.black_pieces & mask != 0;
+
+        if piece_before && !piece_after {
+            from_square = pos;
+        } else if !piece_before && piece_after {
+            to_square = pos;
+        }
+    }
+
+    let file_from = (from_square % 8) as u8;
+    let rank_from = (7 - (from_square / 8)) as u8;
+    let file_to = (to_square % 8) as u8;
+    let rank_to = (7 - (to_square / 8)) as u8;
+
+    let file_from_char = (file_from + b'a') as char;
+    let rank_from_char = (rank_from + 1 + b'0') as char;
+    let file_to_char = (file_to + b'a') as char;
+    let rank_to_char = (rank_to + 1 + b'0') as char;
+
+    format!("{}{}{}{}", file_from_char, rank_from_char, file_to_char, rank_to_char)
+}
+
+
 pub fn num_to_coord(num: u64) -> String {
     let file = num % 8;
     let rank = 7 - (num / 8);
@@ -300,5 +330,15 @@ mod tests {
         // play a standard opening 
         apply_fen(&mut chessboard, "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
         assert_eq!(generate_fen(&chessboard), "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - e3 0 1");
+    }
+
+    #[test]
+    fn test_get_uci_move() {
+        let precomps = &PRECOMPS;
+        let mut chessboard_1 = Chessboard::new(&precomps);
+        apply_fen(&mut chessboard_1, "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
+        let mut chessboard_2 = Chessboard::new(&precomps);
+        apply_fen(&mut chessboard_2, "rnbqkbnr/ppppppp1/7p/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
+        assert_eq!(get_uci_move(&chessboard_1, &chessboard_2), "h7h6");
     }
 }
