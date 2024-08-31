@@ -3,10 +3,9 @@ pub const BISHOP_FILE_PATH: &'static str = "/home/miika/Projects/CIC-chess-engin
 pub const PRECOMP_ROOK: bool = false;
 pub const PRECOMP_BISHOP: bool = false;
 
-
+pub const CENTER: u64 = 258704670720;
 pub const EXTENDED_CENTER:u64 = 66229406269440;
-pub const PIECE_COUNT_EC: u64 = 16;
-pub const DEPTH: i8 = 4;
+pub const DEPTH: i8 = 3;
 
 pub const PAWN_VAL:i32 = 10;
 pub const KNIGHT_VAL:i32 = 30;

@@ -1,62 +1,125 @@
 use std::io::{self, BufRead};
 use std::collections::HashMap;
-use std::mem::size_of;
 use crate::board::Chessboard;
-use crate::graphics::display_board;
+use crate::graphics::*;
 use crate::engine::search_best_move;
 
 pub fn uci_loop(mut board: Chessboard) {
     let stdin = io::stdin();
     let mut lines = stdin.lock().lines().map(|l| l.unwrap());
 
-    println!("id name Magachess");
+    println!("id name CIC");
     println!("id author Kontrakti");
-    println!("uciok");
 
-    let mut is_white_turn = true;
+    let mut is_white_turn: bool = true;
 
     loop {
-        let input = lines.next().unwrap();
+        let input = match lines.next() {
+            Some(line) => line,
+            None => {
+                eprintln!("Error: Unexpected end of input.");
+                break;
+            }
+        };        
         let input_split: Vec<&str> = input.split_whitespace().collect();
-    
+        
         match input_split[0] {
             "uci" => {
-                println!("option name OptionName type OptionType default OptionDefault");
                 println!("uciok");
             }
             "isready" => {
                 println!("readyok");
             }
+            "getfen" => {
+                println!("{}", generate_fen(&board));
+            }
             "ucinewgame" => {
-                is_white_turn = true;
                 board = Chessboard::new(board.precomps);
             }
             "position" => {
-                if input_split[1] == "startpos" && input_split[2] == "moves" {
+                if input_split.len() == 1 {
+                    eprintln!("Error: Missing position option.");
+                    continue;
+                }
+                if input_split[1] != "startpos" {
+                    eprintln!("Error: Unknown position option.");
+                    continue;
+                }
+                if input_split.len() == 2 {
+                    apply_fen(&mut board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+                    continue;
+                }
+
+                if input_split[2] == "moves" {
+                    apply_fen(&mut board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
                     for movestr in input_split.iter().skip(3) {
                         let move_to_play = translate_move(movestr);
-
-                        let piece_moved = board.move_piece(move_to_play[0], move_to_play[1], is_white_turn);
-                        if !piece_moved {
-                            println!("The move {} -> {} was not successful", move_to_play[0], move_to_play[1]);
-                            continue;
-                        } else {
-                            println!("moved from {} to {}", move_to_play[0], move_to_play[1]);
-                            println!("{}", display_board(&board));
-                        }
-                        is_white_turn = !is_white_turn;
+                        board.move_piece(move_to_play[0], move_to_play[1]);
                     }
+                    continue;
+                }
+                if input_split[2] == "fen" {
+                    apply_fen(&mut board, &input_split[3..].join(" "));
+                    continue;
                 }
             }
             "go" => {
+                /*
                 let size_of_board_bytes = size_of::<Chessboard>();
                 println!("The size of the board is {} B", size_of_board_bytes);
-                println!("{}", display_board(&board));
-                board = search_best_move(board, is_white_turn);
-                println!("{}", display_board(&board));    
+                */
+                let new_board = search_best_move(board);
+                println!("bestmove {}",get_uci_move(&board, &new_board, board.is_white));    
+                apply_fen(&mut board, &generate_fen(&new_board));
             }
             "quit" => {
                 break;
+            }
+            "br" => {
+                println!("{}", display_board(&board));
+            }
+            "ma" => {
+                if input_split.len() == 0 {
+                    continue;
+                }
+                match input_split[1].parse::<u64>() {
+                    Ok(pos) => {
+                        let is_white = board.white_pieces & 1u64 << pos == 1u64 << pos;
+                        let orig = board.is_white;
+                        board.is_white = is_white;
+                        let ma = board.get_all_moves_at_position(pos);
+                        println!("{:?}", ma);
+                        let mut ucima = Vec::<String>::new();
+                        for m in ma {
+                            ucima.push(format!("{}{}", num_to_coord(pos), num_to_coord(m)));
+                        }
+                        println!("{:?}", ucima);
+                        board.is_white = orig;
+                    },
+                    Err(_) => {
+                        println!("Error: Invalid position");
+                    }
+                }
+            }
+            "ep" => {
+                println!("{}", display_bit_board(board.en_passant_square));
+            }
+            "flip" => {
+                is_white_turn = !is_white_turn;
+            }
+            "gp" => {
+                match input_split[1] {
+                    "queen" => {
+                        println!("{}", display_bit_board(board.queen));
+                    }
+                    _ => {
+                        println!("Unknown command");
+                    }
+                }
+            }
+            "mv" => {
+                let move_to_play = translate_move(&input_split[1]);
+                board.move_piece(move_to_play[0], move_to_play[1]);
             }
             _ => {
                 println!("Unknown command");
@@ -100,35 +163,47 @@ pub fn translate_move(uci: &str) -> [u64; 2] {
     return [10000, 100000];
 }
 
-pub fn get_uci_move(cb_before: &Chessboard, cb_after: &Chessboard) -> String {
+pub fn get_uci_move(cb_before: &Chessboard, cb_after: &Chessboard, is_white: bool) -> String {
     let mut from_square: u64 = 0;
     let mut to_square: u64 = 0;
 
     for pos in 0..64 {
         let mask = 1u64 << pos;
-        let piece_before = cb_before.white_pieces & mask != 0 || cb_before.black_pieces & mask != 0;
-        let piece_after = cb_after.white_pieces & mask != 0 || cb_after.black_pieces & mask != 0;
+        let piece_before = if is_white {
+            cb_before.white_pieces & mask != 0
+        } else {
+            cb_before.black_pieces & mask != 0
+        };
+        let piece_after = if is_white {
+            cb_after.white_pieces & mask != 0
+        } else {
+            cb_after.black_pieces & mask != 0
+        };
 
         if piece_before && !piece_after {
             from_square = pos;
-        } else if !piece_before && piece_after {
+        }
+        if !piece_before && piece_after {
             to_square = pos;
         }
     }
 
-    let file_from = (from_square % 8) as u8;
-    let rank_from = (7 - (from_square / 8)) as u8;
-    let file_to = (to_square % 8) as u8;
-    let rank_to = (7 - (to_square / 8)) as u8;
+    let promotion = if is_white && to_square < 8{
+        cb_after.queen & (1u64 << to_square) != 0
+    } else if !is_white && to_square >= 56 {
+        cb_after.queen & (1u64 << to_square) != 0
+    } else {
+        false
+    };
 
-    let file_from_char = (file_from + b'a') as char;
-    let rank_from_char = (rank_from + 1 + b'0') as char;
-    let file_to_char = (file_to + b'a') as char;
-    let rank_to_char = (rank_to + 1 + b'0') as char;
+    let move_str = format!("{}{}", num_to_coord(from_square), num_to_coord(to_square));
 
-    format!("{}{}{}{}", file_from_char, rank_from_char, file_to_char, rank_to_char)
+    if promotion {
+        return format!("{}q", move_str); // Assuming promotion to queen; adjust if needed
+    }
+
+    move_str
 }
-
 
 pub fn num_to_coord(num: u64) -> String {
     let file = num % 8;
@@ -245,7 +320,7 @@ pub fn generate_fen(cb: &Chessboard) -> String {
     let mut fen = String::new();
     let mut empty_count = 0;
 
-    for rank in (0..8) {
+    for rank in 0..8 {
         for file in 0..8 {
             let pos = rank * 8 + file;
             let piece = if (cb.pawn & (1u64 << pos)) != 0 {
@@ -339,6 +414,6 @@ mod tests {
         apply_fen(&mut chessboard_1, "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
         let mut chessboard_2 = Chessboard::new(&precomps);
         apply_fen(&mut chessboard_2, "rnbqkbnr/ppppppp1/7p/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
-        assert_eq!(get_uci_move(&chessboard_1, &chessboard_2), "h7h6");
+        assert_eq!(get_uci_move(&chessboard_1, &chessboard_2, false), "h7h6");
     }
 }

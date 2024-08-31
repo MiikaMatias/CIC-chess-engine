@@ -2,7 +2,7 @@ use crate::precomps;
 use crate::masks::*;
 use crate::graphics::*;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Chessboard {
     pub pawn: u64, 
     pub rook: u64, 
@@ -63,74 +63,71 @@ impl Chessboard {
             .wrapping_add(self.king.wrapping_mul(self.precomps.king_hash)).wrapping_add(depth.wrapping_mul(self.precomps.turn_hash))
     }
     
-    pub fn get_pawn_move_mask(&self, pos: u64, is_white: bool) -> u64 {
+    pub fn get_pawn_move_mask(&self, pos: u64) -> u64 {
         if self.pawn | (1u64 << pos) != self.pawn {
             return 0
         }
 
-        let (moves, attacks) = self.precomps.get_pawn_move_mask(pos, is_white);
-        let mut preliminary = 0;
+        let (moves, attacks) = self.precomps.get_pawn_move_mask(pos, self.is_white);
         let all_pieces = self.get_all_pieces();
 
-        if is_white {
+        if self.is_white {
             let move_decider = all_pieces | ((all_pieces & !(1u64 << pos)) >> 8);
-            preliminary = !move_decider & moves & !all_pieces;
+            let preliminary = !move_decider & moves & !all_pieces;
 
             return preliminary | (attacks & self.black_pieces)
 
         } else {
             let move_decider = all_pieces | ((all_pieces & !(1u64 << pos)) << 8);
-            preliminary = !move_decider & moves & !all_pieces;
+            let preliminary = !move_decider & moves & !all_pieces;
 
             return preliminary | (attacks & self.white_pieces) 
         }
     }  
 
-    pub fn _get_queen_move_mask(&self, pos: u64) -> u64 {
+    pub fn get_queen_move_mask(&self, pos: u64) -> u64 {
         self.precomps.get_rook_move_mask(pos, self.get_all_pieces()) | self.precomps.get_bishop_move_mask(pos, self.get_all_pieces())
     }
 
-    pub fn get_all_moves_at_position(&self, pos: u64, is_white: bool) -> Vec<u64> {
-        let white_mask = -(is_white as i64) as u64;
+    pub fn get_all_moves_at_position(&self, pos: u64) -> Vec<u64> {
+        let white_mask = -(self.is_white as i64) as u64;
         let black_mask = !white_mask; 
         
         let pieces = (self.white_pieces & white_mask) | (self.black_pieces & black_mask);
+        let all_pieces = self.get_all_pieces();
         
         let pos_mask = 1u64 << pos;
         let empty_squares = !pieces;
     
-        let pawn_moves = (self.get_pawn_move_mask(pos, is_white) & empty_squares) * ((self.pawn & pos_mask) >> pos);
+        let pawn_moves = (self.get_pawn_move_mask(pos) & empty_squares) * ((self.pawn & pos_mask) >> pos);
         let knight_moves = (self.precomps.get_knight_move_mask(pos) & empty_squares) * ((self.knight & pos_mask) >> pos);
-        let bishop_moves = (self.precomps.get_bishop_move_mask(pos, self.get_all_pieces()) & empty_squares) * ((self.bishop & pos_mask) >> pos);
-        let rook_moves = (self.precomps.get_rook_move_mask(pos, self.get_all_pieces()) & empty_squares) * ((self.rook & pos_mask) >> pos);
+        let bishop_moves = (self.precomps.get_bishop_move_mask(pos, all_pieces) & empty_squares) * ((self.bishop & pos_mask) >> pos);
+        let rook_moves = (self.precomps.get_rook_move_mask(pos, all_pieces) & empty_squares) * ((self.rook & pos_mask) >> pos);
         let king_moves = (get_king_move_mask(pos) & empty_squares) * ((self.king & pos_mask) >> pos);
-        let queen_moves = (self._get_queen_move_mask(pos) & empty_squares) * (((!(self.pawn | self.knight | self.bishop | self.rook | self.king) & pos_mask) >> pos));
+        let queen_moves = (self.get_queen_move_mask(pos) & empty_squares) * (((!(self.pawn | self.knight | self.bishop | self.rook | self.king) & pos_mask) >> pos));
         
-        let all_moves = pawn_moves | knight_moves | bishop_moves | rook_moves | king_moves | queen_moves;
+        let all_moves = (pawn_moves | knight_moves | bishop_moves | rook_moves | king_moves | queen_moves) * (all_pieces & pos_mask).min(1);
         
         find_set_bits_positions(all_moves)
     }
 
-    pub fn get_all_possible_moves(&self, is_white: bool) -> Vec<Chessboard> {
-        // this will very likely get rough with memory; consider having an array of values instead
-
-        // TRY OPTIMISING
+    // always returns only one sides' moves
+    pub fn get_all_possible_moves(&self) -> Vec<Chessboard> {
         let mut board_array: Vec<Chessboard> = Vec::new();
         let _i = 0;
 
-        let pieces = if is_white {
-            [self.get_white_pawns(), self.get_white_bishops(), self.get_white_kings(), self.get_white_queens(), self.get_white_rooks(), self.get_white_knights()]
-        } else {
-            [self.get_black_pawns(), self.get_black_bishops(), self.get_black_kings(), self.get_black_queens(), self.get_black_rooks(), self.get_black_knights()]
-        };
+        let pieces =  [self.get_white_pawns(), self.get_white_bishops(), self.get_white_kings(), self.get_white_queens(), self.get_white_rooks(), self.get_white_knights(), 
+        self.get_black_pawns(), self.get_black_bishops(), self.get_black_kings(), self.get_black_queens(), self.get_black_rooks(), self.get_black_knights()];
 
-        for piece in pieces {
-            let positions_of_pieces = find_set_bits_positions(piece);
+        let increment = 6 * !self.is_white as u64;
+
+        for i in 0..6 {
+            let positions_of_pieces = find_set_bits_positions(pieces[i+increment as usize]);
             for position in positions_of_pieces {
-                let moves_of_position = self.get_all_moves_at_position(position, is_white);
+                let moves_of_position = self.get_all_moves_at_position(position);
                 for move_target in moves_of_position {
                     let mut new_chessboard = *self;
-                    let is_legal = new_chessboard.move_piece(position, move_target, is_white);
+                    let is_legal = new_chessboard.move_piece(position, move_target);
                     if is_legal {
                         board_array.push(new_chessboard);
                     }
@@ -139,12 +136,6 @@ impl Chessboard {
         }
 
         board_array
-    }
-
-    // FASTER WAY TO DO THIS
-    pub fn check_win(&self, is_white: bool) -> bool {
-        return (self.get_all_possible_moves(!is_white).len() == 0) &&
-                (self.get_all_possible_moves(is_white).len() != 0)
     }
 
     pub fn get_threat_masks(&self, is_white: bool) -> [u64; 6] {
@@ -190,7 +181,7 @@ impl Chessboard {
     }
     
     pub fn threatened_squares(&self, is_white: bool) -> u64 {
-        return self.get_threat_masks(!is_white).iter().cloned().fold(0, |acc, x| acc | x);
+        return self.get_threat_masks(is_white).iter().cloned().fold(0, |acc, x| acc | x);
     }
 
     pub fn get_all_pieces(&self) -> u64 {
@@ -253,7 +244,7 @@ impl Chessboard {
         return self.king & self.black_pieces;
     }
 
-    pub fn _self_check_check(&self, from: u64, to: u64, is_white: bool) -> bool {
+    pub fn _self_check_check(&self, from: u64, to: u64) -> bool {
         let mut next_state = *self;
         if next_state.pawn | (1u64 << from) == next_state.pawn {
             next_state.move_pawn(from, to);
@@ -268,15 +259,15 @@ impl Chessboard {
         } else if next_state.king | (1u64 << from) == next_state.king {
             next_state.move_king(from, to);
         }
-        is_check(next_state, is_white)
+        next_state.is_white = !next_state.is_white;
+        is_check(next_state, !next_state.is_white)
     }
 
-    pub fn _check_en_passant(&self, pos: u64, return_mask: u64, is_white: bool) -> u64 {
-        if is_white {
-            if self.en_passant_square == pos - 7 || self.en_passant_square == pos - 9 {
-                return return_mask | self.en_passant_square;
-            }
-        } else if self.en_passant_square == pos + 7 || self.en_passant_square == pos + 9 {
+    pub fn check_en_passant(&self, pos: u64, return_mask: u64) -> u64 {
+        if self.en_passant_square as i64 - pos as i64 == 7 || 
+            self.en_passant_square as i64 - pos as i64 == 9 ||
+            pos as i64 - self.en_passant_square as i64 == 7 ||
+            pos as i64 - self.en_passant_square as i64 == 9 {
             return return_mask | self.en_passant_square;
         }
         return_mask
@@ -300,9 +291,9 @@ impl Chessboard {
         }
     }
 
-    pub fn move_piece(&mut self, from: u64, to: u64, is_white: bool) -> bool {
+    pub fn move_piece(&mut self, from: u64, to: u64) -> bool {
 
-        if self._self_check_check(from, to, is_white) {
+        if self._self_check_check(from, to) {
             return false;
         }
 
@@ -335,7 +326,7 @@ impl Chessboard {
         } else if self.king | (1u64 << from) == self.king {
             self.move_king(from, to);
         }
-
+        self.is_white = !self.is_white;
         return true
     }
 
@@ -376,7 +367,7 @@ impl Chessboard {
             }
         }
     
-        if to > from && (to - from == 16) { 
+        if to > from && (to - from == 16) {
             self.en_passant_square = to_mask >> 8; 
         } else if from > to && (from - to == 16) { 
             self.en_passant_square = to_mask << 8; 
@@ -500,11 +491,11 @@ impl Chessboard {
         if is_white {
             if ((self.get_white_pawns() >> pos) & 1u64) == 1 {
                 if (1u64 << pos | FILE_H_MASK) == FILE_H_MASK {
-                    return self._check_en_passant(pos, (1u64 << (pos-9)) & self.black_pieces, is_white);
+                    return self.check_en_passant(pos, (1u64 << (pos-9)) & self.black_pieces);
                 } else if (1u64 << pos | FILE_A_MASK) == FILE_A_MASK {
-                    return  self._check_en_passant(pos, (1u64 << (pos-7)) & self.black_pieces, is_white);
+                    return  self.check_en_passant(pos, (1u64 << (pos-7)) & self.black_pieces);
                 } else {
-                    return  self._check_en_passant(pos, ((1u64 << (pos-9))|(1u64 << (pos-7))) & self.black_pieces, is_white);
+                    return  self.check_en_passant(pos, ((1u64 << (pos-9))|(1u64 << (pos-7))) & self.black_pieces);
                 }
             } else if ((self.get_white_knights() >> pos) & 1u64) == 1 {   
                 return self.precomps.get_knight_move_mask(pos) & self.black_pieces
@@ -513,7 +504,7 @@ impl Chessboard {
             } else if ((self.get_white_bishops() >> pos) & 1u64) == 1 {   
                 return self.precomps.get_bishop_move_mask(pos, self.get_all_pieces()) & self.black_pieces
             } else if ((self.get_white_queens() >> pos) & 1u64) == 1 {   
-                return self._get_queen_move_mask(pos) & self.black_pieces
+                return self.get_queen_move_mask(pos) & self.black_pieces
             } else if ((self.get_white_kings() >> pos) & 1u64) == 1 {   
                 return get_king_move_mask(pos) & self.black_pieces
             } 
@@ -521,11 +512,11 @@ impl Chessboard {
         }
         if ((self.get_black_pawns() >> pos) & 1u64) == 1 {
             if (1u64 << pos | FILE_H_MASK) == FILE_H_MASK  {
-                return  self._check_en_passant(pos, (1u64 << (pos+7)) & self.white_pieces, is_white);
+                return  self.check_en_passant(pos, (1u64 << (pos+7)) & self.white_pieces);
             } else if (1u64 << pos | FILE_A_MASK) == FILE_A_MASK {
-                return  self._check_en_passant(pos, (1u64 << (pos+9)) & self.white_pieces, is_white);
+                return  self.check_en_passant(pos, (1u64 << (pos+9)) & self.white_pieces);
             } else {
-                return  self._check_en_passant(pos, ((1u64 << (pos+9))|(1u64 << (pos+7))) & self.white_pieces, is_white);
+                return  self.check_en_passant(pos, ((1u64 << (pos+9))|(1u64 << (pos+7))) & self.white_pieces);
             }
         } else if ((self.get_black_knights() >> pos) & 1u64) == 1 {   
             return self.precomps.get_knight_move_mask(pos) & self.white_pieces
@@ -534,13 +525,12 @@ impl Chessboard {
         } else if ((self.get_black_bishops() >> pos) & 1u64) == 1 {   
             return self.precomps.get_bishop_move_mask(pos, self.get_all_pieces()) & self.white_pieces
         } else if ((self.get_black_queens() >> pos) & 1u64) == 1 {   
-            return self._get_queen_move_mask(pos) & self.white_pieces
+            return self.get_queen_move_mask(pos) & self.white_pieces
         } else if ((self.get_black_kings() >> pos) & 1u64) == 1 {   
             return get_king_move_mask(pos) & self.white_pieces
         }
         0
     }
-        
 
 }
 
@@ -560,9 +550,10 @@ pub fn find_set_bits_positions(mut num: u64) -> Vec<u64> {
     positions
 }
 
-pub fn is_check(state: Chessboard, is_white: bool) -> bool {
-    let opponent_threatens: u64 = state.threatened_squares(is_white);
-    if is_white {
+pub fn is_check(state: Chessboard, towards_white: bool) -> bool {
+    // get squares threatened by the opponent
+    let opponent_threatens: u64 = state.threatened_squares(!towards_white);
+    if towards_white {
         (state.get_white_kings() & opponent_threatens) == state.get_white_kings()
     } else {
         (state.get_black_kings() & opponent_threatens) == state.get_black_kings()
@@ -613,7 +604,7 @@ pub fn get_king_move_mask(pos: u64) -> u64 {
 mod tests {
     use super::*;
     use std::sync::LazyLock;
-    use crate::graphics::*;
+    use crate::{graphics::*, uci_wrapper::apply_fen};
 
     static PRECOMPS: LazyLock<precomps::Precomps> = LazyLock::new(|| precomps::Precomps::new());
 
@@ -667,7 +658,7 @@ mod tests {
     fn test_get_pawn_move_mask_white() {
         let precomps = &PRECOMPS;
         let chessboard = Chessboard::new(&precomps);
-        let result = chessboard.get_pawn_move_mask(55, true);
+        let result = chessboard.get_pawn_move_mask(55);
 
         assert_eq!(result, 141287244169216);
     }
@@ -675,8 +666,9 @@ mod tests {
     #[test]
     fn test_get_pawn_move_mask_black() {
         let precomps = &PRECOMPS;
-        let chessboard = Chessboard::new(&precomps);
-        let result = chessboard.get_pawn_move_mask(15, false);
+        let mut chessboard = Chessboard::new(&precomps);
+        chessboard.is_white = false;
+        let result = chessboard.get_pawn_move_mask(15);
         println!("{} ", display_bit_board(result));
 
         assert_eq!(result, 2155872256);
@@ -686,7 +678,7 @@ mod tests {
     fn test_get_pawn_move_mask_no_pawn() {
         let precomps = &PRECOMPS;
         let chessboard = Chessboard::new(&precomps);
-        let result = chessboard.get_pawn_move_mask(36, false);
+        let result = chessboard.get_pawn_move_mask(36);
 
         assert_eq!(result, 0);
     }
@@ -695,7 +687,7 @@ mod tests {
     fn test_move_white_pawn_1_board_value() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard.move_piece(55, 47, true);
+        chessboard.move_piece(55, 47);
         println!("{} ", display_bit_board(chessboard.get_all_pieces()));
 
         assert_eq!(chessboard.get_white_pawns(), 35888059530608640);
@@ -705,7 +697,7 @@ mod tests {
     fn test_move_black_pawn_2_board_value() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard.move_piece(9, 25, false);
+        chessboard.move_piece(9, 25);
 
         assert_eq!(chessboard.get_black_pawns(), 33619200);
     }
@@ -714,10 +706,10 @@ mod tests {
     fn test_white_pawn_capture() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard.move_piece(48, 32, true);
-        chessboard.move_piece(32, 24, true);
-        chessboard.move_piece(24, 16, true);
-        chessboard.move_piece(16, 9, true);
+        chessboard.move_piece(48, 32);
+        chessboard.move_piece(32, 24);
+        chessboard.move_piece(24, 16);
+        chessboard.move_piece(16, 9);
         assert_eq!(chessboard.get_all_pieces(), 18446181123756195839);
     }
 
@@ -725,10 +717,10 @@ mod tests {
     fn test_black_pawn_capture() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard.move_piece(9,25, false);
-        chessboard.move_piece(25, 33, false);
-        chessboard.move_piece(33, 41, false);
-        chessboard.move_piece(41, 48, false);
+        chessboard.move_piece(9,25);
+        chessboard.move_piece(25, 33);
+        chessboard.move_piece(33, 41);
+        chessboard.move_piece(41, 48);
         assert_eq!(chessboard.get_all_pieces(), 18446462598732905983);
     }
 
@@ -737,15 +729,15 @@ mod tests {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
         
-        chessboard.move_piece(51, 35, true);
-        chessboard.move_piece(11, 27, false);
+        chessboard.move_piece(51, 35);
+        chessboard.move_piece(11, 27);
         // test if can move forwards if occupied
-        chessboard.move_piece(51, 27, true);
-        chessboard.move_piece(12, 28, false);
+        chessboard.move_piece(51, 27);
+        chessboard.move_piece(12, 28);
         // we capture with white
-        chessboard.move_piece(35, 28, true);
+        chessboard.move_piece(35, 28);
         // we capture with black
-        chessboard.move_piece(21, 28, false);
+        chessboard.move_piece(21, 28);
     
         
         assert_eq!(chessboard.get_all_pieces(), 18444210799321868287);
@@ -755,24 +747,14 @@ mod tests {
     fn test_pawn_jump_not_allowed() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        
-        // bring white pawn to front of black pieces
-        chessboard.move_piece(51, 35, true);
-        chessboard.move_piece(35, 27, true);
-        chessboard.move_piece(27, 19, true);
+        apply_fen(&mut chessboard, "rnbqkbnr/pppppppp/P7/8/8/P7/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+   
         println!("{} ", display_board(&chessboard));
-        // bring black pawn to front of white pieces
-        chessboard.move_piece(8, 24, false);
-        chessboard.move_piece(24, 32, false);
-        chessboard.move_piece(32, 40, false);
-        println!("{} ", display_board(&chessboard));
-
-        //JUMP!
-        let m1 = chessboard.get_pawn_move_mask(48, true);
-        let m2= chessboard.get_pawn_move_mask(11, false);
-
-        println!("{}\n{}", display_bit_board(m1), display_bit_board(m2));
+        let m1 = chessboard.get_pawn_move_mask(48);
         assert_eq!(m1, 0);
+        chessboard.is_white = false;
+        let m2= chessboard.get_pawn_move_mask(8);
+        println!("{}\n{}", display_bit_board(m1), display_bit_board(m2));
         assert_eq!(m2, 0);
     }
 
@@ -781,10 +763,10 @@ mod tests {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
         // create square
-        chessboard.move_piece(48, 32, true);
+        chessboard.move_piece(48, 32);
         assert_eq!(chessboard.en_passant_square, (1u64 << 40));
         // make sure it's gone
-        chessboard.move_piece(32, 24, true);
+        chessboard.move_piece(32, 24);
         assert_eq!(chessboard.en_passant_square, 0);
     }
 
@@ -793,21 +775,21 @@ mod tests {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
         // bring white pawn to front of black pieces
-        chessboard.move_piece(51, 35, true);
-        chessboard.move_piece(35, 27, true);
+        chessboard.move_piece(51, 35);
+        chessboard.move_piece(35, 27);
 
         // bring black pawn to front of white pieces
-        chessboard.move_piece(8, 24, false);
-        chessboard.move_piece(24, 32, false);
+        chessboard.move_piece(8, 24);
+        chessboard.move_piece(24, 32);
 
         //JUMP!
-        chessboard.move_piece(49, 33, true);
+        chessboard.move_piece(49, 33);
         // eat
-        let epb: bool =chessboard.move_piece(32, 41, false);
+        let epb: bool =chessboard.move_piece(32, 41);
         //JUMP!
-        chessboard.move_piece(12, 28, false);
+        chessboard.move_piece(12, 28);
         //eat
-        let epw =chessboard.move_piece(27, 20, true);
+        let epw =chessboard.move_piece(27, 20);
         assert_eq!(chessboard.get_all_pieces(), 18443650056848469759);
         assert!(epb);
         assert!(epw);
@@ -817,9 +799,9 @@ mod tests {
     fn test_white_knight_capture() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard.move_piece(57, 40, true);
-        chessboard.move_piece(40, 25, true);
-        chessboard.move_piece(25, 8, true);
+        chessboard.move_piece(57, 40);
+        chessboard.move_piece(40, 25);
+        chessboard.move_piece(25, 8);
         assert_eq!(chessboard.get_all_pieces(), 18302347410657050623)
     }
 
@@ -827,9 +809,9 @@ mod tests {
     fn test_black_knight_capture() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard.move_piece(1,18, false);
-        chessboard.move_piece(18, 35, false);
-        chessboard.move_piece(35, 52, false);
+        chessboard.move_piece(1,18);
+        chessboard.move_piece(18, 35);
+        chessboard.move_piece(35, 52);
         assert_eq!(chessboard.get_all_pieces(), 18446462598732906493)
     }
 
@@ -900,16 +882,16 @@ mod tests {
     fn test_rook_move_mask() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard.get_pawn_move_mask(55, true);
-        chessboard.get_pawn_move_mask(15, false);
-        chessboard.move_piece(51, 35, true);
-        chessboard.move_piece(35, 27, true);
-        chessboard.move_piece(8, 24, false);
-        chessboard.move_piece(24, 32, false);
-        chessboard.move_piece(49, 33, true);
-        chessboard.move_piece(32, 41, false);
-        chessboard.move_piece(12, 28, false);
-        chessboard.move_piece(27, 20, true);
+        chessboard.get_pawn_move_mask(55);
+        chessboard.get_pawn_move_mask(15);
+        chessboard.move_piece(51, 35);
+        chessboard.move_piece(35, 27);
+        chessboard.move_piece(8, 24);
+        chessboard.move_piece(24, 32);
+        chessboard.move_piece(49, 33);
+        chessboard.move_piece(32, 41);
+        chessboard.move_piece(12, 28);
+        chessboard.move_piece(27, 20);
         let result = chessboard.precomps.get_rook_move_mask(47, chessboard.get_all_pieces());
         assert_eq!(result, 36167887395782656); //36167887395782656
     }
@@ -918,17 +900,17 @@ mod tests {
     fn test_white_rook_capture() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard.move_piece(51, 35, true);
-        chessboard.move_piece(35, 27, true);
-        chessboard.move_piece(8, 24, false);
-        chessboard.move_piece(24, 32, false);
-        chessboard.move_piece(49, 33, true);
-        chessboard.move_piece(32, 41, false);
-        chessboard.move_piece(12, 28, false);
-        chessboard.move_piece(27, 20, true);
-        chessboard.move_piece(55, 39, true);
-        chessboard.move_piece(63, 47, true);
-        chessboard.move_piece(47, 41, true);
+        chessboard.move_piece(51, 35);
+        chessboard.move_piece(35, 27);
+        chessboard.move_piece(8, 24);
+        chessboard.move_piece(24, 32);
+        chessboard.move_piece(49, 33);
+        chessboard.move_piece(32, 41);
+        chessboard.move_piece(12, 28);
+        chessboard.move_piece(27, 20);
+        chessboard.move_piece(55, 39);
+        chessboard.move_piece(63, 47);
+        chessboard.move_piece(47, 41);
     
         assert_eq!(chessboard.get_all_pieces(), 9184249772730543871);
     }
@@ -937,10 +919,10 @@ mod tests {
     fn test_black_rook_capture() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard.move_piece(8, 24, false);
-        chessboard.move_piece(0, 16, false);
-        chessboard.move_piece(16, 23, false);
-        chessboard.move_piece(23, 55, false);
+        chessboard.move_piece(8, 24);
+        chessboard.move_piece(0, 16);
+        chessboard.move_piece(16, 23);
+        chessboard.move_piece(23, 55);
     
         assert_eq!(chessboard.get_all_pieces(), 18446462598749683454);
     }
@@ -949,9 +931,9 @@ mod tests {
     fn test_white_bishop_capture() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard.move_piece(49, 41, true);
-        chessboard.move_piece(58, 40, true);
-        chessboard.move_piece(40, 12, true);
+        chessboard.move_piece(49, 41);
+        chessboard.move_piece(58, 40);
+        chessboard.move_piece(40, 12);
         assert_eq!(chessboard.get_all_pieces(), 18157671471651028991);
     }
 
@@ -960,10 +942,10 @@ mod tests {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
         println!("{} ", display_bit_board(chessboard.get_all_pieces()));
-        chessboard.move_piece(49, 41, true);
-        chessboard.move_piece(58, 40, true);
-        chessboard.move_piece(40, 12, true);
-        chessboard.move_piece(5, 12, false);
+        chessboard.move_piece(49, 41);
+        chessboard.move_piece(58, 40);
+        chessboard.move_piece(40, 12);
+        chessboard.move_piece(5, 12);
         println!("{} ", display_bit_board(chessboard.get_all_pieces()));
         assert_eq!(chessboard.get_all_pieces(), 18157671471651028959);
     }
@@ -972,12 +954,12 @@ mod tests {
     fn test_queen_movement_capture() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard.move_piece(51, 35, true);
-        chessboard.move_piece(59, 43, true);
-        chessboard.move_piece(43, 16, true);
-        chessboard.move_piece(16, 9, true);
-        chessboard.move_piece(9, 2, true);
-        chessboard.move_piece(3, 2, false);
+        chessboard.move_piece(51, 35);
+        chessboard.move_piece(59, 43);
+        chessboard.move_piece(43, 16);
+        chessboard.move_piece(16, 9);
+        chessboard.move_piece(9, 2);
+        chessboard.move_piece(3, 2);
         assert_eq!(chessboard.get_all_pieces(), 17867750080975535607)
     }
 
@@ -985,27 +967,27 @@ mod tests {
     fn test_threat_mask() {
         let precomps = &PRECOMPS;
         let mut chessboard: Chessboard = Chessboard::new(precomps);
-        chessboard.move_piece(12, 28, false);
-        chessboard.move_piece(13, 29, false);
-        chessboard.move_piece(14, 30, false);
-        chessboard.move_piece(15, 31, false);
-        chessboard.move_piece(1, 18, false);
-        chessboard.move_piece(0, 16, false);
-        chessboard.move_piece(2, 17, false);
-        chessboard.move_piece(3, 19, false);
-        chessboard.move_piece(5, 33, false);
+        chessboard.move_piece(12, 28);
+        chessboard.move_piece(13, 29);
+        chessboard.move_piece(14, 30);
+        chessboard.move_piece(15, 31);
+        chessboard.move_piece(1, 18);
+        chessboard.move_piece(0, 16);
+        chessboard.move_piece(2, 17);
+        chessboard.move_piece(3, 19);
+        chessboard.move_piece(5, 33);
 
-        chessboard.move_piece(52, 36, true);
-        chessboard.move_piece(53, 37, true);
-        chessboard.move_piece(54, 38, true);
-        chessboard.move_piece(55, 39, true);
-        chessboard.move_piece(61, 44, true);
-        chessboard.move_piece(63, 46, true);
-        chessboard.move_piece(62, 45, true);
-        chessboard.move_piece(60, 47, true);
-        chessboard.move_piece(51, 35, true);
-        chessboard.move_piece(45, 28, true);
-        chessboard.move_piece(39, 30, true);
+        chessboard.move_piece(52, 36);
+        chessboard.move_piece(53, 37);
+        chessboard.move_piece(54, 38);
+        chessboard.move_piece(55, 39);
+        chessboard.move_piece(61, 44);
+        chessboard.move_piece(63, 46);
+        chessboard.move_piece(62, 45);
+        chessboard.move_piece(60, 47);
+        chessboard.move_piece(51, 35);
+        chessboard.move_piece(45, 28);
+        chessboard.move_piece(39, 30);
 
         assert_eq!(format!("{:?}", chessboard.get_threat_masks(false)),"[343597383680, 34628173824, 34359738368, 281474976710656, 34628173824, 0]");
         assert_eq!(format!("{:?}", chessboard.get_threat_masks(true)),"[2684354560, 264192, 0, 0, 0, 0]");
@@ -1015,13 +997,13 @@ mod tests {
     fn test_discovered_check_black() {
         let precomps = &PRECOMPS;
         let mut chessboard: Chessboard = Chessboard::new(precomps);
-        chessboard.move_piece(11, 27, false);
-        chessboard.move_piece(52, 36, true);
-        chessboard.move_piece(60, 44, true);
-        chessboard.move_piece(44, 43, true);
-        chessboard.move_piece(2, 29, true);
+        chessboard.move_piece(11, 27);
+        chessboard.move_piece(52, 36);
+        chessboard.move_piece(60, 44);
+        chessboard.move_piece(44, 43);
+        chessboard.move_piece(2, 29);
         println!("{}", display_board(&chessboard));
-        let legal = chessboard.move_piece(36, 27, true);    
+        let legal = chessboard.move_piece(36, 27);    
         println!("{}", display_board(&chessboard));
         assert_eq!(legal, false);
     }
@@ -1030,11 +1012,11 @@ mod tests {
     fn test_check_and_discovered_check_white() {
         let precomps = &PRECOMPS;
         let mut chessboard: Chessboard = Chessboard::new(precomps);
-        chessboard.move_piece(52, 36, true);   // White moves
-        chessboard.move_piece(11, 27, false);    // Black moves
-        chessboard.move_piece(3,19, false);    // Black moves
-        chessboard.move_piece(19, 20, false);    // Black moves
-        let truval = chessboard.move_piece(36, 27, true); // White moves
+        chessboard.move_piece(52, 36);   // White moves
+        chessboard.move_piece(11, 27);    // Black moves
+        chessboard.move_piece(3,19);    // Black moves
+        chessboard.move_piece(19, 20);    // Black moves
+        let truval = chessboard.move_piece(36, 27); // White moves
         assert!(!truval);
     }
 
@@ -1042,16 +1024,18 @@ mod tests {
     fn test_white_king_movement_check() {
         let precomps = &PRECOMPS;
         let mut chessboard: Chessboard = Chessboard::new(precomps);
-        chessboard.move_piece(52, 36, true);   // White moves
-        chessboard.move_piece(60, 52, true);   // White moves
-        chessboard.move_piece(52, 44, true);   // White moves
-        chessboard.move_piece(44, 35, true);   // White moves
-        chessboard.move_piece(35, 28, true);   // White moves
-        let truval = chessboard.move_piece(28, 20, true);   // White moves
+        chessboard.move_piece(52, 36);   // White moves
+        chessboard.move_piece(60, 52);   // White moves
+        chessboard.move_piece(52, 44);   // White moves
+        chessboard.move_piece(44, 35);   // White moves
+        chessboard.move_piece(35, 28);   // White moves
+        chessboard.is_white = true;
+        let truval = chessboard.move_piece(28, 20);   // White moves
         assert!(!truval);
-        chessboard.move_piece(11, 19, false);   // Black checks
+        chessboard.move_piece(11, 19);   // Black checks
         println!("{}", display_board(&chessboard));
-        let truval = chessboard.move_piece(48, 40, true);   // White attempts to move pawns but can't
+        let truval = chessboard.move_piece(48, 40);   // White attempts to move pawns but can't
+        println!("{}", display_board(&chessboard));
         assert!(!truval);
     }
 
@@ -1059,15 +1043,16 @@ mod tests {
     fn test_black_king_movement_check() {
         let precomps = &PRECOMPS;
         let mut chessboard: Chessboard = Chessboard::new(precomps);
-        chessboard.move_piece(12, 28, false);   // Black moves
-        chessboard.move_piece(4, 12, false);   // Black moves
-        chessboard.move_piece(12, 20, false);   // Black moves
-        chessboard.move_piece(20, 27, false);   // Black moves
-        chessboard.move_piece(27, 35, false);   // Black moves
-        let truval = chessboard.move_piece(62, 45, true);   // Black moves
+        chessboard.move_piece(12, 28);   // Black moves
+        chessboard.move_piece(4, 12);   // Black moves
+        chessboard.move_piece(12, 20);   // Black moves
+        chessboard.move_piece(20, 27);   // Black moves
+        chessboard.move_piece(27, 35);   // Black moves
+        let truval = chessboard.move_piece(62, 45);   // Black moves
         assert!(truval);
-        chessboard.move_piece(49, 41, true);   // White checks
-        let truval = chessboard.move_piece(8, 16, false);   // Black attempts to move pawns but can't
+        chessboard.move_piece(49, 41);   // White checks
+        println!("{}", display_board(&chessboard));
+        let truval = chessboard.move_piece(8, 16);   // Black attempts to move pawns but can't
         assert!(!truval);
     }
 
@@ -1075,47 +1060,37 @@ mod tests {
     fn test_pawn_promote_always_to_queen() {
         let precomps = &PRECOMPS;
         let mut chessboard: Chessboard = Chessboard::new(precomps);
-        chessboard.move_piece(51, 1, true);   // White moves
+        chessboard.move_piece(51, 1);   // White moves
         assert_eq!(chessboard.get_all_pieces(), 18444210798919221247);
 
         let precomps = &PRECOMPS;
         let mut chessboard: Chessboard = Chessboard::new(precomps);
-        chessboard.move_piece(12, 58, false);   // Black moves
+        chessboard.move_piece(12, 58);   // Black moves
         assert_eq!(chessboard.get_all_pieces(), 18446462598732902399);
     }
 
     #[test]
     fn test_get_board_states_initial_state() {
         let precomps = &PRECOMPS;
-        let chessboard: Chessboard = Chessboard::new(precomps);
+        let mut chessboard: Chessboard = Chessboard::new(precomps);
 
-        let white_states = chessboard.get_all_possible_moves(true);
-        let black_states = chessboard.get_all_possible_moves(false);
+        let white_states = chessboard.get_all_possible_moves();
+        for state in white_states {
+            println!("{}", display_board(&state));
+        }
+        let white_states = chessboard.get_all_possible_moves();
         assert_eq!(20, white_states.len());
+        chessboard.is_white = false;
+        let black_states = chessboard.get_all_possible_moves();
         assert_eq!(20, black_states.len());
     }
-
-    #[test]
-    fn check_checkmate_checker() {
-        let precomps = &PRECOMPS;
-        let chessboard: Chessboard = Chessboard::new(precomps);
-        assert_eq!(20, chessboard.get_all_possible_moves(true).len());
-        assert_eq!(20, chessboard.get_all_possible_moves(false).len());
-    }
-
     #[test]
     fn run_scholars_mate() {
         let precomps = &PRECOMPS;
         let mut chessboard = Chessboard::new(&precomps);
-        chessboard.move_piece(52, 36, true);
-        chessboard.move_piece(12, 28, false);
-        chessboard.move_piece(59, 31, true);
-        chessboard.move_piece(8, 16, false);
-        chessboard.move_piece(61, 34, true);
-        chessboard.move_piece(16, 24, false);
-        chessboard.move_piece(31, 13, true);
-        
-        assert_eq!(0, chessboard.get_all_possible_moves(false).len());
+        apply_fen(&mut chessboard, "r1bqkbnr/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4");
+        chessboard.is_white = false;
+        assert_eq!(0, chessboard.get_all_possible_moves().len());
     }
 
     #[test]
@@ -1123,12 +1098,12 @@ mod tests {
         let precomps = &PRECOMPS;
         let mut chessboard: Chessboard = Chessboard::new(precomps);
 
-        chessboard.move_piece(48, 32, true); 
-        chessboard.move_piece(1, 18, false); 
-        chessboard.move_piece(18, 35, false); 
-        chessboard.move_piece(35, 25,  false); 
+        chessboard.move_piece(48, 32); 
+        chessboard.move_piece(1, 18); 
+        chessboard.move_piece(18, 35); 
+        chessboard.move_piece(35, 25); 
 
-        assert!(chessboard.move_piece(32, 25, true)); 
+        assert!(chessboard.move_piece(32, 25)); 
         assert_eq!(chessboard.last_capturee, 1);
         assert_eq!(chessboard.last_captured, 2);
     }

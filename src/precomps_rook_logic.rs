@@ -76,7 +76,7 @@ fn write_rook_data(
     let mut offsets = String::new();
     let mut current_offset = 0;
 
-    for (i, table) in move_table.iter().enumerate() {
+    for table in move_table {
         offsets += &format!("    {},\n", current_offset);
 
         for entry in table.iter() {

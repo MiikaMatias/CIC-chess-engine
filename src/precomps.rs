@@ -7,7 +7,7 @@ use crate::config::*;
 use crate::precomps_rook::*;
 use crate::precomps_bishop::*;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Precomps {
     knight_table: HashMap<u64, u64>,
     pawn_table: [(u64, u64); 128],
@@ -30,7 +30,7 @@ pub struct Precomps {
 }
 
 #[derive(Clone)]
-#[derive(Copy)]
+#[derive(Copy, Debug)]
 pub struct MagicEntry {
     pub magic: u64,
     pub mask: u64,
@@ -40,8 +40,31 @@ pub struct MagicEntry {
 
 impl Precomps {
     pub fn new() -> Precomps {
-        if PRECOMP_ROOK {init_rook_magics(ROOK_FILE_PATH);};
-        if PRECOMP_BISHOP {init_bishop_magics(BISHOP_FILE_PATH);};
+        let rook_result = if PRECOMP_ROOK {
+            init_rook_magics(ROOK_FILE_PATH)
+        } else {
+            Ok(())
+        };
+        let bishop_result = if PRECOMP_BISHOP {
+            init_bishop_magics(BISHOP_FILE_PATH)
+        } else {
+            Ok(())
+        };
+
+        match rook_result {
+            Err(e) => {
+                panic!("Error generating rook magics: {}", e);
+            }
+            _ => {}
+        }
+
+        match bishop_result {
+            Err(e) => {
+                panic!("Error generating bishop magics: {}", e);
+            }
+            _ => {}
+        }
+
         Precomps {
             knight_table: init_knight_and_masks(),
 
