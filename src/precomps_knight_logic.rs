@@ -1,4 +1,4 @@
-use crate::masks::*;
+use crate::{graphics::display_bit_board, masks::*};
 
 use std::collections::HashMap;
 
@@ -44,7 +44,7 @@ pub fn precompute_knight_move(pos: u64) -> u64 {
         } else if in_1_rank {
             (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-6))
         } else {
-            (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos-10)) | (1u64 << (pos-17))
+            (1u64 << (pos+15)) | (1u64 << (pos-17)) | (1u64 << pos -15) | (1u64 << (pos+10)) | (1u64 << (pos-6)) | (1u64 << (pos+17))
         }
     } else if in_g_file {
         if in_8_rank {
@@ -56,7 +56,7 @@ pub fn precompute_knight_move(pos: u64) -> u64 {
         } else if in_1_rank {
             (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-10))
         } else {
-            (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos-10)) | (1u64 << (pos-17))
+            (1u64 << (pos-15)) | (1u64 << (pos+17)) | (1u64 << pos +15) | (1u64 << (pos-10)) | (1u64 << (pos+6)) | (1u64 << (pos-17))
         }
     } else if in_h_file {
         if in_8_rank {
@@ -84,4 +84,16 @@ pub fn precompute_knight_move(pos: u64) -> u64 {
             (1u64 << (pos+17)) | (1u64 << (pos+15)) | (1u64 << (pos+6)) | (1u64 << (pos+10)) | (1u64 << (pos-17)) | (1u64 << (pos-15)) | (1u64 << (pos-6)) | (1u64 << (pos-10)) 
         }
     }
+}
+
+
+#[test]
+fn test_knight_wrapping() {
+    let m = precompute_knight_move(41);
+    println!("{}", display_bit_board(m));
+    assert_eq!(m, 362539804446949376);
+
+    let m = precompute_knight_move(46);
+    println!("{}", display_bit_board(m));
+    assert_eq!(m, 11533718717099671552);
 }

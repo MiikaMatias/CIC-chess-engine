@@ -1003,6 +1003,7 @@ mod tests {
         chessboard.move_piece(44, 43);
         chessboard.move_piece(2, 29);
         println!("{}", display_board(&chessboard));
+        chessboard.is_white = true;
         let legal = chessboard.move_piece(36, 27);    
         println!("{}", display_board(&chessboard));
         assert_eq!(legal, false);
@@ -1032,6 +1033,7 @@ mod tests {
         chessboard.is_white = true;
         let truval = chessboard.move_piece(28, 20);   // White moves
         assert!(!truval);
+        chessboard.is_white = false;
         chessboard.move_piece(11, 19);   // Black checks
         println!("{}", display_board(&chessboard));
         let truval = chessboard.move_piece(48, 40);   // White attempts to move pawns but can't
@@ -1048,7 +1050,8 @@ mod tests {
         chessboard.move_piece(12, 20);   // Black moves
         chessboard.move_piece(20, 27);   // Black moves
         chessboard.move_piece(27, 35);   // Black moves
-        let truval = chessboard.move_piece(62, 45);   // Black moves
+        chessboard.is_white = true;
+        let truval = chessboard.move_piece(62, 45);   // White moves
         assert!(truval);
         chessboard.move_piece(49, 41);   // White checks
         println!("{}", display_board(&chessboard));

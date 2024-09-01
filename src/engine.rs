@@ -42,10 +42,10 @@ fn eval_center(state: Chessboard) -> i32 {
 }
 
 fn eval_win_threat(state: Chessboard) -> i32 {
-    if state.get_all_possible_moves().len() == 0 {
+    if state.get_all_possible_moves().len() == 0 && state.is_white{
         return i32::MIN;
     }
-    if state.get_all_possible_moves().len() == 0 {
+    if state.get_all_possible_moves().len() == 0 && !state.is_white{
         return i32::MAX;
     }
     return 0;

@@ -12,6 +12,7 @@ mod precomps_rook;
 mod precomps_bishop;
 mod graphics;
 mod test_illegal_moves;
+mod book_moves;
 
 use board::Chessboard; 
 #[allow(unused_imports)]

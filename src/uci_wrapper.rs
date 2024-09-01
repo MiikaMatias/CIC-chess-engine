@@ -1,6 +1,7 @@
 use std::io::{self, BufRead};
 use std::collections::HashMap;
 use crate::board::Chessboard;
+use crate::book_moves::BOOK_MOVES;
 use crate::graphics::*;
 use crate::engine::search_best_move;
 
@@ -12,6 +13,7 @@ pub fn uci_loop(mut board: Chessboard) {
     println!("id author Kontrakti");
 
     let mut is_white_turn: bool = true;
+    let mut book_move = "";
 
     loop {
         let input = match lines.next() {
@@ -51,11 +53,30 @@ pub fn uci_loop(mut board: Chessboard) {
                 }
 
                 if input_split[2] == "moves" {
+                    let moves = input_split.iter().skip(3);
+                    let mut move_string = String::new();
+                    for movestr in moves {
+                        move_string.push_str(movestr);
+                        move_string.push(' ');
+                    }
+                    for bm in BOOK_MOVES.iter() {
+                        book_move = "";
+                        if bm.len() < move_string.len() {
+                            continue;
+                        }
+                        if bm.starts_with(&move_string) {
+                            book_move = &bm[move_string.len()..].split_whitespace().collect::<Vec<&str>>()[..][0];
+                            break;
+                        }
+                    }
+
+                    let moves = input_split.iter().skip(3);
                     apply_fen(&mut board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-                    for movestr in input_split.iter().skip(3) {
+                    for movestr in moves {
                         let move_to_play = translate_move(movestr);
                         board.move_piece(move_to_play[0], move_to_play[1]);
                     }
+
                     continue;
                 }
                 if input_split[2] == "fen" {
@@ -64,10 +85,15 @@ pub fn uci_loop(mut board: Chessboard) {
                 }
             }
             "go" => {
-                /*
-                let size_of_board_bytes = size_of::<Chessboard>();
-                println!("The size of the board is {} B", size_of_board_bytes);
-                */
+                if book_move != "" {
+                    let mut new_board = Chessboard::new(board.precomps);
+                    println!("bestmove {}", book_move);
+                    book_move = "";
+                    let moves = translate_move(book_move); 
+                    new_board.move_piece(moves[0], moves[1]);
+                    apply_fen(&mut board, &generate_fen(&new_board));
+                    continue;
+                }
                 let new_board = search_best_move(board);
                 println!("bestmove {}",get_uci_move(&board, &new_board, board.is_white));    
                 apply_fen(&mut board, &generate_fen(&new_board));
@@ -120,6 +146,10 @@ pub fn uci_loop(mut board: Chessboard) {
             "mv" => {
                 let move_to_play = translate_move(&input_split[1]);
                 board.move_piece(move_to_play[0], move_to_play[1]);
+            }
+            "boardsize" => {
+                let size_of_board_bytes = size_of::<Chessboard>();
+                println!("The size of the board is {} B", size_of_board_bytes);
             }
             _ => {
                 println!("Unknown command");
